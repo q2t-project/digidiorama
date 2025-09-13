@@ -1,25 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <!-- Replace <repo> with your repository name, e.g., /my-repo/ -->
-  <base href="/<repo>/"></base>
+  <base href="/ddviewer/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>digigiorama Viewer</title>
+
+  <!-- スタイル -->
   <link rel="stylesheet" href="styles/style.css" />
+
+  <!-- アプリ本体 -->
   <script type="module" src="scripts/app.js"></script>
 </head>
 <body>
-  <header>
-    <h1>digigiorama Viewer</h1>
-    <select id="dataset"></select>
-  </header>
-  <main>
-    <div id="viewer">Three.js canvas goes here</div>
-    <aside id="panel">選択情報がここに表示されます</aside>
-  </main>
-  <footer>
-    <small>Theme: light / accent #2563eb</small>
-  </footer>
+  <div id="viewer" aria-label="3D viewer" role="application"></div>
 </body>
 </html>
