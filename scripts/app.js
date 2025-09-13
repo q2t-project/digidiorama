@@ -39,16 +39,14 @@ camera.position.set(2.5, 2, 2.5);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.1;
-controls.zoom0 = 1.0;             // 初期倍率を固定
-controls.enableZoom = false;      // zoomプロパティによる拡大縮小は無効化
-controls.enableDolly = true;      // 距離移動によるズームを有効化
-controls.zoomSpeed = 0.1;       // ズーム感度（1.0基準、0.5なら緩やか）
-controls.minDistance = 0.5;  // 近づきすぎを防止
-controls.maxDistance = 50;   // ズームアウトしすぎ防止
-controls.zoomToCursor = true;      // マウス位置を中心にズーム
+
+controls.enableZoom = true;
+controls.zoomSpeed = 1.0;
+controls.minDistance = 0.5;
+controls.maxDistance = 50;
+controls.zoomToCursor = true;
 controls.screenSpacePanning = true;
 
-// 重要: ホイールを連続ズームにする
 controls.mouseButtons = {
   LEFT: THREE.MOUSE.ROTATE,
   MIDDLE: THREE.MOUSE.DOLLY,
@@ -58,6 +56,7 @@ controls.touches = {
   ONE: THREE.TOUCH.ROTATE,
   TWO: THREE.TOUCH.DOLLY_PAN
 };
+
 
 // ガイド系
 const grid = new THREE.GridHelper(10, 10, 0x8aa7ff, 0xdbe5ff);
