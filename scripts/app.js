@@ -33,11 +33,14 @@ renderer.setSize(container.clientWidth, container.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 2000);
 camera.position.set(2.5, 1.8, 2.5);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.minDistance = 0.2;  // 近づきすぎを防止
+controls.maxDistance = 20;   // ズームアウトしすぎ防止
+controls.target.set(0, 0, 0);
 
 // ガイド系
 const grid = new THREE.GridHelper(10, 10, 0x8aa7ff, 0xdbe5ff);
