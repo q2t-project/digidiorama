@@ -1,0 +1,66 @@
+{
+  "kind": "digigiorama-theme",
+  "palette": {
+    "bg": "#ffffff",
+    "fg": "#111827",
+    "accent": "#2563eb",
+    "muted": "#64748b",
+    "grid": "#e5e7eb"
+  },
+  "fonts": {
+    "ui": "system-ui, Segoe UI, Roboto, Noto Sans JP, sans-serif",
+    "label": "ui"
+  },
+  "textStyles": {
+    "labelSm": {
+      "size": 12,
+      "outline": true,
+      "outlineWidth": 0.5
+    },
+    "labelLg": {
+      "size": 18,
+      "outline": true
+    }
+  },
+  "nodeStyles": {
+    "default": {
+      "shape": "sphere",
+      "color": "var(accent)",
+      "size": 0.06
+    }
+  },
+  "edgeStyles": {
+    "default": {
+      "style": "solid",
+      "width": 1,
+      "color": "#94a3b8"
+    }
+  },
+  "selectors": [
+    {
+      "if": "node[tag~='causality']",
+      "use": {
+        "color": "#d97706",
+        "textStyle": "labelSm"
+      }
+    },
+    {
+      "if": "edge[label='緩和']",
+      "use": {
+        "style": "dashed"
+      }
+    }
+  ],
+  "legend": {
+    "groups": [
+      {
+        "title": "因果",
+        "selector": "node[tag~='causality']"
+      },
+      {
+        "title": "リンク：緩和",
+        "selector": "edge[label='緩和']"
+      }
+    ]
+  }
+}
