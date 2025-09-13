@@ -1,9 +1,6 @@
-// Three.js をCDNからESMで直接読み込み（バンドラ不要）
-// CDNからthree.jsをESMで読み込み
-import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
-import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-
-
+// Three.js 読み込み
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 
 const container = document.getElementById('viewer');

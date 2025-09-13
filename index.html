@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <base href="/digidiorama/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>digigiorama Viewer</title>
@@ -10,9 +9,17 @@
   <link rel="stylesheet" href="styles/style.css" />
 
   <!-- アプリ本体 -->
-  <script type="module" src="scripts/app.js"></script>
+  <script type="importmap">
+  {
+      "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+  }
+  </script>
 </head>
 <body>
   <div id="viewer" aria-label="3D viewer" role="application"></div>
+  <script type="module" src="scripts/app.js"></script>
 </body>
 </html>
