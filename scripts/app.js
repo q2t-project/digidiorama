@@ -39,6 +39,7 @@ camera.position.set(2.5, 2, 2.5);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enableZoom = true;
+controls.zoomSpeed = 1.0;       // ズーム感度（1.0基準、0.5なら緩やか）
 controls.minDistance = 0.2;  // 近づきすぎを防止
 controls.maxDistance = 50;   // ズームアウトしすぎ防止
 controls.target.set(0, 0, 0);
