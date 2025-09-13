@@ -1,13 +1,16 @@
-/* ライト基調 / 余白なしの全画面キャンバス */
-html, body {
-  height: 100%;
-  margin: 0;
-  background: #f7f8fb; /* light */
-  color: #111;
-  font-family: system-ui, Segoe UI, Roboto, Noto Sans JP, sans-serif;
+html, body { height: 100%; margin: 0; background: #f7f8fb; color: #111;
+  font-family: system-ui, Segoe UI, Roboto, Noto Sans JP, sans-serif; }
+#viewer { position: fixed; inset: 48px 320px 0 0; outline: none; } /* 上48px/右320px */
+.topbar {
+  position: fixed; left: 0; right: 0; top: 0; height: 48px; display: flex;
+  align-items: center; gap: 12px; padding: 0 12px; background: #fff; border-bottom: 1px solid #e5e7eb;
 }
-#viewer {
-  position: fixed;
-  inset: 0;           /* 画面いっぱい */
-  outline: none;
+.brand { font-weight: 600; }
+.picker select { padding: 4px; }
+.status { margin-left: auto; color: #555; font-size: 12px; }
+.sidepanel {
+  position: fixed; top: 48px; right: 0; width: 320px; bottom: 0; overflow: auto;
+  background: #fff; border-left: 1px solid #e5e7eb; padding: 12px 12px 24px;
 }
+h3 { margin: 12px 0 6px; }
+.errors { background: #fff5f5; color: #8b0000; min-height: 64px; padding: 8px; }

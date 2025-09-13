@@ -1,11 +1,9 @@
 [
   {
-    "file": "/assets/data/sample.digigiorama.json",
-    "title": "サンプル",
+    "file": "assets/data/sample.digigiorama.json",
+    "title": "サンプル：因果の型",
     "author": "you",
     "created": "2025-09-13",
-    "tags": [
-      "demo"
-    ]
+    "tags": ["demo","causality"]
   }
 ]

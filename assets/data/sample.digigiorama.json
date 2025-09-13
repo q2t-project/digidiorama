@@ -1,135 +1,27 @@
 {
   "version": "1.0.0",
-  "meta": {
-    "title": "サンプル",
-    "author": "you",
-    "created": "2025-09-13",
-    "tags": [
-      "demo"
-    ]
-  },
+  "meta": { "title": "サンプル：因果の型", "author": "you", "created": "2025-09-13", "tags": ["demo","causality"] },
   "space": {
     "units": "normalized",
     "axes": [
-      {
-        "id": "x",
-        "label": "形式 φ",
-        "domain": [
-          0,
-          1
-        ],
-        "scale": "linear"
-      },
-      {
-        "id": "y",
-        "label": "操作 ψ",
-        "domain": [
-          0,
-          1
-        ],
-        "scale": "linear"
-      },
-      {
-        "id": "z",
-        "label": "意味 μ",
-        "domain": [
-          0,
-          1
-        ],
-        "scale": "linear"
-      }
+      {"id":"x","label":"形式 φ","domain":[0,1],"scale":"linear"},
+      {"id":"y","label":"操作 ψ","domain":[0,1],"scale":"linear"},
+      {"id":"z","label":"意味 μ","domain":[0,1],"scale":"linear"}
     ],
     "grid": true
   },
   "layers": [
-    {
-      "id": "grid",
-      "order": 10,
-      "hitTest": false,
-      "visible": true
-    },
-    {
-      "id": "models",
-      "order": 20,
-      "hitTest": false,
-      "visible": true
-    },
-    {
-      "id": "nodes",
-      "order": 30,
-      "hitTest": true,
-      "visible": true
-    },
-    {
-      "id": "labels",
-      "order": 40,
-      "hitTest": false,
-      "visible": true,
-      "renderer": "troika"
-    },
-    {
-      "id": "hud",
-      "order": 90,
-      "hitTest": false,
-      "visible": true
-    }
+    {"id":"grid","order":10,"hitTest":false,"visible":true},
+    {"id":"nodes","order":30,"hitTest":true,"visible":true}
   ],
-  "theme": "/assets/themes/default.digigiorama-theme.json",
+  "theme": "assets/themes/default.digigiorama-theme.json",
   "nodes": [
-    {
-      "id": "n1",
-      "label": "必然因果",
-      "position": [
-        0.8,
-        0.4,
-        0.6
-      ],
-      "tags": [
-        "causality"
-      ],
-      "description": "確定的な因果"
-    },
-    {
-      "id": "n2",
-      "label": "確率因果",
-      "position": [
-        0.6,
-        0.3,
-        0.5
-      ],
-      "tags": [
-        "causality"
-      ]
-    },
-    {
-      "id": "n3",
-      "label": "回路",
-      "position": [
-        0.3,
-        0.8,
-        0.5
-      ],
-      "tags": [
-        "process"
-      ]
-    }
+    { "id":"n1", "label":"必然因果", "position":[0.8,0.4,0.6], "tags":["causality"], "description":"確定的な因果" },
+    { "id":"n2", "label":"確率因果", "position":[0.6,0.3,0.5], "tags":["causality"] },
+    { "id":"n3", "label":"多因果",   "position":[0.3,0.7,0.4], "tags":["causality"] }
   ],
   "edges": [
-    {
-      "source": "n1",
-      "target": "n2",
-      "label": "緩和"
-    }
+    { "source":"n1", "target":"n2", "label":"緩和" }
   ],
-  "models": [
-    {
-      "id": "base",
-      "path": "/assets/models/base.glb",
-      "position": [
-        0,
-        0,
-        0
-      ]
-    }
-  ]
+  "models": []
 }

@@ -9,7 +9,7 @@
   <!-- スタイル -->
   <link rel="stylesheet" href="styles/style.css" />
 
-  <!-- アプリ本体 -->
+  <!-- Three.js importmap -->
   <script type="importmap">
   {
       "imports": {
@@ -20,7 +20,28 @@
   </script>
 </head>
 <body>
+  <!-- 上部バー：データ選択 -->
+  <header class="topbar">
+    <div class="brand">digigiorama Viewer</div>
+    <label>
+      Data:
+      <select id="data-picker"></select>
+    </label>
+    <button id="reload">Reload</button>
+    <div id="status" class="status">Ready</div>
+  </header>
+
+  <!-- 右パネル：メタ情報 & エラー -->
+  <aside id="sidepanel" class="sidepanel">
+    <h3>Meta</h3>
+    <div id="meta"></div>
+    <h3>Errors</h3>
+    <pre id="errors" class="errors"></pre>
+  </aside>
+
+  <!-- Three.jsビュー -->
   <div id="viewer" aria-label="3D viewer" role="application"></div>
+
   <script type="module" src="scripts/app.js"></script>
 </body>
 </html>
