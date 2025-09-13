@@ -38,11 +38,23 @@ camera.position.set(2.5, 2, 2.5);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.dampingFactor = 0.05;
 controls.enableZoom = true;
-controls.zoomSpeed = 0.05;       // ズーム感度（1.0基準、0.5なら緩やか）
+controls.zoomSpeed = 1;       // ズーム感度（1.0基準、0.5なら緩やか）
 controls.minDistance = 0.01;  // 近づきすぎを防止
 controls.maxDistance = 20;   // ズームアウトしすぎ防止
 controls.target.set(0, 0, 0);
+
+// 重要: ホイールを連続ズームにする
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+  RIGHT: THREE.MOUSE.PAN
+};
+controls.touches = {
+  ONE: THREE.TOUCH.ROTATE,
+  TWO: THREE.TOUCH.DOLLY_PAN
+};
 
 // ガイド系
 const grid = new THREE.GridHelper(10, 10, 0x8aa7ff, 0xdbe5ff);
