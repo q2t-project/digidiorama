@@ -33,7 +33,7 @@ renderer.setSize(container.clientWidth, container.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 2000);
 camera.position.set(2.5, 2, 2.5);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -41,8 +41,10 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.1;
 controls.enableZoom = true;
 controls.zoomSpeed = 0.01;       // ズーム感度（1.0基準、0.5なら緩やか）
-controls.minDistance = 0.01;  // 近づきすぎを防止
-controls.maxDistance = 100;   // ズームアウトしすぎ防止
+controls.minDistance = 0.5;  // 近づきすぎを防止
+controls.maxDistance = 50;   // ズームアウトしすぎ防止
+controls.zoomToCursor = true;      // マウス位置を中心にズーム
+controls.screenSpacePanning = true;
 
 // 重要: ホイールを連続ズームにする
 controls.mouseButtons = {
