@@ -20,7 +20,7 @@
   </script>
 </head>
 <body>
-  <!-- 上部バー：データ選択 -->
+  <!-- 上部バー -->
   <header class="topbar">
     <div class="brand">digigiorama Viewer</div>
     <label>
@@ -31,15 +31,23 @@
     <div id="status" class="status">Ready</div>
   </header>
 
-  <!-- 右パネル：メタ情報 & エラー -->
+  <!-- 左パネル: レイヤ制御 -->
+  <aside id="layerpanel" class="layerpanel">
+    <h3>Layers</h3>
+    <div id="layers"></div>
+  </aside>
+
+  <!-- 右パネル: メタ情報 & ノード注釈 -->
   <aside id="sidepanel" class="sidepanel">
     <h3>Meta</h3>
     <div id="meta"></div>
+    <h3>Node</h3>
+    <div id="node-detail"></div>
     <h3>Errors</h3>
     <pre id="errors" class="errors"></pre>
   </aside>
 
-  <!-- Three.jsビュー -->
+  <!-- Three.js ビュー -->
   <div id="viewer" aria-label="3D viewer" role="application"></div>
 
   <script type="module" src="scripts/app.js"></script>
