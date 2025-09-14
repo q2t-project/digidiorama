@@ -1,28 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>digidiorama</title>
+  <meta charset="utf-8" />
+  <title>digidiorama – P0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/digidiorama/" />
+
+  <!-- style -->
   <link rel="stylesheet" href="styles/style.css" />
 
   <!-- Import Map -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.155.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.155.0/examples/jsm/"
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
     }
   }
   </script>
 </head>
 <body>
+  <div class="topbar">
+    <div class="title">digidiorama</div>
+    <div class="spacer"></div>
+    <select id="lang-switcher">
+      <option value="ja">日本語</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <!-- viewer -->
   <div id="viewer"></div>
 
-  <aside id="sidepanel" class="sidepanel">
+  <!-- side panel -->
+  <div class="sidepanel">
+    <h3>Meta</h3>
+    <div id="meta">（統計情報などをここに表示予定）</div>
+
     <h3>Node Info</h3>
     <div id="node-info">ノードをクリックしてください</div>
-  </aside>
 
-  <script type="module" src="./scripts/app.js"></script>
+    <h3>Errors</h3>
+    <div id="errors">（バリデーション結果をここに表示予定）</div>
+  </div>
+
+  <script type="module" src="scripts/app.js"></script>
 </body>
 </html>

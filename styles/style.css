@@ -1,35 +1,58 @@
-html, body {
+body {
   margin: 0;
-  height: 100%;
-  overflow: hidden;
   font-family: sans-serif;
+  background: #f6f8fa;
+  color: #111;
 }
 
+/* トップバー */
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.topbar .title {
+  font-weight: bold;
+}
+.topbar .spacer {
+  flex: 1;
+}
+
+/* viewer */
 #viewer {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 260px; /* サイドパネル分 */
-  bottom: 0;
+  inset: 0;
+  top: 48px;
 }
 
-/* サイドパネル */
+/* 右サイドパネル */
 .sidepanel {
   position: fixed;
-  top: 0;
+  top: 48px;
   right: 0;
   width: 260px;
   bottom: 0;
   overflow-y: auto;
-  background: #fff;
-  border-left: 1px solid #d1d5db;
+  background: rgba(255,255,255,0.95);
+  border-left: 1px solid #ddd;
   padding: 12px;
   font-size: 14px;
+  z-index: 5;
 }
 
-/* ===== 黒字を強制 ===== */
-#node-info, #node-info * {
+/* ★ 黒字統一 */
+.sidepanel, .sidepanel * {
   color: #111 !important;
-  opacity: 1 !important;
-  font-size: 14px;
+}
+
+.sidepanel h3 {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.sidepanel div {
+  margin: 6px 0;
 }
