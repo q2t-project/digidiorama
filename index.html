@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- GitHub Pages（Project Pages）用。必ずリポジトリ名に合わせる -->
   <base href="/digidiorama/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,47 +10,53 @@
   <!-- スタイル -->
   <link rel="stylesheet" href="styles/style.css" />
 
-  <!-- Three.js importmap -->
+  <!-- Three.js をブラウザESMで。addons も解決するため Import Maps は必須 -->
   <script type="importmap">
   {
-      "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
+    "imports": {
+      "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/",
+      "ajv": "https://cdn.jsdelivr.net/npm/ajv@8.17.1/+esm"
+    }
   }
   </script>
 </head>
 <body>
-  <!-- 上部バー -->
+  <!-- 上部：ブランド／データ選択／状態 -->
   <header class="topbar">
     <div class="brand">digigiorama Viewer</div>
-    <label>
-      Data:
-      <select id="data-picker"></select>
+    <label class="picker">
+      <span>Data:</span>
+      <select id="data-picker" aria-label="データ選択"></select>
+      <button id="reload" type="button">Reload</button>
     </label>
-    <button id="reload">Reload</button>
-    <div id="status" class="status">Ready</div>
+    <div id="status" class="status" aria-live="polite">Ready</div>
   </header>
 
-  <!-- 左パネル: レイヤ制御 -->
-  <aside id="layerpanel" class="layerpanel">
+  <!-- 左：レイヤ切替（P1は grid/nodes を実装、ほかは将来拡張の占位） -->
+  <nav id="layer-panel" class="layer-panel" aria-label="Layers">
     <h3>Layers</h3>
-    <div id="layers"></div>
-  </aside>
+    <label><input type="checkbox" data-layer="grid"  checked> grid</label>
+    <label><input type="checkbox" data-layer="nodes" checked> nodes</label>
+    <!-- 仕様に従いデータ駆動も可能。JSONのlayers[]が来たら動的に上書き生成します -->
+  </nav>
 
-  <!-- 右パネル: メタ情報 & ノード注釈 -->
+  <!-- 右：メタ情報／ノード注釈／エラー -->
   <aside id="sidepanel" class="sidepanel">
     <h3>Meta</h3>
     <div id="meta"></div>
+
     <h3>Node</h3>
-    <div id="node-detail"></div>
+    <div id="node" class="nodebox"></div>
+
     <h3>Errors</h3>
-    <pre id="errors" class="errors"></pre>
+    <pre id="errors" class="errors" tabindex="0"></pre>
   </aside>
 
-  <!-- Three.js ビュー -->
-  <div id="viewer" aria-label="3D viewer" role="application"></div>
+  <!-- 中央：Three.js ビュー -->
+  <main id="viewer" aria-label="3D viewer" role="application"></main>
 
+  <!-- アプリ本体 -->
   <script type="module" src="scripts/app.js"></script>
 </body>
 </html>
