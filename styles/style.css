@@ -32,6 +32,18 @@ canvas { display: block; }
   padding: 12px;
   font-size: 14px;
   z-index: 5;
+  color: #111;   /* 文字を濃い色に */
+}
+.sidepanel h3 {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.sidepanel div,
+.sidepanel pre {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #333;
 }
 
 #viewer {
