@@ -148,23 +148,24 @@ function selectNode(mesh) {
   selectedNode = mesh;
   originalMaterial = mesh.material;
 
-  // 強調表示（色変更＋拡大）
+  // 強調表示（赤色＋拡大）
   mesh.material = new THREE.MeshStandardMaterial({
-    color: 0xff4444, // 赤系
+    color: 0xff4444,
     emissive: 0x441111,
     roughness: 0.4
   });
   mesh.scale.set(1.3, 1.3, 1.3);
 
-  // パネル更新
+  // ノード情報を右パネルに表示
   const d = mesh.userData;
-  nodeInfoEl.innerHTML = `
+  document.getElementById("node-info").innerHTML = `
     <div><b>ID:</b> ${d.id}</div>
-    <div><b>Label:</b> ${d.label ?? ''}</div>
-    <div><b>Description:</b> ${d.description ?? ''}</div>
-    <div><b>Tags:</b> ${(d.tags ?? []).join(', ')}</div>
+    <div><b>Label:</b> ${d.label ?? ""}</div>
+    <div><b>Description:</b> ${d.description ?? ""}</div>
+    <div><b>Tags:</b> ${(d.tags ?? []).join(", ")}</div>
   `;
 }
+
 
 // イベント登録
 renderer.domElement.addEventListener('click', onClick);
