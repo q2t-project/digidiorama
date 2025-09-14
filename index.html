@@ -10,38 +10,44 @@
         background: #f6f8fa;
         color: #111;
         display: flex;
+        flex-direction: column;
         height: 100vh;
       }
+
       header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 48px;
+        flex: 0 0 48px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 1rem;
         background: #fff;
         border-bottom: 1px solid #ddd;
-        z-index: 10;
       }
+
+      main {
+        flex: 1;
+        display: flex;
+        height: calc(100% - 48px);
+      }
+
       #viewer {
         flex: 1;
-        margin-top: 48px;
+        background: #fff; /* 背景白に固定 */
       }
+
       .sidepanel {
         width: 280px;
-        margin-top: 48px;
         padding: 1rem;
         border-left: 1px solid #ddd;
         background: #fff;
         overflow-y: auto;
       }
+
       .sidepanel h2 {
         margin-top: 1rem;
         font-size: 1.1rem;
       }
+
       .sidepanel p {
         margin: 0.25rem 0;
       }
@@ -64,18 +70,19 @@
       </select>
     </header>
 
-    <div id="viewer"></div>
+    <main>
+      <div id="viewer"></div>
+      <aside class="sidepanel">
+        <h2>Meta</h2>
+        <p>(統計情報などをここに表示予定)</p>
 
-    <aside class="sidepanel">
-      <h2>Meta</h2>
-      <p>(統計情報などをここに表示予定)</p>
+        <h2>Node Info</h2>
+        <div id="node-info">ノードをクリックしてください</div>
 
-      <h2>Node Info</h2>
-      <div id="node-info">ノードをクリックしてください</div>
-
-      <h2>Errors</h2>
-      <div id="errors">(バリデーション結果をここに表示予定)</div>
-    </aside>
+        <h2>Errors</h2>
+        <div id="errors">(バリデーション結果をここに表示予定)</div>
+      </aside>
+    </main>
 
     <script type="module" src="./scripts/app.js"></script>
   </body>
