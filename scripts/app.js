@@ -94,8 +94,7 @@ function applyLayerVisibility() {
 
 // --- Data schema（P1は最小） ---
 const schema = {
-  $schema: 'https://json-schema.org/draft/2020-12/schema',
-  title: 'digigiorama(min)',
+  title: 'digidiorama(min)',
   type: 'object',
   required: ['version','meta','nodes'],
   properties: {

@@ -1,0 +1,135 @@
+{
+  "title": "digigiorama",
+  "type": "object",
+  "required": ["version", "meta", "nodes"],
+  "properties": {
+    "version": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "created": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "space": {
+      "type": "object",
+      "properties": {
+        "units": { "type": "string", "enum": ["normalized", "metric"] },
+        "axes": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "domain", "scale"],
+            "properties": {
+              "id": { "type": "string", "enum": ["x", "y", "z"] },
+              "label": { "type": "string" },
+              "unit": { "type": "string" },
+              "domain": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "scale": { "type": "string", "enum": ["linear", "log", "ordinal"] }
+            }
+          }
+        },
+        "grid": { "type": "boolean" }
+      }
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "order", "visible"],
+        "properties": {
+          "id": { "type": "string" },
+          "order": { "type": "integer" },
+          "visible": { "type": "boolean" },
+          "hitTest": { "type": "boolean" },
+          "renderer": { "type": "string", "enum": ["troika", "css2d"] }
+        }
+      }
+    },
+    "theme": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "position"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "position": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "color": { "type": "string" },
+          "size": { "type": "number" },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          "description": { "type": "string" },
+          "links": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target"],
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "label": { "type": "string" },
+          "weight": { "type": "number" },
+          "style": { "type": "string", "enum": ["solid", "dashed", "arrow"] }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path"],
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "position": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotation": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "scale": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "commonjs",
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "ajv-cli": "^5.0.0",
+    "wanakana": "^5.3.1"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "lhci:autorun": "lhci autorun"
+  }
+}

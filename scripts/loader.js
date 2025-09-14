@@ -4,7 +4,7 @@ import Ajv from 'https://cdn.jsdelivr.net/npm/ajv@8.17.1/+esm';
 // 最小スキーマ（P1用：必須部のみ抜粋）
 const schema = {
   $schema: 'https://json-schema.org/draft/2020-12/schema',
-  title: 'digigiorama(min)',
+  title: 'digidiorama(min)',
   type: 'object',
   required: ['version', 'meta', 'nodes'],
   properties: {

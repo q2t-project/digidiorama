@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "meta": { "title": "範囲逸脱テスト" },
+  "space": {
+    "units": "normalized",
+    "axes": [
+      {"id": "x", "label": "形式 φ", "domain": [0, 1], "scale": "linear"},
+      {"id": "y", "label": "操作 ψ", "domain": [0, 1], "scale": "linear"},
+      {"id": "z", "label": "意味 μ", "domain": [0, 1], "scale": "linear"}
+    ]
+  },
+  "layers": [
+    {"id":"nodes","order":20,"visible":true}
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "範囲外ノード",
+      "position": [1.5, -0.2, 0.5]
+    }
+  ]
+}
