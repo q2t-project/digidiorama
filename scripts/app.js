@@ -158,12 +158,12 @@ function selectNode(mesh) {
 
   // ノード情報を右パネルに表示
   const d = mesh.userData;
-  document.getElementById("node-info").innerHTML = `
-    <div><b>ID:</b> ${d.id}</div>
-    <div><b>Label:</b> ${d.label ?? ""}</div>
-    <div><b>Description:</b> ${d.description ?? ""}</div>
-    <div><b>Tags:</b> ${(d.tags ?? []).join(", ")}</div>
-  `;
+document.getElementById("node-info").innerHTML = `
+  <div><b>ID:</b> ${d.id ?? ""}</div>
+  <div><b>Label:</b> ${d.label ?? ""}</div>
+  <div><b>Description:</b> ${d.description ?? ""}</div>
+  <div><b>Tags:</b> ${(d.tags ?? []).join(", ")}</div>
+`;
 }
 
 
