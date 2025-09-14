@@ -1,3 +1,30 @@
 html, body { margin: 0; height: 100%; }
-#viewer { position: fixed; inset: 0; }
+#viewer { position: fixed; inset: 0; top: 48px; } /* ヘッダー分下げる */
 canvas { display: block; }
+
+/* ===== P2: ヘッダーUI ===== */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 10;
+}
+.topbar .title { font-weight: 600; }
+.topbar .spacer { flex: 1; }
+
+select#lang {
+  font-size: 14px;
+  padding: 6px 8px;
+}
+
+/* モバイル最適化 */
+@media (hover:none) and (pointer:coarse) {
+  select#lang { padding: 10px 12px; }
+}

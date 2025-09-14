@@ -5,6 +5,24 @@ const el = document.getElementById("viewer");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf7f9fc);
 
+// ===== i18n 辞書 =====
+const i18nDict = {
+  ja: { title: "digidiorama", loading: "読み込み中…" },
+  en: { title: "digidiorama", loading: "Loading…" }
+};
+
+function applyI18n(lang) {
+  const dict = i18nDict[lang] ?? i18nDict.ja;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+const langSel = document.getElementById("lang");
+langSel.addEventListener("change", () => applyI18n(langSel.value));
+applyI18n(langSel.value);
+
 const camera = new THREE.PerspectiveCamera(60, el.clientWidth / el.clientHeight, 0.1, 1000);
 camera.position.set(2.5, 2, 3);
 
