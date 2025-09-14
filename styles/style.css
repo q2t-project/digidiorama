@@ -5,28 +5,18 @@ html, body {
   font-family: sans-serif;
 }
 
-/* ヘッダー */
-.topbar {
-  height: 48px;
-  line-height: 48px;
-  padding: 0 12px;
-  background: #e5e7eb;
-  border-bottom: 1px solid #d1d5db;
-}
-
-/* 3Dビュー */
 #viewer {
-  position: absolute;
-  top: 48px;
+  position: fixed;
+  top: 0;
   left: 0;
-  bottom: 0;
   right: 260px; /* サイドパネル分 */
+  bottom: 0;
 }
 
-/* 右サイドパネル */
+/* サイドパネル */
 .sidepanel {
-  position: absolute;
-  top: 48px;
+  position: fixed;
+  top: 0;
   right: 0;
   width: 260px;
   bottom: 0;
@@ -34,9 +24,10 @@ html, body {
   background: #fff;
   border-left: 1px solid #d1d5db;
   padding: 12px;
+  font-size: 14px;
 }
 
-/* ノード情報は必ず黒字 */
+/* ===== 黒字を強制 ===== */
 #node-info, #node-info * {
   color: #111 !important;
   opacity: 1 !important;
