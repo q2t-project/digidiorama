@@ -1,22 +1,28 @@
-  <!-- ===== 右パネル ===== -->
-  <aside id="sidepanel" class="sidepanel">
-    <h3>Meta</h3>
-    <div id="meta"></div>
-    <h3>Node Info</h3>
-    <div id="node-info"></div>
-    <h3>Errors</h3>
-    <pre id="errors" class="errors"></pre>
-  </aside>
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>digidiorama</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
 
-  <script type="module" src="scripts/app.js"></script>
-</body>
+  <body>
+    <!-- ===== ヘッダー ===== -->
+    <header class="topbar">
+      <div class="title">digidiorama</div>
+    </header>
 
-<aside id="sidepanel" class="sidepanel">   <!-- ← 重複 -->
-  <h3>Meta</h3>
-  <div id="meta"></div>
-  <h3>Node Info</h3>
-  <div id="node-info"></div>
-  <h3>Errors</h3>
-  <pre id="errors" class="errors"></pre>
-</aside>
+    <!-- ===== Three.js 描画領域 ===== -->
+    <div id="viewer"></div>
+
+    <!-- ===== 右パネル ===== -->
+    <aside id="sidepanel" class="sidepanel">
+      <h3>Node Info</h3>
+      <div id="node-info"></div>
+    </aside>
+
+    <!-- ===== アプリケーションコード ===== -->
+    <script type="module" src="scripts/app.js"></script>
+  </body>
 </html>

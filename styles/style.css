@@ -1,71 +1,44 @@
-html, body { margin: 0; height: 100%; }
-#viewer { position: fixed; inset: 0; top: 48px; } /* ヘッダー分下げる */
-canvas { display: block; }
-
-/* ===== P2: ヘッダーUI ===== */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 12px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #e5e7eb;
-  z-index: 10;
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
 }
-.topbar .title { font-weight: 600; }
-.topbar .spacer { flex: 1; }
+
+/* ヘッダー */
+.topbar {
+  height: 48px;
+  line-height: 48px;
+  padding: 0 12px;
+  background: #e5e7eb;
+  border-bottom: 1px solid #d1d5db;
+}
+
+/* 3Dビュー */
+#viewer {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  bottom: 0;
+  right: 260px; /* サイドパネル分 */
+}
 
 /* 右サイドパネル */
 .sidepanel {
-  position: fixed;
+  position: absolute;
   top: 48px;
   right: 0;
   width: 260px;
   bottom: 0;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.92);
-  border-left: 1px solid #e5e7eb;
+  background: #fff;
+  border-left: 1px solid #d1d5db;
   padding: 12px;
-  font-size: 14px;
-  z-index: 5;
-  color: #111;  /* ← ここで基本文字色を濃く */
 }
 
-.sidepanel h3 {
-  margin-top: 12px;
-  font-size: 15px;
-  font-weight: bold;
-}
-
-.sidepanel div,
-.sidepanel pre {
-  margin: 6px 0;
-  font-size: 14px;
-  color: #111;  /* ← #333 ではなく黒に近い色 */
-}
-
-#viewer {
-  position: fixed;
-  inset: 0;
-  top: 48px;          /* ヘッダー分下げる */
-  right: 260px;       /* サイドパネル分狭める */
-}
-
-select#lang {
-  font-size: 14px;
-  padding: 6px 8px;
-}
-
+/* ノード情報は必ず黒字 */
 #node-info, #node-info * {
   color: #111 !important;
   opacity: 1 !important;
-}
-
-/* モバイル最適化 */
-@media (hover:none) and (pointer:coarse) {
-  select#lang { padding: 10px 12px; }
+  font-size: 14px;
 }
