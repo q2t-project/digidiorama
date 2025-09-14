@@ -69,15 +69,19 @@ function renderDataset(ds) {
   });
 
   // === エッジ描画 ===
-  ds.edges.forEach(e => {
-    const src = nodeMeshes[e.source];
-    const tgt = nodeMeshes[e.target];
-    if (src && tgt) {
-      const geom = new THREE.BufferGeometry().setFromPoints([src.position, tgt.position]);
-      const line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: 0x888 }));
-      scene.add(line);
-    }
-  });
+// === エッジ描画 ===
+ds.edges.forEach(e => {
+  const src = nodeMeshes[e.source];
+  const tgt = nodeMeshes[e.target];
+  if (src && tgt) {
+    const points = [src.position.clone(), tgt.position.clone()];
+    const geom = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({ color: 0x444444 });
+    const line = new THREE.Line(geom, mat);
+    scene.add(line);
+  }
+});
+
 
   // === Meta 更新 ===
   updateMeta(ds.meta);
