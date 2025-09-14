@@ -1,0 +1,1 @@
+echo "console.log('digidiorama viewer v2 loaded');" > scripts/app.js
