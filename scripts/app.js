@@ -77,6 +77,7 @@ async function init() {
 
     tick();
   } catch (e) {
+    console.log("tick"); 
     console.error("init failed:", e);
   }
 }
