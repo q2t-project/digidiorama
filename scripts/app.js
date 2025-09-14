@@ -51,12 +51,13 @@ let nodeMeshes = {};
 
 // === ノード表示 ===
 function renderDataset(ds) {
-  // 既存をクリア
-  for (const id in nodeMeshes) {
-    scene.remove(nodeMeshes[id]);
+  // === 既存クリア ===
+  for (const obj of [...Object.values(nodeMeshes), ...scene.children.filter(o => o.isLine)]) {
+    scene.remove(obj);
   }
   nodeMeshes = {};
 
+  // === ノード描画 ===
   ds.nodes.forEach(n => {
     const geom = new THREE.SphereGeometry(0.2, 32, 32);
     const mat = new THREE.MeshStandardMaterial({ color: n.color });
@@ -67,6 +68,7 @@ function renderDataset(ds) {
     nodeMeshes[n.id] = mesh;
   });
 
+  // === エッジ描画 ===
   ds.edges.forEach(e => {
     const src = nodeMeshes[e.source];
     const tgt = nodeMeshes[e.target];
@@ -77,7 +79,10 @@ function renderDataset(ds) {
     }
   });
 
+  // === Meta 更新 ===
   updateMeta(ds.meta);
+  // Node Info 初期化
+  document.getElementById("node-info").textContent = "ノードをクリックしてください";
 }
 
 // === パネル更新 ===
