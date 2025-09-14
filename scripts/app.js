@@ -64,10 +64,14 @@ function addNode(n) {
   const mesh = new THREE.Mesh(g, m);
   const [x, y, z] = n.pos ?? [0, 0, 0];
   mesh.position.set(x, y, z);
-  mesh.userData = { kind: 'node',id: n.id, label: n.label };
+
+  // 🔽 全属性を userData にコピー
+  mesh.userData = { kind: 'node', ...n };
+
   objectGroup.add(mesh);
   return mesh;
 }
+
 
 function addEdge(e, nodesById) {
   const a = nodesById.get(e.source);
@@ -172,3 +176,80 @@ renderer.domElement.addEventListener('click', onClick);
 
 onResize();
 tick();
+
+// ==== DEBUGスイッチ ====
+const DEBUG = true;
+const log = (...args) => DEBUG && console.log(...args);
+const assert = (cond, msg) => { if (!cond) { throw new Error("ASSERT: " + msg); } };
+
+// ===== DOM =====
+const nodeInfoEl = document.getElementById("node-info");
+const errorsEl   = document.getElementById("errors");
+
+// ===== manifest 読み込み（キャッシュ殺す）=====
+async function loadManifest(url = "assets/manifest.json") {
+  const u = `${url}?v=${Date.now()}`;
+  const res = await fetch(u, { cache: "no-store" });
+  const txt = await res.text();
+  log("[M1 raw]", txt.slice(0, 200) + (txt.length > 200 ? "..." : ""));
+  const data = JSON.parse(txt);
+  log("[M2 parsed nodes]", data.nodes);
+  // 変化点#1: ファイル→パース
+  assert(Array.isArray(data.nodes), "nodes が配列でない");
+  return data;
+}
+
+// ===== ノード追加 =====
+function addNode(n) {
+  // 変化点#2: 受け取った n の中身
+  log("[N1 input]", n);
+
+  const g = new THREE.SphereGeometry(n.size ?? 0.1, 32, 16);
+  const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(n.color ?? "#3b82f6") });
+  const mesh = new THREE.Mesh(g, m);
+  const [x, y, z] = n.pos ?? [0, 0, 0];
+  mesh.position.set(x, y, z);
+
+  // ここが一番疑わしい箇所。全属性を丸ごと埋める
+  mesh.userData = { kind: "node", ...n };
+
+  // 変化点#3: userData に想定属性が入ったか
+  log("[N2 userData]", mesh.userData);
+  assert("label" in mesh.userData, "userData.label 無し");
+  assert("description" in mesh.userData, "userData.description 無し（manifest側かaddNode側）");
+  return mesh;
+}
+
+// ===== クリック → パネル表示 =====
+function selectNode(mesh) {
+  const d = mesh.userData;
+  // 変化点#4: 選択直後の userData
+  log("[S1 selected userData]", d);
+
+  // パネル更新（innerHTML → 文字化け/タグ化を避けるため textContent を使う）
+  nodeInfoEl.innerHTML = `
+    <div><b>ID:</b> <span id="nf-id"></span></div>
+    <div><b>Label:</b> <span id="nf-label"></span></div>
+    <div><b>Description:</b> <span id="nf-desc"></span></div>
+    <div><b>Tags:</b> <span id="nf-tags"></span></div>
+  `;
+  document.getElementById("nf-id").textContent    = d.id ?? "";
+  document.getElementById("nf-label").textContent = d.label ?? "";
+  document.getElementById("nf-desc").textContent  = d.description ?? "";
+  document.getElementById("nf-tags").textContent  = Array.isArray(d.tags) ? d.tags.join(", ") : "";
+
+  // 変化点#5: パネルに実際入ったか
+  log("[S2 panel text]", {
+    id: document.getElementById("nf-id").textContent,
+    label: document.getElementById("nf-label").textContent,
+    desc: document.getElementById("nf-desc").textContent,
+    tags: document.getElementById("nf-tags").textContent
+  });
+}
+
+// ====== 既存の流れの中に上の関数を組み込むだけ ======
+/*
+  - loadManifest() で取得
+  - nodes をループして addNode(n) → scene/add
+  - クリック時 selectNode(mesh)
+*/
