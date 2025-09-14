@@ -73,27 +73,31 @@ function addNode(n) {
 // ===== ノード選択時の処理 =====
 function selectNode(mesh) {
   const d = mesh.userData;
-  log("[S1 selected userData]", d);
 
-  nodeInfoEl.innerHTML = `
-    <div><b>ID:</b> <span id="nf-id"></span></div>
-    <div><b>Label:</b> <span id="nf-label"></span></div>
-    <div><b>Description:</b> <span id="nf-desc"></span></div>
-    <div><b>Tags:</b> <span id="nf-tags"></span></div>
-  `;
-  document.getElementById("nf-id").textContent = d.id ?? "";
-  document.getElementById("nf-label").textContent = d.label ?? "";
-  document.getElementById("nf-desc").textContent = d.description ?? "";
-  document.getElementById("nf-tags").textContent = Array.isArray(d.tags)
-    ? d.tags.join(", ")
-    : "";
+  const root = document.getElementById("node-info");
+  if (!root) {
+    console.error("#node-info が見つかりません");
+    return;
+  }
 
-  console.log("Panel update:", {
-    id: d.id,
-    label: d.label,
-    desc: d.description,
-    tags: d.tags,
-  });
+  // 中身をクリアして差し替え
+  root.replaceChildren();
+
+  const addRow = (label, value) => {
+    const row = document.createElement("div");
+    const b = document.createElement("b");
+    b.textContent = label + ": ";
+    const span = document.createElement("span");
+    span.textContent = value;
+    row.appendChild(b);
+    row.appendChild(span);
+    root.appendChild(row);
+  };
+
+  addRow("ID", d.id ?? "");
+  addRow("Label", d.label ?? "");
+  addRow("Description", d.description ?? "");
+  addRow("Tags", Array.isArray(d.tags) ? d.tags.join(", ") : "");
 }
 
 // ===== Raycaster によるクリック判定 =====
