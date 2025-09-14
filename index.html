@@ -1,49 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <title>digidiorama – P0</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <base href="/digidiorama/" />
+  <head>
+    <meta charset="UTF-8" />
+    <title>digidiorama</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f6f8fa;
+        color: #111;
+        display: flex;
+        height: 100vh;
+      }
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+        z-index: 10;
+      }
+      #viewer {
+        flex: 1;
+        margin-top: 48px;
+      }
+      .sidepanel {
+        width: 280px;
+        margin-top: 48px;
+        padding: 1rem;
+        border-left: 1px solid #ddd;
+        background: #fff;
+        overflow-y: auto;
+      }
+      .sidepanel h2 {
+        margin-top: 1rem;
+        font-size: 1.1rem;
+      }
+      .sidepanel p {
+        margin: 0.25rem 0;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>digidiorama</h1>
+      <select>
+        <option>日本語</option>
+        <option>English</option>
+      </select>
+    </header>
 
-  <!-- style -->
-  <link rel="stylesheet" href="styles/style.css" />
+    <div id="viewer"></div>
 
-  <!-- Import Map -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
-</head>
-<body>
-  <div class="topbar">
-    <div class="title">digidiorama</div>
-    <div class="spacer"></div>
-    <select id="lang-switcher">
-      <option value="ja">日本語</option>
-      <option value="en">English</option>
-    </select>
-  </div>
+    <aside class="sidepanel">
+      <h2>Meta</h2>
+      <p>(統計情報などをここに表示予定)</p>
 
-  <!-- viewer -->
-  <div id="viewer"></div>
+      <h2>Node Info</h2>
+      <div id="node-info">ノードをクリックしてください</div>
 
-  <!-- side panel -->
-  <div class="sidepanel">
-    <h3>Meta</h3>
-    <div id="meta">（統計情報などをここに表示予定）</div>
+      <h2>Errors</h2>
+      <div id="errors">(バリデーション結果をここに表示予定)</div>
+    </aside>
 
-    <h3>Node Info</h3>
-    <div id="node-info">ノードをクリックしてください</div>
-
-    <h3>Errors</h3>
-    <div id="errors">（バリデーション結果をここに表示予定）</div>
-  </div>
-
-  <script type="module" src="scripts/app.js"></script>
-</body>
+    <script type="module" src="./scripts/app.js"></script>
+  </body>
 </html>
