@@ -69,7 +69,7 @@ function renderDataset(ds) {
     nodeMeshes[n.id] = mesh;
   });
 
-  // === エッジを配置 ===
+  // === エッジを配置 === 
   ds.edges.forEach(e => {
     const src = nodeMeshes[e.source];
     const tgt = nodeMeshes[e.target];
