@@ -38,3 +38,37 @@ function selectNode(mesh) {
   document.getElementById("nf-desc").textContent  = d.description ?? "";
   document.getElementById("nf-tags").textContent  = Array.isArray(d.tags) ? d.tags.join(", ") : "";
 }
+// ===== エントリーポイント =====
+async function init() {
+  try {
+    const data = await loadManifest("assets/manifest.json");
+    log("[I1 manifest loaded]", data);
+
+    // ノードを追加
+    data.nodes.forEach(n => {
+      const mesh = addNode(n);
+      scene.add(mesh);
+      objects.push(mesh);
+    });
+
+    // エッジ（links）がある場合
+    if (Array.isArray(data.links)) {
+      data.links.forEach(l => {
+        const src = objects.find(o => o.userData.id === l.source);
+        const tgt = objects.find(o => o.userData.id === l.target);
+        if (src && tgt) {
+          const points = [src.position, tgt.position];
+          const g = new THREE.BufferGeometry().setFromPoints(points);
+          const m = new THREE.LineBasicMaterial({ color: "#999" });
+          scene.add(new THREE.Line(g, m));
+        }
+      });
+    }
+
+    tick();
+  } catch (e) {
+    console.error("init failed:", e);
+  }
+}
+
+init();
