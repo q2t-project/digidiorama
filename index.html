@@ -1,40 +1,9 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <title>digidiorama — P2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <base href="/digidiorama/">
-  <link rel="stylesheet" href="styles/style.css" />
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
-</head>
-<body>
-  <header class="topbar">
-    <div class="title" data-i18n="title">digidiorama</div>
-    <div class="spacer"></div>
-    <select id="lang" aria-label="Language">
-      <option value="ja">日本語</option>
-      <option value="en">English</option>
-    </select>
-  </header>
-
-  <div id="viewer"></div>
-
   <!-- ===== 右パネル ===== -->
   <aside id="sidepanel" class="sidepanel">
     <h3>Meta</h3>
     <div id="meta"></div>
-
     <h3>Node Info</h3>
     <div id="node-info"></div>
-
     <h3>Errors</h3>
     <pre id="errors" class="errors"></pre>
   </aside>
@@ -42,13 +11,11 @@
   <script type="module" src="scripts/app.js"></script>
 </body>
 
-<aside id="sidepanel" class="sidepanel">
+<aside id="sidepanel" class="sidepanel">   <!-- ← 重複 -->
   <h3>Meta</h3>
   <div id="meta"></div>
-
   <h3>Node Info</h3>
   <div id="node-info"></div>
-
   <h3>Errors</h3>
   <pre id="errors" class="errors"></pre>
 </aside>
