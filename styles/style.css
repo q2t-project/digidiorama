@@ -1,69 +1,55 @@
-html, body {
+body {
   margin: 0;
-  height: 100%;
   font-family: sans-serif;
-  background: #f6f8fa;
+  background: #f5f7f9;
   color: #111;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 /* ヘッダー */
-header {
-  height: 48px;
+.topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
+  padding: 8px 16px;
   background: #fff;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ccc;
 }
-
-header h1 {
-  font-size: 1.2rem;
+.topbar h1 {
   margin: 0;
+  font-size: 20px;
 }
-
-header .controls {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-/* メインレイアウト */
-main {
-  display: flex;
-  height: calc(100% - 48px);
-}
-
-/* Three.js viewer */
-#viewer {
+.topbar .spacer {
   flex: 1;
-  background: #fff;
 }
 
-/* サイドパネル */
+/* 右サイドパネル */
 .sidepanel {
-  width: 280px;
-  padding: 1rem;
-  border-left: 1px solid #ddd;
-  background: #fff;
+  position: fixed;
+  top: 48px;
+  right: 0;
+  width: 260px;
+  bottom: 0;
   overflow-y: auto;
+  background: rgba(255,255,255,0.95);
+  border-left: 1px solid #e5e7eb;
+  padding: 12px;
   font-size: 14px;
+  z-index: 5;
+  color: #111;
+}
+.sidepanel h3 {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.sidepanel div {
+  margin: 6px 0;
 }
 
-/* 常に黒字 */
-.sidepanel, .sidepanel * {
-  color: #111 !important;
-}
-
-/* モバイル対応（狭い時は縦並び） */
-@media (max-width: 768px) {
-  main {
-    flex-direction: column;
-  }
-  .sidepanel {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid #ddd;
-    height: 200px;
-  }
+/* ビューア */
+#viewer {
+  position: fixed;
+  inset: 0;
 }
