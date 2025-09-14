@@ -162,6 +162,17 @@ fetch("schemas/digidiorama.schema.json")
   .then(r => r.json())
   .then(s => { schema = s; });
 
+// データ読み込み時に呼び出す部分
+fetch(manifestUrl)
+  .then(r => r.json())
+  .then(data => {
+    // ノード描画処理
+    renderGraph(data);
+
+    // バリデーション実行
+    validateDataset(data);
+  });  
+
 function validateDataset(data) {
   const panel = document.getElementById("errors");
   if (!schema) {
