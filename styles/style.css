@@ -1,58 +1,45 @@
-body {
+html, body {
   margin: 0;
+  height: 100%;
   font-family: sans-serif;
-  background: #f6f8fa;
+  background: #f6f8fa; /* 背景白に固定 */
   color: #111;
 }
 
-/* トップバー */
-.topbar {
+/* ヘッダー */
+header {
+  height: 48px;
   display: flex;
   align-items: center;
-  height: 48px;
-  padding: 0 12px;
+  justify-content: space-between;
+  padding: 0 1rem;
   background: #fff;
   border-bottom: 1px solid #ddd;
 }
-.topbar .title {
-  font-weight: bold;
-}
-.topbar .spacer {
-  flex: 1;
+
+/* メインレイアウト */
+main {
+  display: flex;
+  height: calc(100% - 48px);
 }
 
-/* viewer */
+/* Three.js表示領域 */
 #viewer {
-  position: fixed;
-  inset: 0;
-  top: 48px;
+  flex: 1;
+  background: #fff; /* 白をデフォルトに */
 }
 
-/* 右サイドパネル */
+/* サイドパネル */
 .sidepanel {
-  position: fixed;
-  top: 48px;
-  right: 0;
-  width: 260px;
-  bottom: 0;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.95);
+  width: 280px;
+  padding: 1rem;
   border-left: 1px solid #ddd;
-  padding: 12px;
+  background: #fff;
+  overflow-y: auto;
   font-size: 14px;
-  z-index: 5;
 }
 
-/* ★ 黒字統一 */
+/* サイドパネル文字は常に黒 */
 .sidepanel, .sidepanel * {
   color: #111 !important;
-}
-
-.sidepanel h3 {
-  margin-top: 12px;
-  font-size: 15px;
-  font-weight: bold;
-}
-.sidepanel div {
-  margin: 6px 0;
 }
