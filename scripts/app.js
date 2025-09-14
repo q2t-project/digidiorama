@@ -18,15 +18,63 @@ controls.enableDamping = true;
 controls.enablePan = true;
 controls.enableZoom = true;
 
+// ライト
 const key = new THREE.DirectionalLight(0xffffff, 1.0);
 key.position.set(3, 4, 5);
 scene.add(key, new THREE.AmbientLight(0xffffff, 0.35));
 
-const geo = new THREE.BoxGeometry(1, 1, 1);
-const mat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.6, metalness: 0.1 });
-const cube = new THREE.Mesh(geo, mat);
-scene.add(cube);
+// ===== P1: manifestのロード & 表示 =====
+const objectGroup = new THREE.Group();
+scene.add(objectGroup);
 
+async function loadManifest(url = "assets/manifest.json") {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`manifest fetch failed: ${res.status}`);
+  return res.json();
+}
+
+function addNode(n) {
+  const r = n.size ?? 0.1;
+  const c = new THREE.Color(n.color ?? "#3b82f6");
+  const g = new THREE.SphereGeometry(r, 32, 16);
+  const m = new THREE.MeshStandardMaterial({ color: c });
+  const mesh = new THREE.Mesh(g, m);
+  const [x, y, z] = n.pos ?? [0, 0, 0];
+  mesh.position.set(x, y, z);
+  mesh.userData = { id: n.id, label: n.label };
+  objectGroup.add(mesh);
+  return mesh;
+}
+
+function addEdge(e, nodesById) {
+  const a = nodesById.get(e.source);
+  const b = nodesById.get(e.target);
+  if (!a || !b) return;
+
+  const mat = new THREE.LineBasicMaterial({
+    color: new THREE.Color(e.color ?? "#64748b"),
+    linewidth: e.width ?? 1
+  });
+  const geom = new THREE.BufferGeometry().setFromPoints([
+    a.position.clone(),
+    b.position.clone()
+  ]);
+  const line = new THREE.Line(geom, mat);
+  objectGroup.add(line);
+}
+
+loadManifest()
+  .then(data => {
+    const nodesById = new Map();
+    (data.nodes ?? []).forEach(n => {
+      const mesh = addNode(n);
+      nodesById.set(n.id, mesh);
+    });
+    (data.edges ?? []).forEach(e => addEdge(e, nodesById));
+  })
+  .catch(err => console.error(err));
+
+// ===== レンダリングループ =====
 function onResize() {
   const { clientWidth: w, clientHeight: h } = el;
   camera.aspect = w / h;
@@ -36,7 +84,6 @@ function onResize() {
 window.addEventListener("resize", onResize);
 
 function tick() {
-  cube.rotation.y += 0.01;
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
