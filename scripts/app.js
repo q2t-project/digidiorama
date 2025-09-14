@@ -5,6 +5,11 @@ const el = document.getElementById("viewer");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf7f9fc);
 
+// ========== DOM参照 ==========
+const container = document.getElementById('viewer');
+const nodeInfoEl = document.getElementById('node-info');
+const errorsEl = document.getElementById('errors');
+
 // ===== i18n 辞書 =====
 const i18nDict = {
   ja: { title: "digidiorama", loading: "読み込み中…" },
@@ -106,5 +111,78 @@ function tick() {
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
+
+// Raycasterとマウス座標
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// 選択状態を管理
+let selectedNode = null;
+let originalMaterial = null;
+
+// ノード描画（P1で使っていた関数を少し拡張）
+function drawNodes(nodes = []) {
+  // 既存ノード削除
+  scene.children = scene.children.filter(obj => obj.userData?.kind !== 'node');
+  for (const n of nodes) {
+    const s = n.size ?? 0.06;
+    const geo = new THREE.SphereGeometry(s, 24, 16);
+    const mat = new THREE.MeshStandardMaterial({ color: n.color ?? '#5aa9e6' });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(...n.position);
+    mesh.userData = { kind: 'node', ...n }; // nの属性を全部持たせる
+    scene.add(mesh);
+  }
+}
+
+// クリック時の処理
+function onClick(event) {
+  // canvasの座標系に正規化
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(scene.children);
+
+  const hit = intersects.find(obj => obj.object.userData?.kind === 'node');
+  if (hit) {
+    selectNode(hit.object);
+  }
+}
+
+// ノード選択処理
+function selectNode(mesh) {
+  // 前の選択をリセット
+  if (selectedNode && originalMaterial) {
+    selectedNode.material = originalMaterial;
+    selectedNode.scale.set(1, 1, 1);
+  }
+
+  // 新しい選択
+  selectedNode = mesh;
+  originalMaterial = mesh.material;
+
+  // 強調表示（色変更＋拡大）
+  mesh.material = new THREE.MeshStandardMaterial({
+    color: 0xff4444, // 赤系
+    emissive: 0x441111,
+    roughness: 0.4
+  });
+  mesh.scale.set(1.3, 1.3, 1.3);
+
+  // パネル更新
+  const d = mesh.userData;
+  nodeInfoEl.innerHTML = `
+    <div><b>ID:</b> ${d.id}</div>
+    <div><b>Label:</b> ${d.label ?? ''}</div>
+    <div><b>Description:</b> ${d.description ?? ''}</div>
+    <div><b>Tags:</b> ${(d.tags ?? []).join(', ')}</div>
+  `;
+}
+
+// イベント登録
+renderer.domElement.addEventListener('click', onClick);
+
 onResize();
 tick();
