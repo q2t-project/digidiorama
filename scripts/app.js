@@ -75,11 +75,13 @@ async function init() {
       });
     }
 
-    tick();
-  } catch (e) {
-    console.log("tick"); 
-    console.error("init failed:", e);
-  }
+function tick() {
+  console.log("tick");  // ← デバッグ用
+  requestAnimationFrame(tick);
+  controls.update();
+  renderer.render(scene, camera);
+}
+}
 }
 
 init();
