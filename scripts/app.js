@@ -1,115 +1,61 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>digidiorama</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    #viewer {
+      position: fixed;
+      inset: 0;
+    }
+    .sidepanel {
+      position: fixed;
+      top: 48px;
+      right: 0;
+      width: 260px;
+      bottom: 0;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.92);
+      border-left: 1px solid #e5e7eb;
+      padding: 12px;
+      font-size: 14px;
+      z-index: 5;
+      color: #111;
+    }
+    .sidepanel h3 {
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .sidepanel div {
+      margin: 6px 0;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf8fafc);
-
-const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  100
-);
-camera.position.set(2, 2, 2);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById("viewer").appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-dirLight.position.set(5, 5, 5);
-scene.add(dirLight);
-
-const objects = [];
-
-// ===== ノード追加 =====
-function addNode(n) {
-  const g = new THREE.SphereGeometry(n.size ?? 0.1, 32, 16);
-  const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(n.color ?? "#3b82f6") });
-  const mesh = new THREE.Mesh(g, m);
-  const [x, y, z] = n.pos ?? [0, 0, 0];
-  mesh.position.set(x, y, z);
-  mesh.userData = { kind: "node", ...n };
-  scene.add(mesh);
-  objects.push(mesh);
-  return mesh;
-}
-
-// ===== ノード選択処理 =====
-function selectNode(mesh) {
-  const d = mesh.userData;
-  const root = document.getElementById("node-info");
-  root.replaceChildren();
-
-  const addRow = (label, value) => {
-    const row = document.createElement("div");
-    const b = document.createElement("b");
-    b.textContent = label + ": ";
-    const span = document.createElement("span");
-    span.textContent = value;
-    row.appendChild(b);
-    row.appendChild(span);
-    root.appendChild(row);
-  };
-
-  addRow("ID", d.id ?? "");
-  addRow("Label", d.label ?? "");
-  addRow("Description", d.description ?? "");
-  addRow("Tags", Array.isArray(d.tags) ? d.tags.join(", ") : "");
-}
-
-// ===== Raycaster =====
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-function onClick(event) {
-  const rect = renderer.domElement.getBoundingClientRect();
-  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(objects);
-  if (intersects.length > 0) {
-    selectNode(intersects[0].object);
+  <!-- ✅ importmap 決定事項を反映 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.155.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.155.0/examples/jsm/"
+    }
   }
-}
-renderer.domElement.addEventListener("click", onClick);
+  </script>
+</head>
+<body>
+  <div id="viewer"></div>
+  <div class="sidepanel">
+    <h3>Node Info</h3>
+    <div id="node-info">ノードをクリックしてください</div>
+  </div>
 
-// ===== サンプルノード =====
-addNode({
-  id: "a",
-  label: "Alpha",
-  description: "最初の概念ノード",
-  tags: ["start", "concept"],
-  pos: [0, 0, 0],
-  color: "#60a5fa",
-  size: 0.12
-});
-
-addNode({
-  id: "b",
-  label: "Beta",
-  description: "次の概念ノード",
-  tags: ["next", "concept"],
-  pos: [1.2, 0.4, -0.6],
-  color: "#34d399",
-  size: 0.10
-});
-
-// ===== ループ =====
-function tick() {
-  requestAnimationFrame(tick);
-  controls.update();
-  renderer.render(scene, camera);
-}
-tick();
-
-window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  <script type="module" src="scripts/app.js"></script>
+</body>
+</html>

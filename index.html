@@ -1,28 +1,61 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>digidiorama</title>
-    <link rel="stylesheet" href="styles/style.css" />
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>digidiorama</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    #viewer {
+      position: fixed;
+      inset: 0;
+    }
+    .sidepanel {
+      position: fixed;
+      top: 48px;
+      right: 0;
+      width: 260px;
+      bottom: 0;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.92);
+      border-left: 1px solid #e5e7eb;
+      padding: 12px;
+      font-size: 14px;
+      z-index: 5;
+      color: #111;
+    }
+    .sidepanel h3 {
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .sidepanel div {
+      margin: 6px 0;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
 
-  <body>
-    <!-- ===== ヘッダー ===== -->
-    <header class="topbar">
-      <div class="title">digidiorama</div>
-    </header>
+  <!-- ✅ importmap 決定事項を反映 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.155.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.155.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="viewer"></div>
+  <div class="sidepanel">
+    <h3>Node Info</h3>
+    <div id="node-info">ノードをクリックしてください</div>
+  </div>
 
-    <!-- ===== Three.js 描画領域 ===== -->
-    <div id="viewer"></div>
-
-    <!-- ===== 右パネル ===== -->
-    <aside id="sidepanel" class="sidepanel">
-      <h3>Node Info</h3>
-      <div id="node-info"></div>
-    </aside>
-
-    <!-- ===== アプリケーションコード ===== -->
-    <script type="module" src="scripts/app.js"></script>
-  </body>
+  <script type="module" src="scripts/app.js"></script>
+</body>
 </html>
