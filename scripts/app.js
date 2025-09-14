@@ -1,59 +1,98 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+// === Viewer 初期化 ===
 const container = document.getElementById("viewer");
-
-// === Renderer ===
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.setClearColor(0xf6f8fa, 1); // ★ 背景を白に固定
+renderer.setClearColor(0xf6f8fa, 1);
 container.appendChild(renderer.domElement);
 
-// === Scene & Camera ===
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf6f8fa); // ★ 背景を白に固定
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
+scene.background = new THREE.Color(0xf6f8fa);
+
+const camera = new THREE.PerspectiveCamera(
+  45,
+  container.clientWidth / container.clientHeight,
+  0.1,
+  1000
+);
 camera.position.set(0, 0, 5);
 
-// === Controls ===
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// === Lights ===
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
 dirLight.position.set(5, 5, 5);
 scene.add(dirLight);
 
-// === Nodes Sample ===
-const nodes = [
-  { id: "a", label: "Alpha", description: "最初の概念ノード", tags: ["start","concept"], pos:[-1,0,0], color: 0x3366cc },
-  { id: "b", label: "Beta", description: "次の概念ノード", tags: ["next","concept"], pos:[1,0,0], color: 0x33aa66 }
-];
-const nodeMeshes = {};
+// === サンプルデータ ===
+const datasets = {
+  sample1: {
+    meta: { title: "Sample 1", author: "Author A", created: "2025-09-01", tags: ["demo","test"] },
+    nodes: [
+      { id:"a", label:"Alpha", description:"最初のノード", tags:["start"], pos:[-1,0,0], color:0x3366cc },
+      { id:"b", label:"Beta", description:"次のノード", tags:["next"], pos:[1,0,0], color:0x33aa66 }
+    ],
+    edges: [{ source:"a", target:"b" }]
+  },
+  sample2: {
+    meta: { title: "Sample 2", author: "Author B", created: "2025-09-15", tags: ["example"] },
+    nodes: [
+      { id:"x", label:"Xray", description:"別のサンプルノード", tags:["alt"], pos:[-0.5,0,0], color:0xcc3333 },
+      { id:"y", label:"Yankee", description:"その次", tags:["alt"], pos:[0.5,0,0], color:0x3333cc }
+    ],
+    edges: []
+  }
+};
 
-for (const n of nodes) {
-  const geom = new THREE.SphereGeometry(0.2, 32, 32);
-  const mat = new THREE.MeshStandardMaterial({ color: n.color });
-  const mesh = new THREE.Mesh(geom, mat);
-  mesh.position.set(...n.pos);
-  mesh.userData = n;
-  scene.add(mesh);
-  nodeMeshes[n.id] = mesh;
+let nodeMeshes = {};
+
+// === ノード表示 ===
+function renderDataset(ds) {
+  // 既存をクリア
+  for (const id in nodeMeshes) {
+    scene.remove(nodeMeshes[id]);
+  }
+  nodeMeshes = {};
+
+  ds.nodes.forEach(n => {
+    const geom = new THREE.SphereGeometry(0.2, 32, 32);
+    const mat = new THREE.MeshStandardMaterial({ color: n.color });
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.position.set(...n.pos);
+    mesh.userData = n;
+    scene.add(mesh);
+    nodeMeshes[n.id] = mesh;
+  });
+
+  ds.edges.forEach(e => {
+    const src = nodeMeshes[e.source];
+    const tgt = nodeMeshes[e.target];
+    if (src && tgt) {
+      const geom = new THREE.BufferGeometry().setFromPoints([src.position, tgt.position]);
+      const line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: 0x888 }));
+      scene.add(line);
+    }
+  });
+
+  updateMeta(ds.meta);
 }
 
-// === Edge Sample ===
-const edgeGeom = new THREE.BufferGeometry().setFromPoints([
-  nodeMeshes["a"].position,
-  nodeMeshes["b"].position
-]);
-const edgeLine = new THREE.Line(edgeGeom, new THREE.LineBasicMaterial({ color: 0x888888 }));
-scene.add(edgeLine);
+// === パネル更新 ===
+function updateMeta(meta) {
+  document.getElementById("meta").innerHTML = `
+    <div><b>Title:</b> ${meta.title}</div>
+    <div><b>Author:</b> ${meta.author}</div>
+    <div><b>Created:</b> ${meta.created}</div>
+    <div><b>Tags:</b> ${(meta.tags ?? []).join(", ")}</div>
+  `;
+}
 
-// === Raycaster for Node Click ===
+// === Raycaster ===
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-
 renderer.domElement.addEventListener("click", (event) => {
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -66,17 +105,26 @@ renderer.domElement.addEventListener("click", (event) => {
   }
 });
 
-// === Update Sidepanel ===
 function showNodeInfo(d) {
   document.getElementById("node-info").innerHTML = `
     <div><b>ID:</b> ${d.id}</div>
     <div><b>Label:</b> ${d.label}</div>
     <div><b>Description:</b> ${d.description}</div>
-    <div><b>Tags:</b> ${d.tags.join(", ")}</div>
+    <div><b>Tags:</b> ${(d.tags ?? []).join(", ")}</div>
   `;
 }
 
-// === Render Loop ===
+// === データ切替 ===
+const datasetSelect = document.getElementById("dataset");
+datasetSelect.addEventListener("change", () => {
+  const val = datasetSelect.value;
+  renderDataset(datasets[val]);
+});
+
+// 初期表示
+renderDataset(datasets.sample1);
+
+// === レンダリングループ ===
 function tick() {
   controls.update();
   renderer.render(scene, camera);
@@ -84,7 +132,7 @@ function tick() {
 }
 tick();
 
-// === Resize ===
+// === リサイズ対応 ===
 window.addEventListener("resize", () => {
   camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();

@@ -2,7 +2,7 @@ html, body {
   margin: 0;
   height: 100%;
   font-family: sans-serif;
-  background: #f6f8fa; /* 背景白に固定 */
+  background: #f6f8fa;
   color: #111;
 }
 
@@ -17,16 +17,27 @@ header {
   border-bottom: 1px solid #ddd;
 }
 
+header h1 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+header .controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 /* メインレイアウト */
 main {
   display: flex;
   height: calc(100% - 48px);
 }
 
-/* Three.js表示領域 */
+/* Three.js viewer */
 #viewer {
   flex: 1;
-  background: #fff; /* 白をデフォルトに */
+  background: #fff;
 }
 
 /* サイドパネル */
@@ -39,7 +50,20 @@ main {
   font-size: 14px;
 }
 
-/* サイドパネル文字は常に黒 */
+/* 常に黒字 */
 .sidepanel, .sidepanel * {
   color: #111 !important;
+}
+
+/* モバイル対応（狭い時は縦並び） */
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+  .sidepanel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #ddd;
+    height: 200px;
+  }
 }

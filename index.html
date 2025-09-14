@@ -20,23 +20,35 @@
 </head>
 <body>
   <header>
-    <h1>digidiorama</h1>
-    <select>
-      <option value="ja">日本語</option>
-      <option value="en">English</option>
-    </select>
+    <h1 id="app-title">digidiorama</h1>
+    <div class="controls">
+      <label>
+        Dataset:
+        <select id="dataset">
+          <option value="sample1">Sample 1</option>
+          <option value="sample2">Sample 2</option>
+        </select>
+      </label>
+      <label>
+        Lang:
+        <select id="lang">
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+    </div>
   </header>
 
   <main>
     <div id="viewer"></div>
     <aside class="sidepanel">
-      <h2>Meta</h2>
+      <h2 data-i18n="meta">Meta</h2>
       <div id="meta">(統計情報をここに表示予定)</div>
 
-      <h2>Node Info</h2>
+      <h2 data-i18n="node">Node Info</h2>
       <div id="node-info">ノードをクリックしてください</div>
 
-      <h2>Errors</h2>
+      <h2 data-i18n="errors">Errors</h2>
       <div id="errors">(バリデーション結果をここに表示予定)</div>
     </aside>
   </main>
