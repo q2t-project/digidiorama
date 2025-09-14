@@ -51,16 +51,17 @@ let nodeMeshes = {};
 
 // === ノード表示 ===
 function renderDataset(ds) {
-  // === 既存クリア ===
-  for (const obj of [...Object.values(nodeMeshes), ...scene.children.filter(o => o.isLine)]) {
-    scene.remove(obj);
-  }
+  // === 既存オブジェクトをクリア ===
+  Object.values(nodeMeshes).forEach(m => scene.remove(m));
+  scene.children
+    .filter(o => o.isLine) // 既存エッジも削除
+    .forEach(l => scene.remove(l));
   nodeMeshes = {};
 
-  // === ノード描画 ===
+  // === ノードを配置 ===
   ds.nodes.forEach(n => {
     const geom = new THREE.SphereGeometry(0.2, 32, 32);
-    const mat = new THREE.MeshStandardMaterial({ color: n.color });
+    const mat = new THREE.MeshPhongMaterial({ color: n.color || 0x3366cc });
     const mesh = new THREE.Mesh(geom, mat);
     mesh.position.set(...n.pos);
     mesh.userData = n;
@@ -68,26 +69,20 @@ function renderDataset(ds) {
     nodeMeshes[n.id] = mesh;
   });
 
-  // === エッジ描画 ===
-// === エッジ描画 ===
-ds.edges.forEach(e => {
-  const src = nodeMeshes[e.source];
-  const tgt = nodeMeshes[e.target];
-  if (src && tgt) {
-    const points = [src.position.clone(), tgt.position.clone()];
-    const geom = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineBasicMaterial({ color: 0x444444 });
-    const line = new THREE.Line(geom, mat);
-    scene.add(line);
-  }
-});
-
-
-  // === Meta 更新 ===
-  updateMeta(ds.meta);
-  // Node Info 初期化
-  document.getElementById("node-info").textContent = "ノードをクリックしてください";
+  // === エッジを配置 ===
+  ds.edges.forEach(e => {
+    const src = nodeMeshes[e.source];
+    const tgt = nodeMeshes[e.target];
+    if (src && tgt) {
+      const points = [src.position.clone(), tgt.position.clone()];
+      const geom = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color: 0x444444 });
+      const line = new THREE.Line(geom, mat);
+      scene.add(line);
+    }
+  });
 }
+
 
 // === パネル更新 ===
 function updateMeta(meta) {
