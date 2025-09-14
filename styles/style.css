@@ -60,6 +60,11 @@ select#lang {
   padding: 6px 8px;
 }
 
+#node-info, #node-info * {
+  color: #111 !important;
+  opacity: 1 !important;
+}
+
 /* モバイル最適化 */
 @media (hover:none) and (pointer:coarse) {
   select#lang { padding: 10px 12px; }
