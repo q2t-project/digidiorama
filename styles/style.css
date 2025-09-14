@@ -22,7 +22,7 @@ canvas { display: block; }
 /* 右サイドパネル */
 .sidepanel {
   position: fixed;
-  top: 48px;           /* ヘッダーの下に配置 */
+  top: 48px;
   right: 0;
   width: 260px;
   bottom: 0;
@@ -32,20 +32,20 @@ canvas { display: block; }
   padding: 12px;
   font-size: 14px;
   z-index: 5;
-  color: #111;   /* 文字を濃い色に */
+  color: #111;  /* ← ここで基本文字色を濃く */
 }
+
 .sidepanel h3 {
   margin-top: 12px;
   font-size: 15px;
   font-weight: bold;
 }
-.sidepanel div {
-  color: #111;
-}
+
+.sidepanel div,
 .sidepanel pre {
   margin: 6px 0;
   font-size: 14px;
-  color: #333;
+  color: #111;  /* ← #333 ではなく黒に近い色 */
 }
 
 #viewer {
