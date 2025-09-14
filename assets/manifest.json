@@ -1,7 +1,23 @@
 {
   "nodes": [
-    { "id": "a", "label": "Alpha", "pos": [0, 0, 0], "color": "#60a5fa", "size": 0.12 },
-    { "id": "b", "label": "Beta",  "pos": [1.2, 0.4, -0.6], "color": "#34d399", "size": 0.10 }
+    {
+      "id": "a",
+      "label": "Alpha",
+      "description": "最初の概念ノード",
+      "tags": ["start", "concept"],
+      "pos": [0, 0, 0],
+      "color": "#60a5fa",
+      "size": 0.12
+    },
+    {
+      "id": "b",
+      "label": "Beta",
+      "description": "次の概念ノード",
+      "tags": ["next", "concept"],
+      "pos": [1.2, 0.4, -0.6],
+      "color": "#34d399",
+      "size": 0.10
+    }
   ],
   "edges": [
     { "source": "a", "target": "b", "color": "#94a3b8", "width": 2 }
