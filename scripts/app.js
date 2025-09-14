@@ -1,96 +1,115 @@
+// scripts/app.js
+
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// ===== 基本セットアップ =====
-const container = document.getElementById("viewer");
-const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0, 5);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0xf5f7f9); // 白背景固定
-container.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-// ライト
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-dirLight.position.set(5, 5, 5);
-scene.add(dirLight);
-
-// ===== データセット（固定サンプル） =====
-const datasets = {
-  sample1: {
-    meta: { title: "Sample 1", author: "Author A", created: "2025-09-14", tags: ["demo"] },
-    nodes: [
-      { id: "a", label: "Alpha", description: "最初の概念ノード", tags: ["start", "concept"], pos: [-1, 0, 0], color: 0x3366cc },
-      { id: "b", label: "Beta", description: "次の概念ノード", tags: ["next", "concept"], pos: [1, 0, 0], color: 0x228844 }
-    ],
-    edges: [{ source: "a", target: "b" }]
+// ===== 固定サンプルデータ =====
+const sampleData = {
+  meta: {
+    title: "Sample 1",
+    author: "Author A",
+    created: "2025-09-15",
+    tags: ["example"]
   },
-  sample2: {
-    meta: { title: "Sample 2", author: "Author B", created: "2025-09-15", tags: ["example"] },
-    nodes: [
-      { id: "a", label: "Alpha", description: "最初のノード", tags: ["start"], pos: [-0.5, -0.5, 0], color: 0x990000 },
-      { id: "b", label: "Beta", description: "次のノード", tags: ["example"], pos: [0.5, 0.5, 0], color: 0x000099 }
-    ],
-    edges: [{ source: "a", target: "b" }]
-  }
+  nodes: [
+    { id: "a", label: "Alpha", description: "最初の概念ノード", tags: ["start", "concept"], color: 0x3366cc },
+    { id: "b", label: "Beta", description: "次の概念ノード", tags: ["next", "concept"], color: 0x228844 }
+  ],
+  edges: [
+    { source: "a", target: "b" }
+  ]
 };
 
-// ===== ノード・エッジ描画 =====
-let nodeMeshes = [];
-let currentData = null;
+// ===== シーン初期化 =====
+const container = document.getElementById("viewer");
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf5f7fa); // 白背景
 
-function loadDataset(name) {
-  // クリア
-  nodeMeshes.forEach(m => scene.remove(m));
-  scene.traverse(obj => { if (obj.type === "Line") scene.remove(obj); });
-  nodeMeshes = [];
+const camera = new THREE.PerspectiveCamera(
+  45,
+  container.clientWidth / container.clientHeight,
+  0.1,
+  1000
+);
+camera.position.set(0, 0, 10);
 
-  const data = datasets[name];
-  currentData = data;
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
 
-  // メタ表示
-  document.getElementById("meta").innerHTML = `
-    <p><b>Title:</b> ${data.meta.title}</p>
-    <p><b>Author:</b> ${data.meta.author}</p>
-    <p><b>Created:</b> ${data.meta.created}</p>
-    <p><b>Tags:</b> ${data.meta.tags.join(", ")}</p>
-  `;
+// コントロール
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// ===== ノードとエッジ描画 =====
+const nodeMeshes = {};
+function renderGraph(data) {
+  // 既存オブジェクトをクリア
+  for (const obj of [...scene.children]) {
+    if (obj.isMesh || obj.isLine) scene.remove(obj);
+  }
 
   // ノード
-  for (const node of data.nodes) {
-    const geom = new THREE.SphereGeometry(0.15, 32, 32);
-    const mat = new THREE.MeshStandardMaterial({ color: node.color });
-    const mesh = new THREE.Mesh(geom, mat);
-    mesh.position.set(...node.pos);
-    mesh.userData = node;
-    scene.add(mesh);
-    nodeMeshes.push(mesh);
-  }
+  data.nodes.forEach(node => {
+    const geometry = new THREE.SphereGeometry(0.3, 32, 32);
+    const material = new THREE.MeshStandardMaterial({ color: node.color || 0x666666 });
+    const sphere = new THREE.Mesh(geometry, material);
+
+    sphere.position.set(Math.random() * 4 - 2, Math.random() * 4 - 2, 0);
+    sphere.userData = node;
+
+    scene.add(sphere);
+    nodeMeshes[node.id] = sphere;
+  });
 
   // エッジ
-  for (const edge of data.edges) {
-    const s = data.nodes.find(n => n.id === edge.source);
-    const t = data.nodes.find(n => n.id === edge.target);
-    if (s && t) {
-      const points = [new THREE.Vector3(...s.pos), new THREE.Vector3(...t.pos)];
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
-      const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x444444 }));
+  data.edges.forEach(edge => {
+    const src = nodeMeshes[edge.source];
+    const tgt = nodeMeshes[edge.target];
+    if (src && tgt) {
+      const points = [src.position, tgt.position];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({ color: 0x444444 });
+      const line = new THREE.Line(geometry, material);
       scene.add(line);
     }
-  }
+  });
 
-  // バリデーション（簡易）
-  validateDataset(data);
+  // 簡易ライト
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x888888));
 }
 
-// ===== バリデーション =====
+// ===== パネル更新 =====
+function updateMetaPanel(meta) {
+  document.getElementById("meta").innerHTML = `
+    <b>Title:</b> ${meta.title}<br>
+    <b>Author:</b> ${meta.author}<br>
+    <b>Created:</b> ${meta.created}<br>
+    <b>Tags:</b> ${meta.tags.join(", ")}
+  `;
+}
+
+function updateNodeInfoPanel(node) {
+  if (!node) {
+    document.getElementById("node-info").innerHTML = "<em>ノードをクリックしてください</em>";
+    return;
+  }
+  document.getElementById("node-info").innerHTML = `
+    <b>ID:</b> ${node.id}<br>
+    <b>Label:</b> ${node.label}<br>
+    <b>Description:</b> ${node.description}<br>
+    <b>Tags:</b> ${node.tags.join(", ")}
+  `;
+}
+
+function updateErrorsPanel(errors) {
+  document.getElementById("errors").innerHTML =
+    errors.length ? errors.map(e => `<div>${e}</div>`).join("") : "<em>エラーなし</em>";
+}
+
+// ===== 簡易バリデーション =====
 function validateDataset(data) {
   const errors = [];
   if (!data.nodes || data.nodes.length === 0) {
@@ -100,93 +119,39 @@ function validateDataset(data) {
     if (!node.id) errors.push("ノードにIDがありません");
     if (!node.label) errors.push(`ノード ${node.id} にラベルがありません`);
   }
-  document.getElementById("errors").innerHTML =
-    errors.length ? errors.map(e => `<div>${e}</div>`).join("") : "<em>エラーなし</em>";
+  updateErrorsPanel(errors);
 }
 
-// ===== クリック選択 =====
+// ===== レイキャストによるクリック検出 =====
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-renderer.domElement.addEventListener("click", event => {
+function onClick(event) {
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(nodeMeshes);
+  const intersects = raycaster.intersectObjects(Object.values(nodeMeshes));
+
   if (intersects.length > 0) {
     const node = intersects[0].object.userData;
-    showNodeInfo(node);
+    updateNodeInfoPanel(node);
   }
-});
-
-function showNodeInfo(node) {
-  const panel = document.getElementById("node-info");
-  panel.innerHTML = `
-    <p><b>ID:</b> ${node.id}</p>
-    <p><b>Label:</b> ${node.label}</p>
-    <p><b>Description:</b> ${node.description || ""}</p>
-    <p><b>Tags:</b> ${node.tags?.join(", ") || ""}</p>
-  `;
 }
 
-// ===== イベント =====
-document.getElementById("datasetSelect").addEventListener("change", e => {
-  loadDataset(e.target.value);
-});
+renderer.domElement.addEventListener("click", onClick);
 
-// 初期ロード
-loadDataset("sample1");
+// ===== 初期化 =====
+renderGraph(sampleData);
+updateMetaPanel(sampleData.meta);
+updateNodeInfoPanel(null);
+validateDataset(sampleData);
 
-// ===== レンダリングループ =====
-function tick() {
-  requestAnimationFrame(tick);
+// ===== ループ =====
+function animate() {
+  requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
 }
-tick();
-
-window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// === Ajvを初期化 ===
-const ajv = new window.Ajv();
-let schema = null;
-
-// スキーマをロード（最初に一回だけ）
-fetch("schemas/digidiorama.schema.json")
-  .then(r => r.json())
-  .then(s => { schema = s; });
-
-// データ読み込み時に呼び出す部分
-fetch(manifestUrl)
-  .then(r => r.json())
-  .then(data => {
-    // ノード描画処理
-    renderGraph(data);
-
-    // バリデーション実行
-    validateDataset(data);
-  });  
-
-function validateDataset(data) {
-  const panel = document.getElementById("errors");
-  if (!schema) {
-    panel.innerHTML = "<em>Schema未ロード</em>";
-    return;
-  }
-
-  const validate = ajv.compile(schema);
-  const valid = validate(data);
-  if (valid) {
-    panel.innerHTML = "<em>エラーなし</em>";
-  } else {
-    panel.innerHTML = validate.errors
-      .map(e => `<div>${e.instancePath} ${e.message}</div>`)
-      .join("");
-  }
-}
+animate();
