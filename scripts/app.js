@@ -37,13 +37,16 @@ function selectNode(mesh) {
   document.getElementById("nf-label").textContent = d.label ?? "";
   document.getElementById("nf-desc").textContent  = d.description ?? "";
   document.getElementById("nf-tags").textContent  = Array.isArray(d.tags) ? d.tags.join(", ") : "";
+
+  // 🔽 ここに置く
+  console.log("Panel update:", {
+    id: d.id,
+    label: d.label,
+    desc: d.description,
+    tags: d.tags
+  });
 }
-console.log("Panel update:", {
-  id: d.id,
-  label: d.label,
-  desc: d.description,
-  tags: d.tags
-});
+
 
 // ===== エントリーポイント =====
 async function init() {
