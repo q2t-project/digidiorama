@@ -64,7 +64,7 @@ function addNode(n) {
   const mesh = new THREE.Mesh(g, m);
   const [x, y, z] = n.pos ?? [0, 0, 0];
   mesh.position.set(x, y, z);
-  mesh.userData = { id: n.id, label: n.label };
+  mesh.userData = { kind: 'node',id: n.id, label: n.label };
   objectGroup.add(mesh);
   return mesh;
 }
@@ -119,21 +119,6 @@ const mouse = new THREE.Vector2();
 // 選択状態を管理
 let selectedNode = null;
 let originalMaterial = null;
-
-// ノード描画（P1で使っていた関数を少し拡張）
-function drawNodes(nodes = []) {
-  // 既存ノード削除
-  scene.children = scene.children.filter(obj => obj.userData?.kind !== 'node');
-  for (const n of nodes) {
-    const s = n.size ?? 0.06;
-    const geo = new THREE.SphereGeometry(s, 24, 16);
-    const mat = new THREE.MeshStandardMaterial({ color: n.color ?? '#5aa9e6' });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(...n.position);
-    mesh.userData = { kind: 'node', ...n }; // nの属性を全部持たせる
-    scene.add(mesh);
-  }
-}
 
 // クリック時の処理
 function onClick(event) {
