@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import Ajv2020 from "ajv2020";
+import { Ajv2020 from } "ajv2020";
 
 // --- DOM refs ---
 const picker     = document.getElementById('data-picker');
