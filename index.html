@@ -16,7 +16,6 @@
   </script>
 </head>
 <body>
-  <!-- ===== P2: UIヘッダー ===== -->
   <header class="topbar">
     <div class="title" data-i18n="title">digidiorama</div>
     <div class="spacer"></div>
@@ -26,11 +25,23 @@
     </select>
   </header>
 
-  <!-- Three.js Viewer -->
   <div id="viewer"></div>
+
+  <!-- ===== 右パネル ===== -->
+  <aside id="sidepanel" class="sidepanel">
+    <h3>Meta</h3>
+    <div id="meta"></div>
+
+    <h3>Node Info</h3>
+    <div id="node-info"></div>
+
+    <h3>Errors</h3>
+    <pre id="errors" class="errors"></pre>
+  </aside>
 
   <script type="module" src="scripts/app.js"></script>
 </body>
+
 <aside id="sidepanel" class="sidepanel">
   <h3>Meta</h3>
   <div id="meta"></div>

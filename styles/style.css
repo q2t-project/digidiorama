@@ -19,6 +19,28 @@ canvas { display: block; }
 .topbar .title { font-weight: 600; }
 .topbar .spacer { flex: 1; }
 
+/* 右サイドパネル */
+.sidepanel {
+  position: fixed;
+  top: 48px;           /* ヘッダーの下に配置 */
+  right: 0;
+  width: 260px;
+  bottom: 0;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.92);
+  border-left: 1px solid #e5e7eb;
+  padding: 12px;
+  font-size: 14px;
+  z-index: 5;
+}
+
+#viewer {
+  position: fixed;
+  inset: 0;
+  top: 48px;          /* ヘッダー分下げる */
+  right: 260px;       /* サイドパネル分狭める */
+}
+
 select#lang {
   font-size: 14px;
   padding: 6px 8px;
