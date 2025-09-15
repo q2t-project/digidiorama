@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer — Plane Label</title>
+  <title>digidiorama viewer — Labels</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -41,7 +41,7 @@
 <body>
   <div id="app">
     <header>
-      <h1 data-i18n="title">digidiorama viewer — Plane Label</h1>
+      <h1 data-i18n="title">digidiorama viewer — Labels</h1>
       <div class="spacer"></div>
       <select id="fileSelect"></select>
       <select id="langSelect">
@@ -84,8 +84,11 @@
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
     const grid=new THREE.GridHelper(20,20,0x334477,0x223355);scene.add(grid);
-    const nodeGroup=new THREE.Group();const edgeGroup=new THREE.Group();
-    scene.add(edgeGroup,nodeGroup);
+
+    const nodeGroup=new THREE.Group();
+    const edgeGroup=new THREE.Group();
+    const labelGroup=new THREE.Group(); // エッジラベル用
+    scene.add(edgeGroup,nodeGroup,labelGroup);
 
     const ro=new ResizeObserver(()=>{const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();});
@@ -113,7 +116,7 @@
     function makeLabelPlane(text, options={}){
       const fontSize = options.fontSize || 28;
       const color = options.color || "white";
-      const offset = options.offset || [0,0.15,0];
+      const offset = options.offset || [0,0,0]; // デフォルトはノード座標と一致
 
       const canvas=document.createElement('canvas');
       canvas.width=256; canvas.height=64;
@@ -133,7 +136,7 @@
     }
 
     function buildScene(data){
-      nodeGroup.clear();edgeGroup.clear();nodeById.clear();
+      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();nodeById.clear();
 
       // ノードは目立たない点
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
@@ -157,6 +160,13 @@
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
         const mat=new THREE.LineBasicMaterial({color:e.color||0x9ec1ff,transparent:true,opacity:e.opacity||1.0});
         edgeGroup.add(new THREE.Line(geo,mat));
+
+        if(e.label){
+          const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
+          const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});
+          edgeLabel.position.copy(midpoint);
+          labelGroup.add(edgeLabel);
+        }
       }
       showMeta(data.meta,data);
     }
@@ -184,11 +194,14 @@
       gridVisible=!gridVisible;grid.visible=gridVisible;
       nodesVisible=!nodesVisible;nodeGroup.visible=nodesVisible;edgeGroup.visible=nodesVisible;
       labelsVisible=!labelsVisible;
+      // ノードラベル
       nodeGroup.children.forEach(n=>{
         n.children.forEach(ch=>{
           if(ch.isMesh && ch.geometry.type==="PlaneGeometry"){ ch.visible=labelsVisible; }
         });
       });
+      // エッジラベル
+      labelGroup.visible=labelsVisible;
     };
 
     const select=document.getElementById('fileSelect');
