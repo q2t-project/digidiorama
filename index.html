@@ -29,6 +29,7 @@
     <h3>エラー</h3>
     <div id="errors"></div>
   </div>
+
   <script type="module">
     import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
     import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js";
@@ -83,6 +84,7 @@
         .then(r=>r.json())
         .then(data=>{
           document.getElementById("meta").textContent = JSON.stringify(data.meta,null,2);
+
           data.nodes.forEach(n=>{
             // sphere node
             const geom = new THREE.SphereGeometry(n.size||0.1,16,16);
@@ -92,17 +94,26 @@
             sphere.userData = n;
 
             // === ラベルを Mesh にアタッチ ===
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.font = "20px Arial";
-            ctx.fillStyle = "white";
-            ctx.fillText(n.label||"", 2, 20);
-            const texture = new THREE.CanvasTexture(canvas);
-            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent:true, depthTest:false });
-            const sprite = new THREE.Sprite(spriteMat);
-            sprite.scale.set(0.5,0.25,1);
-            sprite.position.set(0,(n.size||0.1)+0.1,0); // ノードの上に
-            sphere.add(sprite);
+            if(n.label){
+              const canvas = document.createElement("canvas");
+              canvas.width = 256;
+              canvas.height = 64;
+              const ctx = canvas.getContext("2d");
+              ctx.font = "28px Arial";
+              ctx.fillStyle = "white";
+              ctx.textBaseline = "top";
+              ctx.fillText(n.label, 4, 4);
+              const texture = new THREE.CanvasTexture(canvas);
+              const spriteMat = new THREE.SpriteMaterial({
+                map: texture,
+                transparent:true,
+                depthTest:false
+              });
+              const sprite = new THREE.Sprite(spriteMat);
+              sprite.scale.set(1.5,0.5,1);
+              sprite.position.set(0,(n.size||0.1)+0.15,0); // ノード上に配置
+              sphere.add(sprite);
+            }
 
             nodes[n.id] = sphere;
             scene.add(sphere);
@@ -113,7 +124,11 @@
             if(!src||!tgt) return;
             const points = [src.position, tgt.position];
             const geom = new THREE.BufferGeometry().setFromPoints(points);
-            const mat = new THREE.LineBasicMaterial({color:e.color||"#aaa", transparent:true, opacity:e.opacity||1.0});
+            const mat = new THREE.LineBasicMaterial({
+              color:e.color||"#aaa",
+              transparent:true,
+              opacity:e.opacity||1.0
+            });
             const line = new THREE.Line(geom,mat);
             edges.push(line);
             scene.add(line);
