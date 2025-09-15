@@ -3,6 +3,6 @@
   { "path": "./assets/data/sample_labels.json", "title": "Label Directions" },
   { "path": "./assets/data/sample_edges.json", "title": "Edge Attributes Demo" },
   { "path": "./assets/data/sample_mixed.json", "title": "Mixed Features" },
-  { "path": "./assets/data/sample_large.json", "title": "Large Graph Demo" }
+  { "path": "./assets/data/sample_large.json", "title": "Large Graph Demo" },
   { "path": "./assets/data/sample_huge.json", "title": "Huge Graph Demo" }
 ]
