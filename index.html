@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer — Sprite Label</title>
+  <title>digidiorama viewer — Plane Label</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -41,7 +41,7 @@
 <body>
   <div id="app">
     <header>
-      <h1 data-i18n="title">digidiorama viewer — Sprite Label</h1>
+      <h1 data-i18n="title">digidiorama viewer — Plane Label</h1>
       <div class="spacer"></div>
       <select id="fileSelect"></select>
       <select id="langSelect">
@@ -101,8 +101,8 @@
 
     const nodeById=new Map();
 
-    // === ノード生成 with Spriteラベル ===
-    function makeLabelSprite(text){
+    // === ノードラベル生成 (Plane方式) ===
+    function makeLabelPlane(text){
       const canvas=document.createElement('canvas');
       canvas.width=256; canvas.height=64;
       const ctx=canvas.getContext('2d');
@@ -110,12 +110,19 @@
       ctx.font="28px Arial";
       ctx.textBaseline="middle";
       ctx.fillText(text,10,32);
+
       const texture=new THREE.CanvasTexture(canvas);
       texture.needsUpdate=true;
-      const mat=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:true});
-      const sprite=new THREE.Sprite(mat);
-      sprite.scale.set(1.5,0.6,1);
-      return sprite;
+
+      const mat=new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+      });
+
+      const geom=new THREE.PlaneGeometry(1.5,0.6);
+      const mesh=new THREE.Mesh(geom,mat);
+      return mesh;
     }
 
     function buildScene(data){
@@ -128,9 +135,9 @@
         m.userData=n;nodeGroup.add(m);nodeById.set(n.id,m);
 
         if(n.label){
-          const sprite=makeLabelSprite(n.label);
-          sprite.position.set(0,0.4,0); // ノード上に固定
-          m.add(sprite);
+          const label=makeLabelPlane(n.label);
+          label.position.set(0,(n.size||0.25)+0.15,0);
+          m.add(label);
         }
       }
       for(const e of data.edges||[]){
@@ -165,13 +172,24 @@
       labelsVisible=!labelsVisible;
       nodeGroup.children.forEach(n=>{
         n.children.forEach(ch=>{
-          if(ch.isSprite){ ch.visible=labelsVisible; }
+          if(ch.isMesh && ch.geometry.type==="PlaneGeometry"){ ch.visible=labelsVisible; }
         });
       });
     };
 
     const select=document.getElementById('fileSelect');
-    loadManifest().then(list=>{const files=Array.isArray(list)?list:list.files||[];files.forEach(item=>{const opt=document.createElement('option');opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);});if(files[0]){select.value=files[0].path;loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});}});
+    loadManifest().then(list=>{
+      const files=Array.isArray(list)?list:list.files||[];
+      files.forEach(item=>{
+        const opt=document.createElement('option');
+        opt.value=item.path;opt.textContent=item.title||item.path;
+        select.appendChild(opt);
+      });
+      if(files[0]){
+        select.value=files[0].path;
+        loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});
+      }
+    });
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
     loadLocale('ja');
   </script>
