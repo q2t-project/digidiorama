@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer — P6.6 Clean UI</title>
+  <title>digidiorama viewer — P6.7 Layer Popup</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -27,6 +27,12 @@
       #fab{position:absolute;right:.75rem;bottom:.75rem;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:20}
     }
     .label{color:#fff;font-size:11px;text-shadow:0 0 3px #000}
+    #layerPopup{
+      position:absolute;top:40px;right:10px;z-index:20;
+      background:#0e142a;border:1px solid #2a3969;border-radius:.4rem;
+      padding:.5rem;display:none;flex-direction:column;gap:.3rem;
+    }
+    #layerPopup label{font-size:13px;cursor:pointer}
   </style>
 
   <script type="importmap">
@@ -42,7 +48,7 @@
 <body>
   <div id="app">
     <header>
-      <h1 data-i18n="title">digidiorama viewer — P6.6</h1>
+      <h1 data-i18n="title">digidiorama viewer — P6.7</h1>
       <div class="spacer"></div>
       <select id="fileSelect"></select>
       <select id="langSelect">
@@ -64,6 +70,11 @@
       </div>
     </div>
     <button id="fab">≡</button>
+    <div id="layerPopup">
+      <label><input type="checkbox" id="chkGrid" checked> Grid</label>
+      <label><input type="checkbox" id="chkNodes" checked> Nodes/Edges</label>
+      <label><input type="checkbox" id="chkLabels" checked> Labels</label>
+    </div>
   </div>
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
@@ -130,31 +141,59 @@
     function showMeta(meta,data){
       const box=document.getElementById('meta');box.innerHTML='';
       if(meta){for(const [k,v] of Object.entries(meta)){const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);}}
-      const counts=document.createElement('div');
-      counts.className='meta-item';
+      const counts=document.createElement('div');counts.className='meta-item';
       counts.textContent=`Counts: Nodes=${(data.nodes||[]).length}, Edges=${(data.edges||[]).length}`;
       box.appendChild(counts);
     }
 
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';(errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
+    // i18n
     let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){console.warn("i18n load failed",e);}}
     function t(key){return dict[key]||key;}
     function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
-    renderer.domElement.addEventListener('click',(ev)=>{const rect=renderer.domElement.getBoundingClientRect();});
-
+    // UI
     document.getElementById('btnReset').onclick=()=>{camera.position.set(6,4,8);controls.target.set(0,0,0);controls.update();};
     document.getElementById('fab').onclick=()=>{document.getElementById('panel').classList.toggle('open');};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{
-      gridVisible=!gridVisible;grid.visible=gridVisible;
-      nodesVisible=!nodesVisible;nodeGroup.visible=nodesVisible;edgeGroup.visible=nodesVisible;
-      labelsVisible=!labelsVisible;labelRenderer.domElement.style.display=labelsVisible?'block':'none';
+      const popup=document.getElementById('layerPopup');
+      popup.style.display=popup.style.display==='flex'?'none':'flex';
     };
 
+    // Layer チェックボックス
+    const chkGrid=document.getElementById('chkGrid');
+    const chkNodes=document.getElementById('chkNodes');
+    const chkLabels=document.getElementById('chkLabels');
+
+    function updateLayers(){
+      // 少なくとも Grid か Nodes のどちらかは true にする
+      if(!chkGrid.checked && !chkNodes.checked){
+        chkGrid.checked=true; // 強制的にGridを戻す
+      }
+      grid.visible=chkGrid.checked;
+      nodeGroup.visible=edgeGroup.visible=chkNodes.checked;
+      labelRenderer.domElement.style.display=chkLabels.checked?'block':'none';
+    }
+
+    chkGrid.onchange=updateLayers;
+    chkNodes.onchange=updateLayers;
+    chkLabels.onchange=updateLayers;
+
+    // データ読み込み
     const select=document.getElementById('fileSelect');
-    loadManifest().then(list=>{const files=Array.isArray(list)?list:list.files||[];files.forEach(item=>{const opt=document.createElement('option');opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);});if(files[0]){select.value=files[0].path;loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});}});
+    loadManifest().then(list=>{
+      const files=Array.isArray(list)?list:list.files||[];
+      files.forEach(item=>{
+        const opt=document.createElement('option');
+        opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);
+      });
+      if(files[0]){
+        select.value=files[0].path;
+        loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});
+      }
+    });
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
     loadLocale('ja');
   </script>
