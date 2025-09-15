@@ -30,6 +30,19 @@
         "position": [0, -0.01, 0]
       }
     },
+        {
+      "id": "grid-xy",
+      "type": "grid",
+      "grid": {
+        "shape": "rect",
+        "size": 10,
+        "divisions": 10,
+        "plane": "xy",
+        "color": "#334477",
+        "opacity": 0.3,
+        "position": [0, -0.01, 1]
+      }
+    },
     {
       "id": "grid-yz",
       "type": "grid",
