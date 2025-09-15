@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <base href="/digidiorama/">
-  <title>digidiorama viewer P0</title>
+  <title>digidiorama</title>
 
   <!-- Import Maps: JSONのみ -->
   <script type="importmap">
@@ -18,16 +18,20 @@
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
+  <header class="topbar">
+    <!-- 既存のUIはそのまま -->
+  </header>
+
   <div id="viewer"></div>
 
-  <!-- Ajv は importmap 外で読み込み -->
+  <!-- Ajv は importmap の外で読み込む -->
   <script type="module">
     import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv.min.js";
     window.Ajv = Ajv;
     console.log("Ajv loaded", Ajv);
   </script>
 
-  <!-- キャッシュバスターのため app.v2.js を参照 -->
+  <!-- メインアプリ -->
   <script type="module" src="scripts/app.v2.js"></script>
 </body>
 </html>
