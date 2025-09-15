@@ -68,7 +68,8 @@
         "opacity": 0.4,
         "position": [0, 0.01, 0]
       }
-    }    {
+    }
+    {
       "id": "polar-half",
       "type": "grid",
       "grid": {
