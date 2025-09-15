@@ -3,14 +3,2825 @@
     "title": "Huge Graph Stress Test",
     "author": "q2t-project",
     "created": "2025-09-16",
-    "tags": ["demo", "stress", "huge"]
+    "tags": [
+      "demo",
+      "stress",
+      "huge"
+    ]
   },
   "nodes": [
-    { "id": "n1",  "label": "N1",  "position": [0,0,0],   "color": "#5aa9ff", "labelPos": "top" }
-    // 以下に n2〜n120 を展開
+    {
+      "id": "n1",
+      "label": "N1",
+      "position": [
+        -2.98,
+        -3.59,
+        8.94
+      ],
+      "color": "#2452a6",
+      "labelPos": "front"
+    },
+    {
+      "id": "n2",
+      "label": "N2",
+      "position": [
+        3.44,
+        -5.31,
+        -3.26
+      ],
+      "color": "#cf170e",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n3",
+      "label": "N3",
+      "position": [
+        -4.66,
+        4.59,
+        -1.53
+      ],
+      "color": "#5a2e2c",
+      "labelPos": "back"
+    },
+    {
+      "id": "n4",
+      "label": "N4",
+      "position": [
+        5.82,
+        5.81,
+        -4.14
+      ],
+      "color": "#d813e9",
+      "labelPos": "back"
+    },
+    {
+      "id": "n5",
+      "label": "N5",
+      "position": [
+        -6.43,
+        1.56,
+        -7.0
+      ],
+      "color": "#6abba6",
+      "labelPos": "right"
+    },
+    {
+      "id": "n6",
+      "label": "N6",
+      "position": [
+        3.08,
+        8.07,
+        -2.27
+      ],
+      "color": "#b35954",
+      "labelPos": "back"
+    },
+    {
+      "id": "n7",
+      "label": "N7",
+      "position": [
+        -7.27,
+        -6.5,
+        5.01
+      ],
+      "color": "#455544",
+      "labelPos": "left"
+    },
+    {
+      "id": "n8",
+      "label": "N8",
+      "position": [
+        -2.72,
+        9.01,
+        3.92
+      ],
+      "color": "#65cf42",
+      "labelPos": "top"
+    },
+    {
+      "id": "n9",
+      "label": "N9",
+      "position": [
+        -8.6,
+        3.59,
+        2.96
+      ],
+      "color": "#11371f",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n10",
+      "label": "N10",
+      "position": [
+        1.16,
+        8.7,
+        -9.24
+      ],
+      "color": "#5ca03a",
+      "labelPos": "front"
+    },
+    {
+      "id": "n11",
+      "label": "N11",
+      "position": [
+        -8.73,
+        7.8,
+        0.48
+      ],
+      "color": "#4e5e05",
+      "labelPos": "back"
+    },
+    {
+      "id": "n12",
+      "label": "N12",
+      "position": [
+        6.71,
+        -0.5,
+        4.22
+      ],
+      "color": "#0c0b2f",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n13",
+      "label": "N13",
+      "position": [
+        -3.2,
+        -9.47,
+        9.37
+      ],
+      "color": "#b12f27",
+      "labelPos": "back"
+    },
+    {
+      "id": "n14",
+      "label": "N14",
+      "position": [
+        -4.7,
+        -9.1,
+        0.06
+      ],
+      "color": "#ca0614",
+      "labelPos": "left"
+    },
+    {
+      "id": "n15",
+      "label": "N15",
+      "position": [
+        -6.98,
+        5.66,
+        9.69
+      ],
+      "color": "#ca27e2",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n16",
+      "label": "N16",
+      "position": [
+        -1.61,
+        -4.4,
+        5.53
+      ],
+      "color": "#4f27a2",
+      "labelPos": "front"
+    },
+    {
+      "id": "n17",
+      "label": "N17",
+      "position": [
+        -2.85,
+        8.04,
+        -4.32
+      ],
+      "color": "#28a43d",
+      "labelPos": "right"
+    },
+    {
+      "id": "n18",
+      "label": "N18",
+      "position": [
+        3.42,
+        -1.16,
+        4.66
+      ],
+      "color": "#b8ed07",
+      "labelPos": "right"
+    },
+    {
+      "id": "n19",
+      "label": "N19",
+      "position": [
+        -5.68,
+        -6.18,
+        -2.99
+      ],
+      "color": "#a9ddeb",
+      "labelPos": "left"
+    },
+    {
+      "id": "n20",
+      "label": "N20",
+      "position": [
+        -1.92,
+        -7.8,
+        -5.69
+      ],
+      "color": "#b613e7",
+      "labelPos": "left"
+    },
+    {
+      "id": "n21",
+      "label": "N21",
+      "position": [
+        -3.67,
+        7.31,
+        7.03
+      ],
+      "color": "#5b5fd1",
+      "labelPos": "top"
+    },
+    {
+      "id": "n22",
+      "label": "N22",
+      "position": [
+        -5.92,
+        -0.34,
+        7.29
+      ],
+      "color": "#014e43",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n23",
+      "label": "N23",
+      "position": [
+        -5.83,
+        -3.53,
+        9.66
+      ],
+      "color": "#32632b",
+      "labelPos": "left"
+    },
+    {
+      "id": "n24",
+      "label": "N24",
+      "position": [
+        3.85,
+        -7.58,
+        -9.49
+      ],
+      "color": "#bab6a4",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n25",
+      "label": "N25",
+      "position": [
+        9.31,
+        -5.28,
+        7.78
+      ],
+      "color": "#355e22",
+      "labelPos": "back"
+    },
+    {
+      "id": "n26",
+      "label": "N26",
+      "position": [
+        -8.64,
+        6.04,
+        -3.96
+      ],
+      "color": "#6af3e2",
+      "labelPos": "back"
+    },
+    {
+      "id": "n27",
+      "label": "N27",
+      "position": [
+        5.46,
+        2.12,
+        3.59
+      ],
+      "color": "#e59286",
+      "labelPos": "front"
+    },
+    {
+      "id": "n28",
+      "label": "N28",
+      "position": [
+        2.58,
+        -1.82,
+        7.1
+      ],
+      "color": "#32a50a",
+      "labelPos": "left"
+    },
+    {
+      "id": "n29",
+      "label": "N29",
+      "position": [
+        8.72,
+        6.91,
+        3.56
+      ],
+      "color": "#855ff6",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n30",
+      "label": "N30",
+      "position": [
+        -8.21,
+        8.24,
+        1.69
+      ],
+      "color": "#5fc316",
+      "labelPos": "back"
+    },
+    {
+      "id": "n31",
+      "label": "N31",
+      "position": [
+        0.27,
+        8.6,
+        -0.02
+      ],
+      "color": "#6f639e",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n32",
+      "label": "N32",
+      "position": [
+        9.69,
+        -6.88,
+        8.41
+      ],
+      "color": "#7d46a0",
+      "labelPos": "front"
+    },
+    {
+      "id": "n33",
+      "label": "N33",
+      "position": [
+        1.32,
+        -4.32,
+        8.22
+      ],
+      "color": "#43a1cb",
+      "labelPos": "front"
+    },
+    {
+      "id": "n34",
+      "label": "N34",
+      "position": [
+        1.26,
+        -6.5,
+        0.81
+      ],
+      "color": "#74b8cc",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n35",
+      "label": "N35",
+      "position": [
+        3.78,
+        6.52,
+        -9.35
+      ],
+      "color": "#d6f337",
+      "labelPos": "right"
+    },
+    {
+      "id": "n36",
+      "label": "N36",
+      "position": [
+        9.84,
+        -1.6,
+        2.19
+      ],
+      "color": "#197701",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n37",
+      "label": "N37",
+      "position": [
+        -4.68,
+        -4.82,
+        1.18
+      ],
+      "color": "#7bfcc2",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n38",
+      "label": "N38",
+      "position": [
+        -0.58,
+        -1.95,
+        8.5
+      ],
+      "color": "#9d2292",
+      "labelPos": "left"
+    },
+    {
+      "id": "n39",
+      "label": "N39",
+      "position": [
+        0.49,
+        5.21,
+        6.21
+      ],
+      "color": "#8d0de7",
+      "labelPos": "left"
+    },
+    {
+      "id": "n40",
+      "label": "N40",
+      "position": [
+        -2.81,
+        -4.91,
+        -1.49
+      ],
+      "color": "#b3ef75",
+      "labelPos": "top"
+    },
+    {
+      "id": "n41",
+      "label": "N41",
+      "position": [
+        9.52,
+        2.86,
+        -0.99
+      ],
+      "color": "#1d500d",
+      "labelPos": "top"
+    },
+    {
+      "id": "n42",
+      "label": "N42",
+      "position": [
+        -4.78,
+        -6.85,
+        8.17
+      ],
+      "color": "#4c80c1",
+      "labelPos": "back"
+    },
+    {
+      "id": "n43",
+      "label": "N43",
+      "position": [
+        1.75,
+        -2.63,
+        9.46
+      ],
+      "color": "#33ae28",
+      "labelPos": "right"
+    },
+    {
+      "id": "n44",
+      "label": "N44",
+      "position": [
+        4.21,
+        -3.83,
+        4.94
+      ],
+      "color": "#db11ef",
+      "labelPos": "left"
+    },
+    {
+      "id": "n45",
+      "label": "N45",
+      "position": [
+        3.14,
+        6.45,
+        5.72
+      ],
+      "color": "#55cdda",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n46",
+      "label": "N46",
+      "position": [
+        1.11,
+        -7.84,
+        2.36
+      ],
+      "color": "#e7304f",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n47",
+      "label": "N47",
+      "position": [
+        -2.14,
+        -1.8,
+        -4.13
+      ],
+      "color": "#3bc07b",
+      "labelPos": "right"
+    },
+    {
+      "id": "n48",
+      "label": "N48",
+      "position": [
+        3.51,
+        1.23,
+        8.84
+      ],
+      "color": "#fb4201",
+      "labelPos": "left"
+    },
+    {
+      "id": "n49",
+      "label": "N49",
+      "position": [
+        -4.05,
+        -3.85,
+        4.39
+      ],
+      "color": "#7394c5",
+      "labelPos": "back"
+    },
+    {
+      "id": "n50",
+      "label": "N50",
+      "position": [
+        -7.79,
+        -5.32,
+        1.85
+      ],
+      "color": "#61a3df",
+      "labelPos": "left"
+    },
+    {
+      "id": "n51",
+      "label": "N51",
+      "position": [
+        1.45,
+        -2.71,
+        1.26
+      ],
+      "color": "#5e08a1",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n52",
+      "label": "N52",
+      "position": [
+        -6.25,
+        -1.55,
+        8.66
+      ],
+      "color": "#31be33",
+      "labelPos": "top"
+    },
+    {
+      "id": "n53",
+      "label": "N53",
+      "position": [
+        -8.56,
+        8.64,
+        3.66
+      ],
+      "color": "#d32865",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n54",
+      "label": "N54",
+      "position": [
+        3.36,
+        -5.57,
+        -0.15
+      ],
+      "color": "#16b0f5",
+      "labelPos": "left"
+    },
+    {
+      "id": "n55",
+      "label": "N55",
+      "position": [
+        -4.5,
+        -9.28,
+        2.14
+      ],
+      "color": "#3a084d",
+      "labelPos": "front"
+    },
+    {
+      "id": "n56",
+      "label": "N56",
+      "position": [
+        0.12,
+        7.62,
+        0.09
+      ],
+      "color": "#abf662",
+      "labelPos": "front"
+    },
+    {
+      "id": "n57",
+      "label": "N57",
+      "position": [
+        1.29,
+        -4.86,
+        5.88
+      ],
+      "color": "#58dc31",
+      "labelPos": "right"
+    },
+    {
+      "id": "n58",
+      "label": "N58",
+      "position": [
+        -3.92,
+        8.61,
+        8.87
+      ],
+      "color": "#4ad489",
+      "labelPos": "left"
+    },
+    {
+      "id": "n59",
+      "label": "N59",
+      "position": [
+        0.24,
+        8.6,
+        9.51
+      ],
+      "color": "#a17a2e",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n60",
+      "label": "N60",
+      "position": [
+        6.99,
+        -9.32,
+        -2.2
+      ],
+      "color": "#72fd19",
+      "labelPos": "top"
+    },
+    {
+      "id": "n61",
+      "label": "N61",
+      "position": [
+        -6.71,
+        -2.08,
+        0.41
+      ],
+      "color": "#00b8f6",
+      "labelPos": "right"
+    },
+    {
+      "id": "n62",
+      "label": "N62",
+      "position": [
+        -7.48,
+        -2.65,
+        6.55
+      ],
+      "color": "#addc66",
+      "labelPos": "left"
+    },
+    {
+      "id": "n63",
+      "label": "N63",
+      "position": [
+        -8.86,
+        -8.3,
+        -0.6
+      ],
+      "color": "#d95f94",
+      "labelPos": "back"
+    },
+    {
+      "id": "n64",
+      "label": "N64",
+      "position": [
+        0.91,
+        9.02,
+        1.4
+      ],
+      "color": "#f86330",
+      "labelPos": "top"
+    },
+    {
+      "id": "n65",
+      "label": "N65",
+      "position": [
+        9.96,
+        6.06,
+        6.63
+      ],
+      "color": "#868ae7",
+      "labelPos": "top"
+    },
+    {
+      "id": "n66",
+      "label": "N66",
+      "position": [
+        6.0,
+        -4.54,
+        8.01
+      ],
+      "color": "#93ad80",
+      "labelPos": "top"
+    },
+    {
+      "id": "n67",
+      "label": "N67",
+      "position": [
+        9.44,
+        7.59,
+        4.01
+      ],
+      "color": "#95ad1f",
+      "labelPos": "top"
+    },
+    {
+      "id": "n68",
+      "label": "N68",
+      "position": [
+        -3.19,
+        -3.71,
+        -8.45
+      ],
+      "color": "#576453",
+      "labelPos": "right"
+    },
+    {
+      "id": "n69",
+      "label": "N69",
+      "position": [
+        4.81,
+        3.94,
+        -4.07
+      ],
+      "color": "#1d979a",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n70",
+      "label": "N70",
+      "position": [
+        9.93,
+        -9.98,
+        -6.54
+      ],
+      "color": "#77cf77",
+      "labelPos": "right"
+    },
+    {
+      "id": "n71",
+      "label": "N71",
+      "position": [
+        -0.62,
+        -1.8,
+        1.92
+      ],
+      "color": "#482a4b",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n72",
+      "label": "N72",
+      "position": [
+        -8.76,
+        3.58,
+        1.87
+      ],
+      "color": "#3a8b9c",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n73",
+      "label": "N73",
+      "position": [
+        -2.97,
+        0.91,
+        4.76
+      ],
+      "color": "#18a17c",
+      "labelPos": "right"
+    },
+    {
+      "id": "n74",
+      "label": "N74",
+      "position": [
+        5.19,
+        8.07,
+        -2.22
+      ],
+      "color": "#024d65",
+      "labelPos": "left"
+    },
+    {
+      "id": "n75",
+      "label": "N75",
+      "position": [
+        4.54,
+        7.63,
+        8.66
+      ],
+      "color": "#ad35c0",
+      "labelPos": "top"
+    },
+    {
+      "id": "n76",
+      "label": "N76",
+      "position": [
+        2.21,
+        -1.57,
+        2.97
+      ],
+      "color": "#61f58e",
+      "labelPos": "top"
+    },
+    {
+      "id": "n77",
+      "label": "N77",
+      "position": [
+        -3.24,
+        -2.1,
+        -2.11
+      ],
+      "color": "#5f6c57",
+      "labelPos": "front"
+    },
+    {
+      "id": "n78",
+      "label": "N78",
+      "position": [
+        1.84,
+        -5.45,
+        4.73
+      ],
+      "color": "#672a3a",
+      "labelPos": "left"
+    },
+    {
+      "id": "n79",
+      "label": "N79",
+      "position": [
+        6.66,
+        -4.42,
+        -4.16
+      ],
+      "color": "#f14dcf",
+      "labelPos": "left"
+    },
+    {
+      "id": "n80",
+      "label": "N80",
+      "position": [
+        7.65,
+        3.1,
+        1.96
+      ],
+      "color": "#c1fe12",
+      "labelPos": "back"
+    },
+    {
+      "id": "n81",
+      "label": "N81",
+      "position": [
+        8.8,
+        -1.24,
+        -4.21
+      ],
+      "color": "#fc9640",
+      "labelPos": "top"
+    },
+    {
+      "id": "n82",
+      "label": "N82",
+      "position": [
+        7.19,
+        2.41,
+        5.91
+      ],
+      "color": "#7ba4ca",
+      "labelPos": "left"
+    },
+    {
+      "id": "n83",
+      "label": "N83",
+      "position": [
+        6.18,
+        -7.68,
+        -9.65
+      ],
+      "color": "#6abc98",
+      "labelPos": "top"
+    },
+    {
+      "id": "n84",
+      "label": "N84",
+      "position": [
+        2.85,
+        -5.59,
+        9.82
+      ],
+      "color": "#e6ef53",
+      "labelPos": "right"
+    },
+    {
+      "id": "n85",
+      "label": "N85",
+      "position": [
+        -2.36,
+        3.31,
+        3.22
+      ],
+      "color": "#86c0f4",
+      "labelPos": "right"
+    },
+    {
+      "id": "n86",
+      "label": "N86",
+      "position": [
+        5.25,
+        1.39,
+        9.32
+      ],
+      "color": "#1d0432",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n87",
+      "label": "N87",
+      "position": [
+        5.76,
+        -1.92,
+        -3.51
+      ],
+      "color": "#d4e53f",
+      "labelPos": "right"
+    },
+    {
+      "id": "n88",
+      "label": "N88",
+      "position": [
+        -1.4,
+        0.2,
+        5.44
+      ],
+      "color": "#0ceac4",
+      "labelPos": "top"
+    },
+    {
+      "id": "n89",
+      "label": "N89",
+      "position": [
+        -9.01,
+        -6.98,
+        -9.71
+      ],
+      "color": "#004452",
+      "labelPos": "top"
+    },
+    {
+      "id": "n90",
+      "label": "N90",
+      "position": [
+        4.37,
+        5.73,
+        -9.93
+      ],
+      "color": "#853fc6",
+      "labelPos": "right"
+    },
+    {
+      "id": "n91",
+      "label": "N91",
+      "position": [
+        -1.69,
+        -1.11,
+        -5.61
+      ],
+      "color": "#3cfe78",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n92",
+      "label": "N92",
+      "position": [
+        -5.08,
+        -6.31,
+        -0.1
+      ],
+      "color": "#1c334b",
+      "labelPos": "right"
+    },
+    {
+      "id": "n93",
+      "label": "N93",
+      "position": [
+        8.62,
+        -7.06,
+        -4.34
+      ],
+      "color": "#4273f3",
+      "labelPos": "front"
+    },
+    {
+      "id": "n94",
+      "label": "N94",
+      "position": [
+        0.87,
+        4.62,
+        -8.33
+      ],
+      "color": "#7bfaa5",
+      "labelPos": "top"
+    },
+    {
+      "id": "n95",
+      "label": "N95",
+      "position": [
+        6.96,
+        9.42,
+        4.36
+      ],
+      "color": "#d954f5",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n96",
+      "label": "N96",
+      "position": [
+        4.67,
+        5.46,
+        -0.05
+      ],
+      "color": "#774e90",
+      "labelPos": "top"
+    },
+    {
+      "id": "n97",
+      "label": "N97",
+      "position": [
+        -4.31,
+        -2.78,
+        2.88
+      ],
+      "color": "#5a2467",
+      "labelPos": "front"
+    },
+    {
+      "id": "n98",
+      "label": "N98",
+      "position": [
+        -0.03,
+        4.01,
+        0.91
+      ],
+      "color": "#1eb046",
+      "labelPos": "back"
+    },
+    {
+      "id": "n99",
+      "label": "N99",
+      "position": [
+        -6.23,
+        -5.79,
+        -1.23
+      ],
+      "color": "#2726c9",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n100",
+      "label": "N100",
+      "position": [
+        -9.77,
+        2.47,
+        -9.26
+      ],
+      "color": "#800167",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n101",
+      "label": "N101",
+      "position": [
+        -7.97,
+        -2.69,
+        3.23
+      ],
+      "color": "#2c6f92",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n102",
+      "label": "N102",
+      "position": [
+        9.82,
+        -6.16,
+        -9.95
+      ],
+      "color": "#eafbc7",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n103",
+      "label": "N103",
+      "position": [
+        -4.3,
+        -8.27,
+        2.18
+      ],
+      "color": "#d911ab",
+      "labelPos": "back"
+    },
+    {
+      "id": "n104",
+      "label": "N104",
+      "position": [
+        -6.05,
+        6.22,
+        -8.46
+      ],
+      "color": "#d242e4",
+      "labelPos": "right"
+    },
+    {
+      "id": "n105",
+      "label": "N105",
+      "position": [
+        -0.07,
+        0.85,
+        4.11
+      ],
+      "color": "#4af196",
+      "labelPos": "right"
+    },
+    {
+      "id": "n106",
+      "label": "N106",
+      "position": [
+        -2.76,
+        -5.06,
+        5.06
+      ],
+      "color": "#493dc7",
+      "labelPos": "back"
+    },
+    {
+      "id": "n107",
+      "label": "N107",
+      "position": [
+        2.38,
+        4.83,
+        8.02
+      ],
+      "color": "#c4c00d",
+      "labelPos": "top"
+    },
+    {
+      "id": "n108",
+      "label": "N108",
+      "position": [
+        -6.58,
+        1.16,
+        0.14
+      ],
+      "color": "#234518",
+      "labelPos": "top"
+    },
+    {
+      "id": "n109",
+      "label": "N109",
+      "position": [
+        9.67,
+        4.64,
+        -1.65
+      ],
+      "color": "#9cf539",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n110",
+      "label": "N110",
+      "position": [
+        5.93,
+        -3.67,
+        -8.42
+      ],
+      "color": "#7a2f8e",
+      "labelPos": "right"
+    },
+    {
+      "id": "n111",
+      "label": "N111",
+      "position": [
+        2.17,
+        -0.11,
+        -5.79
+      ],
+      "color": "#3609be",
+      "labelPos": "back"
+    },
+    {
+      "id": "n112",
+      "label": "N112",
+      "position": [
+        -9.73,
+        -9.1,
+        9.31
+      ],
+      "color": "#189792",
+      "labelPos": "right"
+    },
+    {
+      "id": "n113",
+      "label": "N113",
+      "position": [
+        9.81,
+        -8.8,
+        -1.48
+      ],
+      "color": "#2ead4c",
+      "labelPos": "left"
+    },
+    {
+      "id": "n114",
+      "label": "N114",
+      "position": [
+        8.25,
+        3.05,
+        -7.3
+      ],
+      "color": "#22a031",
+      "labelPos": "bottom"
+    },
+    {
+      "id": "n115",
+      "label": "N115",
+      "position": [
+        -1.63,
+        -2.62,
+        7.95
+      ],
+      "color": "#f1d37b",
+      "labelPos": "front"
+    },
+    {
+      "id": "n116",
+      "label": "N116",
+      "position": [
+        -8.67,
+        -2.95,
+        -0.1
+      ],
+      "color": "#b7fbd8",
+      "labelPos": "right"
+    },
+    {
+      "id": "n117",
+      "label": "N117",
+      "position": [
+        9.89,
+        0.38,
+        -6.31
+      ],
+      "color": "#1e66b2",
+      "labelPos": "back"
+    },
+    {
+      "id": "n118",
+      "label": "N118",
+      "position": [
+        -4.42,
+        -0.6,
+        5.93
+      ],
+      "color": "#92c83e",
+      "labelPos": "back"
+    },
+    {
+      "id": "n119",
+      "label": "N119",
+      "position": [
+        -9.95,
+        -2.08,
+        6.63
+      ],
+      "color": "#e4bcb9",
+      "labelPos": "back"
+    },
+    {
+      "id": "n120",
+      "label": "N120",
+      "position": [
+        5.72,
+        2.78,
+        -2.16
+      ],
+      "color": "#fb5327",
+      "labelPos": "bottom"
+    }
   ],
   "edges": [
-    { "source": "n1", "target": "n2", "style": "solid", "color": "#ff0000", "directed": true }
-    // 以下にランダムエッジを展開
+    {
+      "source": "n38",
+      "target": "n7",
+      "style": "dashed",
+      "color": "#c5ba4a",
+      "opacity": 0.83
+    },
+    {
+      "source": "n114",
+      "target": "n47",
+      "style": "loop",
+      "color": "#13bde9",
+      "opacity": 0.7,
+      "directed": true
+    },
+    {
+      "source": "n67",
+      "target": "n5",
+      "style": "solid",
+      "color": "#7fef9f",
+      "opacity": 1.0,
+      "directed": true
+    },
+    {
+      "source": "n86",
+      "target": "n74",
+      "style": "dashed",
+      "color": "#f5ce0d",
+      "opacity": 0.43,
+      "directed": true
+    },
+    {
+      "source": "n64",
+      "target": "n43",
+      "style": "solid",
+      "color": "#0b98e3",
+      "opacity": 0.65
+    },
+    {
+      "source": "n62",
+      "target": "n52",
+      "style": "solid",
+      "color": "#c43529",
+      "opacity": 1.0
+    },
+    {
+      "source": "n59",
+      "target": "n84",
+      "style": "dashed",
+      "color": "#f17042",
+      "opacity": 0.9
+    },
+    {
+      "source": "n74",
+      "target": "n17",
+      "style": "solid",
+      "color": "#bb66ab",
+      "opacity": 0.48,
+      "bidirectional": true
+    },
+    {
+      "source": "n20",
+      "target": "n104",
+      "style": "solid",
+      "color": "#1e573d",
+      "opacity": 0.48,
+      "directed": true
+    },
+    {
+      "source": "n61",
+      "target": "n3",
+      "style": "loop",
+      "color": "#f37a3a",
+      "opacity": 0.49,
+      "directed": true
+    },
+    {
+      "source": "n15",
+      "target": "n112",
+      "style": "curve",
+      "color": "#831445",
+      "opacity": 0.4,
+      "directed": true
+    },
+    {
+      "source": "n62",
+      "target": "n89",
+      "style": "loop",
+      "color": "#3ea534",
+      "opacity": 0.49
+    },
+    {
+      "source": "n104",
+      "target": "n80",
+      "style": "dashed",
+      "color": "#588229",
+      "opacity": 0.5
+    },
+    {
+      "source": "n13",
+      "target": "n91",
+      "style": "solid",
+      "color": "#accc70",
+      "opacity": 0.91,
+      "directed": true
+    },
+    {
+      "source": "n101",
+      "target": "n42",
+      "style": "dashed",
+      "color": "#a42d2a",
+      "opacity": 0.54,
+      "bidirectional": true
+    },
+    {
+      "source": "n4",
+      "target": "n93",
+      "style": "loop",
+      "color": "#498830",
+      "opacity": 0.62
+    },
+    {
+      "source": "n26",
+      "target": "n29",
+      "style": "loop",
+      "color": "#7672f5",
+      "opacity": 0.82
+    },
+    {
+      "source": "n87",
+      "target": "n95",
+      "style": "loop",
+      "color": "#b73661",
+      "opacity": 0.51
+    },
+    {
+      "source": "n12",
+      "target": "n90",
+      "style": "curve",
+      "color": "#f9306b",
+      "opacity": 0.62
+    },
+    {
+      "source": "n60",
+      "target": "n85",
+      "style": "solid",
+      "color": "#72df6c",
+      "opacity": 0.77,
+      "directed": true
+    },
+    {
+      "source": "n24",
+      "target": "n73",
+      "style": "dashed",
+      "color": "#b06000",
+      "opacity": 0.61
+    },
+    {
+      "source": "n75",
+      "target": "n117",
+      "style": "curve",
+      "color": "#5bd554",
+      "opacity": 0.8
+    },
+    {
+      "source": "n18",
+      "target": "n120",
+      "style": "curve",
+      "color": "#3e606c",
+      "opacity": 0.49
+    },
+    {
+      "source": "n113",
+      "target": "n12",
+      "style": "curve",
+      "color": "#e02948",
+      "opacity": 0.43,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n27",
+      "target": "n119",
+      "style": "dashed",
+      "color": "#38b75a",
+      "opacity": 0.93,
+      "directed": true
+    },
+    {
+      "source": "n89",
+      "target": "n78",
+      "style": "dashed",
+      "color": "#279b0e",
+      "opacity": 0.74
+    },
+    {
+      "source": "n49",
+      "target": "n84",
+      "style": "solid",
+      "color": "#43167c",
+      "opacity": 0.9,
+      "directed": true
+    },
+    {
+      "source": "n28",
+      "target": "n98",
+      "style": "curve",
+      "color": "#da345d",
+      "opacity": 0.87
+    },
+    {
+      "source": "n50",
+      "target": "n77",
+      "style": "curve",
+      "color": "#9cbd90",
+      "opacity": 0.94
+    },
+    {
+      "source": "n73",
+      "target": "n78",
+      "style": "curve",
+      "color": "#be6548",
+      "opacity": 0.91,
+      "directed": true
+    },
+    {
+      "source": "n46",
+      "target": "n72",
+      "style": "curve",
+      "color": "#9edefd",
+      "opacity": 0.84,
+      "directed": true
+    },
+    {
+      "source": "n87",
+      "target": "n51",
+      "style": "dashed",
+      "color": "#1c33f3",
+      "opacity": 0.71
+    },
+    {
+      "source": "n108",
+      "target": "n67",
+      "style": "loop",
+      "color": "#55d0c2",
+      "opacity": 0.66,
+      "directed": true
+    },
+    {
+      "source": "n78",
+      "target": "n108",
+      "style": "dashed",
+      "color": "#4bb519",
+      "opacity": 0.46
+    },
+    {
+      "source": "n112",
+      "target": "n5",
+      "style": "dashed",
+      "color": "#6c9a19",
+      "opacity": 0.83,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n47",
+      "target": "n54",
+      "style": "dashed",
+      "color": "#d12543",
+      "opacity": 0.44,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n71",
+      "target": "n101",
+      "style": "dashed",
+      "color": "#5c5010",
+      "opacity": 0.41
+    },
+    {
+      "source": "n94",
+      "target": "n12",
+      "style": "curve",
+      "color": "#ab7da3",
+      "opacity": 0.65,
+      "directed": true
+    },
+    {
+      "source": "n107",
+      "target": "n8",
+      "style": "loop",
+      "color": "#36a906",
+      "opacity": 0.96,
+      "directed": true
+    },
+    {
+      "source": "n5",
+      "target": "n78",
+      "style": "loop",
+      "color": "#1e01cc",
+      "opacity": 0.87
+    },
+    {
+      "source": "n61",
+      "target": "n54",
+      "style": "curve",
+      "color": "#0fe715",
+      "opacity": 0.45
+    },
+    {
+      "source": "n81",
+      "target": "n14",
+      "style": "dashed",
+      "color": "#77d046",
+      "opacity": 0.57,
+      "bidirectional": true
+    },
+    {
+      "source": "n79",
+      "target": "n83",
+      "style": "curve",
+      "color": "#b03df2",
+      "opacity": 0.6,
+      "bidirectional": true
+    },
+    {
+      "source": "n12",
+      "target": "n109",
+      "style": "dashed",
+      "color": "#3a9fc9",
+      "opacity": 0.66
+    },
+    {
+      "source": "n12",
+      "target": "n85",
+      "style": "dashed",
+      "color": "#cc51ea",
+      "opacity": 0.56
+    },
+    {
+      "source": "n50",
+      "target": "n5",
+      "style": "dashed",
+      "color": "#e620c6",
+      "opacity": 0.89
+    },
+    {
+      "source": "n65",
+      "target": "n94",
+      "style": "loop",
+      "color": "#540898",
+      "opacity": 0.44,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n83",
+      "target": "n73",
+      "style": "dashed",
+      "color": "#778ac9",
+      "opacity": 0.45
+    },
+    {
+      "source": "n112",
+      "target": "n92",
+      "style": "curve",
+      "color": "#9ef400",
+      "opacity": 0.85
+    },
+    {
+      "source": "n1",
+      "target": "n13",
+      "style": "curve",
+      "color": "#0b3bcc",
+      "opacity": 0.89,
+      "directed": true
+    },
+    {
+      "source": "n6",
+      "target": "n111",
+      "style": "solid",
+      "color": "#f710ec",
+      "opacity": 0.5,
+      "directed": true
+    },
+    {
+      "source": "n28",
+      "target": "n70",
+      "style": "dashed",
+      "color": "#b62cff",
+      "opacity": 0.7
+    },
+    {
+      "source": "n57",
+      "target": "n69",
+      "style": "loop",
+      "color": "#27bed5",
+      "opacity": 0.96
+    },
+    {
+      "source": "n30",
+      "target": "n59",
+      "style": "curve",
+      "color": "#feef3d",
+      "opacity": 0.49,
+      "directed": true
+    },
+    {
+      "source": "n98",
+      "target": "n24",
+      "style": "dashed",
+      "color": "#3baaa4",
+      "opacity": 0.94
+    },
+    {
+      "source": "n93",
+      "target": "n27",
+      "style": "solid",
+      "color": "#c28e97",
+      "opacity": 0.94,
+      "directed": true
+    },
+    {
+      "source": "n103",
+      "target": "n33",
+      "style": "solid",
+      "color": "#2a4b64",
+      "opacity": 0.95,
+      "bidirectional": true
+    },
+    {
+      "source": "n37",
+      "target": "n93",
+      "style": "loop",
+      "color": "#1108a8",
+      "opacity": 0.44
+    },
+    {
+      "source": "n25",
+      "target": "n32",
+      "style": "curve",
+      "color": "#95c6d6",
+      "opacity": 0.7
+    },
+    {
+      "source": "n49",
+      "target": "n107",
+      "style": "loop",
+      "color": "#5ba803",
+      "opacity": 0.69
+    },
+    {
+      "source": "n4",
+      "target": "n98",
+      "style": "solid",
+      "color": "#b424d4",
+      "opacity": 0.9,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n60",
+      "target": "n30",
+      "style": "solid",
+      "color": "#cf85d1",
+      "opacity": 0.76,
+      "directed": true
+    },
+    {
+      "source": "n104",
+      "target": "n62",
+      "style": "solid",
+      "color": "#a4a657",
+      "opacity": 0.5
+    },
+    {
+      "source": "n8",
+      "target": "n98",
+      "style": "solid",
+      "color": "#38259c",
+      "opacity": 0.64
+    },
+    {
+      "source": "n35",
+      "target": "n57",
+      "style": "solid",
+      "color": "#08ecbd",
+      "opacity": 0.63
+    },
+    {
+      "source": "n90",
+      "target": "n77",
+      "style": "solid",
+      "color": "#f7c862",
+      "opacity": 0.86
+    },
+    {
+      "source": "n80",
+      "target": "n63",
+      "style": "solid",
+      "color": "#8b77c7",
+      "opacity": 0.71,
+      "directed": true
+    },
+    {
+      "source": "n60",
+      "target": "n16",
+      "style": "loop",
+      "color": "#7e0a16",
+      "opacity": 0.53
+    },
+    {
+      "source": "n21",
+      "target": "n78",
+      "style": "solid",
+      "color": "#38eccd",
+      "opacity": 0.49
+    },
+    {
+      "source": "n93",
+      "target": "n43",
+      "style": "loop",
+      "color": "#aa3f6b",
+      "opacity": 0.77
+    },
+    {
+      "source": "n91",
+      "target": "n75",
+      "style": "dashed",
+      "color": "#581a69",
+      "opacity": 0.51
+    },
+    {
+      "source": "n93",
+      "target": "n27",
+      "style": "solid",
+      "color": "#1d925b",
+      "opacity": 0.7,
+      "directed": true
+    },
+    {
+      "source": "n37",
+      "target": "n116",
+      "style": "dashed",
+      "color": "#ccce73",
+      "opacity": 0.44,
+      "directed": true
+    },
+    {
+      "source": "n22",
+      "target": "n46",
+      "style": "loop",
+      "color": "#eb7ae4",
+      "opacity": 0.78,
+      "directed": true
+    },
+    {
+      "source": "n23",
+      "target": "n100",
+      "style": "loop",
+      "color": "#826c4b",
+      "opacity": 0.55
+    },
+    {
+      "source": "n109",
+      "target": "n62",
+      "style": "loop",
+      "color": "#1e9295",
+      "opacity": 0.62
+    },
+    {
+      "source": "n36",
+      "target": "n115",
+      "style": "loop",
+      "color": "#0302c8",
+      "opacity": 0.8,
+      "bidirectional": true
+    },
+    {
+      "source": "n23",
+      "target": "n114",
+      "style": "dashed",
+      "color": "#1d6134",
+      "opacity": 0.81
+    },
+    {
+      "source": "n35",
+      "target": "n2",
+      "style": "curve",
+      "color": "#35304f",
+      "opacity": 0.62,
+      "bidirectional": true
+    },
+    {
+      "source": "n95",
+      "target": "n52",
+      "style": "solid",
+      "color": "#1eb97e",
+      "opacity": 0.79
+    },
+    {
+      "source": "n58",
+      "target": "n81",
+      "style": "dashed",
+      "color": "#5da877",
+      "opacity": 0.41
+    },
+    {
+      "source": "n103",
+      "target": "n86",
+      "style": "solid",
+      "color": "#a77904",
+      "opacity": 0.76
+    },
+    {
+      "source": "n51",
+      "target": "n118",
+      "style": "loop",
+      "color": "#77a089",
+      "opacity": 0.45,
+      "directed": true
+    },
+    {
+      "source": "n3",
+      "target": "n66",
+      "style": "dashed",
+      "color": "#dcfcbe",
+      "opacity": 0.89
+    },
+    {
+      "source": "n109",
+      "target": "n51",
+      "style": "solid",
+      "color": "#b6ab69",
+      "opacity": 0.49,
+      "directed": true
+    },
+    {
+      "source": "n72",
+      "target": "n87",
+      "style": "curve",
+      "color": "#d43f85",
+      "opacity": 0.48
+    },
+    {
+      "source": "n23",
+      "target": "n115",
+      "style": "curve",
+      "color": "#19137b",
+      "opacity": 0.57,
+      "directed": true
+    },
+    {
+      "source": "n61",
+      "target": "n115",
+      "style": "loop",
+      "color": "#4c2ee0",
+      "opacity": 0.88
+    },
+    {
+      "source": "n47",
+      "target": "n27",
+      "style": "solid",
+      "color": "#74bd3b",
+      "opacity": 0.78,
+      "directed": true
+    },
+    {
+      "source": "n90",
+      "target": "n54",
+      "style": "solid",
+      "color": "#17dcd9",
+      "opacity": 0.48,
+      "directed": true
+    },
+    {
+      "source": "n65",
+      "target": "n120",
+      "style": "loop",
+      "color": "#7688bf",
+      "opacity": 0.72
+    },
+    {
+      "source": "n114",
+      "target": "n39",
+      "style": "solid",
+      "color": "#5cb453",
+      "opacity": 0.6
+    },
+    {
+      "source": "n17",
+      "target": "n119",
+      "style": "loop",
+      "color": "#ee451c",
+      "opacity": 0.56
+    },
+    {
+      "source": "n100",
+      "target": "n97",
+      "style": "curve",
+      "color": "#7e3947",
+      "opacity": 0.45,
+      "directed": true
+    },
+    {
+      "source": "n39",
+      "target": "n24",
+      "style": "dashed",
+      "color": "#6f2201",
+      "opacity": 1.0
+    },
+    {
+      "source": "n32",
+      "target": "n18",
+      "style": "loop",
+      "color": "#5ebe46",
+      "opacity": 0.97,
+      "directed": true
+    },
+    {
+      "source": "n67",
+      "target": "n19",
+      "style": "dashed",
+      "color": "#0b114e",
+      "opacity": 0.77
+    },
+    {
+      "source": "n31",
+      "target": "n112",
+      "style": "solid",
+      "color": "#788c8c",
+      "opacity": 0.61
+    },
+    {
+      "source": "n54",
+      "target": "n16",
+      "style": "dashed",
+      "color": "#715ad7",
+      "opacity": 0.67
+    },
+    {
+      "source": "n85",
+      "target": "n83",
+      "style": "solid",
+      "color": "#5fd882",
+      "opacity": 0.6
+    },
+    {
+      "source": "n8",
+      "target": "n38",
+      "style": "solid",
+      "color": "#6b0dee",
+      "opacity": 0.77
+    },
+    {
+      "source": "n11",
+      "target": "n63",
+      "style": "loop",
+      "color": "#1c6d66",
+      "opacity": 0.78,
+      "directed": true
+    },
+    {
+      "source": "n79",
+      "target": "n95",
+      "style": "curve",
+      "color": "#2224fd",
+      "opacity": 0.91,
+      "bidirectional": true
+    },
+    {
+      "source": "n71",
+      "target": "n99",
+      "style": "solid",
+      "color": "#5b9d27",
+      "opacity": 0.61,
+      "directed": true
+    },
+    {
+      "source": "n41",
+      "target": "n109",
+      "style": "solid",
+      "color": "#6039c6",
+      "opacity": 0.64,
+      "directed": true
+    },
+    {
+      "source": "n117",
+      "target": "n83",
+      "style": "loop",
+      "color": "#fd5f5d",
+      "opacity": 0.95,
+      "directed": true
+    },
+    {
+      "source": "n40",
+      "target": "n69",
+      "style": "dashed",
+      "color": "#85045b",
+      "opacity": 0.9
+    },
+    {
+      "source": "n118",
+      "target": "n12",
+      "style": "loop",
+      "color": "#21208a",
+      "opacity": 0.51
+    },
+    {
+      "source": "n120",
+      "target": "n70",
+      "style": "solid",
+      "color": "#e6d3fb",
+      "opacity": 0.61,
+      "bidirectional": true
+    },
+    {
+      "source": "n46",
+      "target": "n18",
+      "style": "dashed",
+      "color": "#e66b80",
+      "opacity": 0.81
+    },
+    {
+      "source": "n60",
+      "target": "n82",
+      "style": "curve",
+      "color": "#8d2052",
+      "opacity": 0.89,
+      "bidirectional": true
+    },
+    {
+      "source": "n36",
+      "target": "n33",
+      "style": "loop",
+      "color": "#c50f84",
+      "opacity": 0.63,
+      "directed": true
+    },
+    {
+      "source": "n116",
+      "target": "n22",
+      "style": "dashed",
+      "color": "#45479b",
+      "opacity": 0.5,
+      "directed": true
+    },
+    {
+      "source": "n63",
+      "target": "n101",
+      "style": "solid",
+      "color": "#c3e831",
+      "opacity": 0.66
+    },
+    {
+      "source": "n62",
+      "target": "n112",
+      "style": "solid",
+      "color": "#8db73d",
+      "opacity": 0.81
+    },
+    {
+      "source": "n52",
+      "target": "n37",
+      "style": "solid",
+      "color": "#db6f12",
+      "opacity": 0.97
+    },
+    {
+      "source": "n29",
+      "target": "n93",
+      "style": "solid",
+      "color": "#6b72d0",
+      "opacity": 0.77
+    },
+    {
+      "source": "n76",
+      "target": "n91",
+      "style": "curve",
+      "color": "#b3fdd1",
+      "opacity": 0.99,
+      "directed": true
+    },
+    {
+      "source": "n59",
+      "target": "n23",
+      "style": "solid",
+      "color": "#40909b",
+      "opacity": 0.78
+    },
+    {
+      "source": "n31",
+      "target": "n2",
+      "style": "curve",
+      "color": "#b93a4f",
+      "opacity": 0.67
+    },
+    {
+      "source": "n22",
+      "target": "n68",
+      "style": "dashed",
+      "color": "#09610b",
+      "opacity": 0.98
+    },
+    {
+      "source": "n39",
+      "target": "n41",
+      "style": "loop",
+      "color": "#87ba2e",
+      "opacity": 0.82
+    },
+    {
+      "source": "n115",
+      "target": "n96",
+      "style": "dashed",
+      "color": "#ecd60f",
+      "opacity": 0.67
+    },
+    {
+      "source": "n2",
+      "target": "n95",
+      "style": "loop",
+      "color": "#a99856",
+      "opacity": 0.85
+    },
+    {
+      "source": "n10",
+      "target": "n22",
+      "style": "curve",
+      "color": "#70329d",
+      "opacity": 0.79,
+      "directed": true
+    },
+    {
+      "source": "n62",
+      "target": "n119",
+      "style": "curve",
+      "color": "#0348ac",
+      "opacity": 0.44
+    },
+    {
+      "source": "n79",
+      "target": "n120",
+      "style": "loop",
+      "color": "#4a7445",
+      "opacity": 0.87
+    },
+    {
+      "source": "n80",
+      "target": "n42",
+      "style": "solid",
+      "color": "#b88abb",
+      "opacity": 0.84
+    },
+    {
+      "source": "n72",
+      "target": "n47",
+      "style": "curve",
+      "color": "#5b0887",
+      "opacity": 0.92,
+      "directed": true
+    },
+    {
+      "source": "n26",
+      "target": "n13",
+      "style": "dashed",
+      "color": "#6345cc",
+      "opacity": 0.71,
+      "directed": true
+    },
+    {
+      "source": "n67",
+      "target": "n20",
+      "style": "curve",
+      "color": "#4bf508",
+      "opacity": 0.74
+    },
+    {
+      "source": "n109",
+      "target": "n66",
+      "style": "loop",
+      "color": "#2a94dd",
+      "opacity": 0.68
+    },
+    {
+      "source": "n49",
+      "target": "n32",
+      "style": "dashed",
+      "color": "#d13df5",
+      "opacity": 0.75,
+      "directed": true
+    },
+    {
+      "source": "n118",
+      "target": "n56",
+      "style": "solid",
+      "color": "#f74157",
+      "opacity": 0.66
+    },
+    {
+      "source": "n92",
+      "target": "n104",
+      "style": "dashed",
+      "color": "#14d989",
+      "opacity": 0.86
+    },
+    {
+      "source": "n115",
+      "target": "n50",
+      "style": "dashed",
+      "color": "#cbcee2",
+      "opacity": 1.0
+    },
+    {
+      "source": "n81",
+      "target": "n14",
+      "style": "curve",
+      "color": "#3c26d8",
+      "opacity": 0.53
+    },
+    {
+      "source": "n55",
+      "target": "n112",
+      "style": "dashed",
+      "color": "#5d974e",
+      "opacity": 0.92
+    },
+    {
+      "source": "n103",
+      "target": "n102",
+      "style": "dashed",
+      "color": "#56413a",
+      "opacity": 0.8
+    },
+    {
+      "source": "n91",
+      "target": "n101",
+      "style": "solid",
+      "color": "#e8c47c",
+      "opacity": 0.9
+    },
+    {
+      "source": "n83",
+      "target": "n71",
+      "style": "dashed",
+      "color": "#8295d5",
+      "opacity": 0.82,
+      "bidirectional": true
+    },
+    {
+      "source": "n82",
+      "target": "n93",
+      "style": "curve",
+      "color": "#dd276e",
+      "opacity": 0.87,
+      "bidirectional": true
+    },
+    {
+      "source": "n91",
+      "target": "n83",
+      "style": "dashed",
+      "color": "#ea7381",
+      "opacity": 0.74,
+      "directed": true
+    },
+    {
+      "source": "n52",
+      "target": "n22",
+      "style": "curve",
+      "color": "#c24d3b",
+      "opacity": 0.97,
+      "directed": true,
+      "bidirectional": true
+    },
+    {
+      "source": "n94",
+      "target": "n106",
+      "style": "dashed",
+      "color": "#923b23",
+      "opacity": 0.43
+    },
+    {
+      "source": "n1",
+      "target": "n67",
+      "style": "loop",
+      "color": "#7dbd57",
+      "opacity": 0.88
+    },
+    {
+      "source": "n115",
+      "target": "n22",
+      "style": "dashed",
+      "color": "#e3af2b",
+      "opacity": 0.63,
+      "bidirectional": true
+    },
+    {
+      "source": "n70",
+      "target": "n111",
+      "style": "solid",
+      "color": "#172313",
+      "opacity": 0.52,
+      "directed": true
+    },
+    {
+      "source": "n98",
+      "target": "n85",
+      "style": "curve",
+      "color": "#d68440",
+      "opacity": 0.44
+    },
+    {
+      "source": "n105",
+      "target": "n103",
+      "style": "solid",
+      "color": "#4d63b2",
+      "opacity": 0.81,
+      "directed": true
+    },
+    {
+      "source": "n17",
+      "target": "n96",
+      "style": "solid",
+      "color": "#5ea24c",
+      "opacity": 0.64
+    },
+    {
+      "source": "n86",
+      "target": "n30",
+      "style": "dashed",
+      "color": "#fc15cf",
+      "opacity": 0.73
+    },
+    {
+      "source": "n58",
+      "target": "n81",
+      "style": "curve",
+      "color": "#969e95",
+      "opacity": 0.59,
+      "directed": true
+    },
+    {
+      "source": "n118",
+      "target": "n59",
+      "style": "loop",
+      "color": "#512371",
+      "opacity": 0.56
+    },
+    {
+      "source": "n35",
+      "target": "n85",
+      "style": "loop",
+      "color": "#8f7d35",
+      "opacity": 0.8
+    },
+    {
+      "source": "n96",
+      "target": "n30",
+      "style": "loop",
+      "color": "#bf90bf",
+      "opacity": 0.47,
+      "bidirectional": true
+    },
+    {
+      "source": "n97",
+      "target": "n32",
+      "style": "loop",
+      "color": "#2c0906",
+      "opacity": 0.74
+    },
+    {
+      "source": "n77",
+      "target": "n6",
+      "style": "dashed",
+      "color": "#b8a230",
+      "opacity": 0.68,
+      "directed": true
+    },
+    {
+      "source": "n120",
+      "target": "n85",
+      "style": "curve",
+      "color": "#710d09",
+      "opacity": 0.93,
+      "directed": true
+    },
+    {
+      "source": "n3",
+      "target": "n25",
+      "style": "loop",
+      "color": "#c6e076",
+      "opacity": 0.54
+    },
+    {
+      "source": "n30",
+      "target": "n104",
+      "style": "solid",
+      "color": "#5d83e5",
+      "opacity": 0.48
+    },
+    {
+      "source": "n84",
+      "target": "n38",
+      "style": "curve",
+      "color": "#c7820c",
+      "opacity": 0.86
+    },
+    {
+      "source": "n82",
+      "target": "n81",
+      "style": "solid",
+      "color": "#da74a1",
+      "opacity": 0.92
+    },
+    {
+      "source": "n64",
+      "target": "n28",
+      "style": "solid",
+      "color": "#90175d",
+      "opacity": 0.8,
+      "directed": true
+    },
+    {
+      "source": "n119",
+      "target": "n35",
+      "style": "curve",
+      "color": "#7cf44d",
+      "opacity": 0.65,
+      "bidirectional": true
+    },
+    {
+      "source": "n61",
+      "target": "n58",
+      "style": "loop",
+      "color": "#1deddb",
+      "opacity": 0.8,
+      "directed": true
+    },
+    {
+      "source": "n8",
+      "target": "n89",
+      "style": "curve",
+      "color": "#172f7c",
+      "opacity": 0.43
+    },
+    {
+      "source": "n114",
+      "target": "n88",
+      "style": "dashed",
+      "color": "#5f545a",
+      "opacity": 0.75
+    },
+    {
+      "source": "n36",
+      "target": "n14",
+      "style": "curve",
+      "color": "#fae341",
+      "opacity": 0.92
+    },
+    {
+      "source": "n119",
+      "target": "n38",
+      "style": "solid",
+      "color": "#bfc484",
+      "opacity": 0.67,
+      "directed": true
+    },
+    {
+      "source": "n14",
+      "target": "n84",
+      "style": "curve",
+      "color": "#9f1163",
+      "opacity": 0.58
+    },
+    {
+      "source": "n36",
+      "target": "n100",
+      "style": "dashed",
+      "color": "#dfce2a",
+      "opacity": 0.6,
+      "bidirectional": true
+    },
+    {
+      "source": "n28",
+      "target": "n54",
+      "style": "curve",
+      "color": "#2c4ff5",
+      "opacity": 0.95
+    },
+    {
+      "source": "n67",
+      "target": "n25",
+      "style": "dashed",
+      "color": "#dc37de",
+      "opacity": 0.99,
+      "directed": true
+    },
+    {
+      "source": "n48",
+      "target": "n49",
+      "style": "curve",
+      "color": "#e65965",
+      "opacity": 0.44,
+      "bidirectional": true
+    },
+    {
+      "source": "n43",
+      "target": "n91",
+      "style": "loop",
+      "color": "#e6b839",
+      "opacity": 0.57,
+      "directed": true
+    },
+    {
+      "source": "n95",
+      "target": "n88",
+      "style": "solid",
+      "color": "#35e5f6",
+      "opacity": 1.0
+    },
+    {
+      "source": "n31",
+      "target": "n69",
+      "style": "curve",
+      "color": "#c9c413",
+      "opacity": 0.69
+    },
+    {
+      "source": "n66",
+      "target": "n8",
+      "style": "loop",
+      "color": "#998a5e",
+      "opacity": 0.79,
+      "directed": true
+    },
+    {
+      "source": "n91",
+      "target": "n5",
+      "style": "loop",
+      "color": "#5f5980",
+      "opacity": 0.66,
+      "directed": true
+    },
+    {
+      "source": "n20",
+      "target": "n71",
+      "style": "solid",
+      "color": "#492a08",
+      "opacity": 0.44
+    },
+    {
+      "source": "n50",
+      "target": "n115",
+      "style": "curve",
+      "color": "#9ec206",
+      "opacity": 0.99
+    },
+    {
+      "source": "n77",
+      "target": "n85",
+      "style": "solid",
+      "color": "#559733",
+      "opacity": 0.47,
+      "directed": true
+    },
+    {
+      "source": "n10",
+      "target": "n64",
+      "style": "curve",
+      "color": "#ebd868",
+      "opacity": 0.75
+    },
+    {
+      "source": "n87",
+      "target": "n82",
+      "style": "curve",
+      "color": "#0580c2",
+      "opacity": 0.43
+    },
+    {
+      "source": "n74",
+      "target": "n2",
+      "style": "solid",
+      "color": "#d894d8",
+      "opacity": 0.88
+    },
+    {
+      "source": "n64",
+      "target": "n94",
+      "style": "loop",
+      "color": "#1f3c56",
+      "opacity": 0.47
+    },
+    {
+      "source": "n107",
+      "target": "n70",
+      "style": "dashed",
+      "color": "#1f9dad",
+      "opacity": 0.68,
+      "bidirectional": true
+    },
+    {
+      "source": "n11",
+      "target": "n80",
+      "style": "solid",
+      "color": "#c9c93d",
+      "opacity": 0.61
+    },
+    {
+      "source": "n44",
+      "target": "n7",
+      "style": "curve",
+      "color": "#bcf7fa",
+      "opacity": 0.78,
+      "directed": true
+    },
+    {
+      "source": "n10",
+      "target": "n64",
+      "style": "curve",
+      "color": "#0bc5d4",
+      "opacity": 0.59,
+      "directed": true
+    },
+    {
+      "source": "n11",
+      "target": "n26",
+      "style": "curve",
+      "color": "#42c307",
+      "opacity": 0.51
+    },
+    {
+      "source": "n103",
+      "target": "n51",
+      "style": "solid",
+      "color": "#5bbe77",
+      "opacity": 0.82
+    },
+    {
+      "source": "n6",
+      "target": "n25",
+      "style": "solid",
+      "color": "#73a338",
+      "opacity": 0.79,
+      "bidirectional": true
+    },
+    {
+      "source": "n100",
+      "target": "n3",
+      "style": "solid",
+      "color": "#8cda91",
+      "opacity": 0.83
+    },
+    {
+      "source": "n11",
+      "target": "n24",
+      "style": "curve",
+      "color": "#d4935f",
+      "opacity": 0.63,
+      "directed": true
+    },
+    {
+      "source": "n114",
+      "target": "n36",
+      "style": "curve",
+      "color": "#82df34",
+      "opacity": 0.78
+    },
+    {
+      "source": "n63",
+      "target": "n28",
+      "style": "curve",
+      "color": "#1c0a2f",
+      "opacity": 0.97
+    },
+    {
+      "source": "n120",
+      "target": "n64",
+      "style": "dashed",
+      "color": "#3eee34",
+      "opacity": 0.76
+    },
+    {
+      "source": "n99",
+      "target": "n36",
+      "style": "solid",
+      "color": "#261f70",
+      "opacity": 0.91,
+      "directed": true
+    }
   ]
 }
