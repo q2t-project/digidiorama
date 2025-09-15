@@ -49,6 +49,7 @@
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
+      <!-- Layers メニュー -->
       <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
         <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
@@ -82,27 +83,31 @@
 
     const container=document.getElementById('viewer');
     const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1020);
+
+    // === Z-up 座標系 ===
     const camera=new THREE.PerspectiveCamera(60,1,0.1,1000);
+    camera.up.set(0,0,1);               // Zを上に
+    camera.position.set(-6,-6,8);       // 初期視点
     const renderer=new THREE.WebGLRenderer({antialias:true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     container.appendChild(renderer.domElement);
 
-    const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
+    const controls=new OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true;
+    controls.target.set(0,0,0);
+    controls.update();
+
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
-    // ====== Z-up ワールドグループ ======
-    const world=new THREE.Group();
-    scene.add(world);
-    world.rotation.x=-Math.PI/2; // Y-up → Z-up 変換
-
+    // ====== 表示グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
     const gridGroup=new THREE.Group();
-    world.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
+    scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
-    // 円形グリッド (arc 指定可能)
+    // ==== arc対応の極座標グリッド ====
     function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466, arc=Math.PI*2){
       const geom=new THREE.BufferGeometry();const verts=[];
       for(let i=1;i<=rings;i++){
@@ -135,10 +140,12 @@
 
     const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},layers:{type:"array"}},required:["meta","nodes","edges"]};
     const ajv=new Ajv({allErrors:true});const validate=ajv.compile(schema);
+
     function runValidation(data){const valid=validate(data);if(!valid){
       const errs=validate.errors.map(e=>`${e.instancePath} ${e.message}`);showErrors(errs);}else{showErrors([]);} }
 
     const nodeById=new Map();
+
     function makeLabelPlane(text, options={}){
       const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
       const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -154,12 +161,16 @@
     function buildScene(data){
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();gridGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
+
+      // ノード
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
         nodeGroup.add(m);nodeById.set(n.id,m);
         if(n.label){m.add(makeLabelPlane(n.label,n.labelAttr||{}));}
       }
+
+      // エッジ
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -171,6 +182,8 @@
           labelGroup.add(edgeLabel);
         }
       }
+
+      // グリッド
       for(const layer of data.layers||[]){
         if(layer.type==="grid" && layer.grid){
           const g=layer.grid;let obj;
@@ -190,6 +203,7 @@
           }
         }
       }
+
       showMeta(data.meta,data);
     }
 
@@ -199,6 +213,7 @@
         const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
       document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
+
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
       (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
