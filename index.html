@@ -2,36 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <base href="/digidiorama/">
-  <title>digidiorama</title>
-
-  <!-- Import Maps: JSONのみ -->
+  <title>digidiorama viewer - P0</title>
+  <link rel="stylesheet" href="style.css" />
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      "three": "https://unpkg.com/three@0.167.1/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.167.1/examples/jsm/"
     }
   }
   </script>
-
-  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <!-- 既存のUIはそのまま -->
-  </header>
-
   <div id="viewer"></div>
-
-  <!-- Ajv は importmap の外で読み込む -->
-  <script type="module">
-    import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv.min.js";
-    window.Ajv = Ajv;
-    console.log("Ajv loaded", Ajv);
-  </script>
-
-  <!-- メインアプリ -->
-  <script type="module" src="scripts/app.v2.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
