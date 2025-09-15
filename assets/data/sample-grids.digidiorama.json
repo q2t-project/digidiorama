@@ -60,7 +60,7 @@
       "id": "polar-main",
       "type": "grid",
       "grid": {
-        "shape": "polar",
+        "shape": "polar-half",
         "size": 8,
         "rings": 4,
         "segments": 12,
