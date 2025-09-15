@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "title": "Sample Diagram",
+    "author": "q2t-project",
+    "created": "2025-09-15",
+    "tags": ["demo", "sample"]
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Alpha",
+      "description": "最初の概念ノード",
+      "tags": ["start", "concept"],
+      "position": [0, 0, 0],
+      "color": "#60a5fa",
+      "size": 0.12
+    },
+    {
+      "id": "b",
+      "label": "Beta",
+      "description": "次の概念ノード",
+      "tags": ["next", "concept"],
+      "position": [1.2, 0.4, -0.6],
+      "color": "#34d399",
+      "size": 0.10
+    }
+  ],
+  "edges": [
+    { "source": "a", "target": "b", "color": "#94a3b8", "width": 2 }
+  ]
+}
