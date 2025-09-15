@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>digidiorama viewer — P3 Node Interaction</title>
+    <title>digidiorama viewer — P4 Node Spec</title>
     <style>
       :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
       html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -27,9 +27,10 @@
         #panel.open{display:block;background:#0b1020}
         #fab{position:absolute;right:.75rem;bottom:.75rem;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:20}
       }
+      .label{color:#fff;font-size:11px;text-shadow:0 0 3px #000}
     </style>
 
-    <!-- Import Map for three.js ESM (OrbitControls addon) -->
+    <!-- Import Map for three.js ESM (OrbitControls addon, CSS2DRenderer) -->
     <script type="importmap">
       {
         "imports": {
@@ -42,7 +43,7 @@
   <body>
     <div id="app">
       <header>
-        <h1 data-i18n="title">digidiorama viewer — P3</h1>
+        <h1 data-i18n="title">digidiorama viewer — P4</h1>
         <div class="spacer"></div>
         <select id="fileSelect"></select>
         <select id="langSelect">
@@ -70,6 +71,7 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
       // ---- Core setup ----
       const container = document.getElementById('viewer');
@@ -80,6 +82,12 @@
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
+      const labelRenderer = new CSS2DRenderer();
+      labelRenderer.setSize(container.clientWidth, container.clientHeight);
+      labelRenderer.domElement.style.position='absolute';
+      labelRenderer.domElement.style.top='0';
+      container.appendChild(labelRenderer.domElement);
+
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
@@ -96,9 +104,10 @@
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        labelRenderer.setSize(w,h);
       });
       ro.observe(container);
-      function animate(){controls.update();renderer.render(scene, camera);requestAnimationFrame(animate);}animate();
+      function animate(){controls.update();renderer.render(scene, camera);labelRenderer.render(scene,camera);requestAnimationFrame(animate);}animate();
 
       // ---- DataAccess ----
       async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
@@ -113,8 +122,15 @@
           const mat=new THREE.MeshStandardMaterial({color:n.color||0x5aa9ff});
           const m=new THREE.Mesh(sphereGeom,mat);
           m.position.set(...n.position);
-          m.userData=n; // attach data
+          m.userData=n;
           nodeGroup.add(m);nodeById.set(n.id,m);
+          // 短いラベルはCSS2Dで表示
+          if(n.label && n.label.length<=10){
+            const div=document.createElement('div');div.className='label';div.textContent=n.label;
+            const labelObj=new CSS2DObject(div);
+            labelObj.position.set(0,0.4,0);
+            m.add(labelObj);
+          }
         }
         const lineMat=new THREE.LineBasicMaterial({color:0x9ec1ff});
         for(const e of data.edges||[]){const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);edgeGroup.add(new THREE.Line(geo,lineMat));}
@@ -133,8 +149,14 @@
         const box=document.getElementById('node');box.innerHTML='';
         if(!node)return;
         for(const [k,v] of Object.entries(node)){
-          if(['position','color','size','id','label','description','tags','links'].includes(k)){
-            const d=document.createElement('div');d.className='node-item';d.textContent=`${k}: ${Array.isArray(v)?v.join(','):v}`;box.appendChild(d);
+          if(['id','label','description','tags','position','color','size','links'].includes(k)){
+            const d=document.createElement('div');d.className='node-item';
+            if(k==='links' && Array.isArray(v)){
+              v.forEach(l=>{const a=document.createElement('a');a.href=l;a.textContent=l;a.target='_blank';box.appendChild(a);box.appendChild(document.createElement('br'));});
+            } else {
+              d.textContent=`${k}: ${Array.isArray(v)?v.join(','):v}`;
+              box.appendChild(d);
+            }
           }
         }
       }
