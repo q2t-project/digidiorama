@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>digidiorama viewer — P6 Layers & HUD</title>
+    <title>digidiorama viewer — P6 Layers & HUD (fix)</title>
     <style>
       :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
       html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -79,6 +79,12 @@
       import Ajv from 'ajv';
       import Stats from 'three/addons/libs/stats.module.js';
 
+      // ---- レイヤ状態フラグを先に宣言 ----
+      let gridVisible = true,
+          nodesVisible = true,
+          labelsVisible = true,
+          hudVisible = false;
+
       // ---- Core setup ----
       const container=document.getElementById('viewer');
       const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1020);
@@ -93,7 +99,7 @@
 
       // HUD
       const hud=document.getElementById('hud');const fpsBox=document.getElementById('fps');const countBox=document.getElementById('counts');
-      const stats=new Stats();stats.showPanel(0); // FPS
+      const stats=new Stats();stats.showPanel(0);
       stats.dom.style.position='absolute';stats.dom.style.top='0';stats.dom.style.left='0';stats.dom.style.display='none';
       container.appendChild(stats.dom);
 
@@ -101,7 +107,7 @@
         controls.update();
         renderer.render(scene,camera);
         labelRenderer.render(scene,camera);
-        if(hudVisible){stats.update();}
+        if(hudVisible){ stats.update(); }
         requestAnimationFrame(animate);
       }
       animate();
@@ -162,17 +168,18 @@
       function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';(errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
       // ---- i18n ----
-      let dict = {};
-      async function loadLocale(lang) {
-        try {
-          const res = await fetch(`./assets/i18n/${lang}.json`);
-          dict = await res.json();
+      let dict={};
+      async function loadLocale(lang){
+        try{
+          const res=await fetch(`./assets/i18n/${lang}.json`);
+          dict=await res.json();
           applyI18n();
-        } catch (e) {
+        } catch(e){
           console.warn("i18n load failed", e);
         }
       }
-      function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
+      function t(key){return dict[key]||key;}
+      function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
       // ---- Interaction ----
       const raycaster=new THREE.Raycaster();const mouse=new THREE.Vector2();let selected=null;
@@ -184,7 +191,6 @@
       document.getElementById('fab').onclick=()=>{document.getElementById('panel').classList.toggle('open');};
       document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
 
-      let gridVisible=true,nodesVisible=true,labelsVisible=true,hudVisible=false;
       document.getElementById('btnLayers').onclick=()=>{
         gridVisible=!gridVisible;grid.visible=gridVisible;
         nodesVisible=!nodesVisible;nodeGroup.visible=nodesVisible;edgeGroup.visible=nodesVisible;
