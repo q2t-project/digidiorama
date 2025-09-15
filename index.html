@@ -2,46 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>digidiorama</title>
+  <title>digidiorama viewer P0</title>
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.152.2/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.152.2/examples/jsm/"
-      import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv.min.js";
-      window.Ajv = Ajv; // app.jsから使えるようにglobal公開
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
     }
   }
   </script>
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>digidiorama</h1>
-    <div class="spacer"></div>
-    <select id="datasetSelect">
-      <option value="sample1">Sample 1</option>
-      <option value="sample2">Sample 2</option>
-    </select>
-    <select id="langSelect">
-      <option value="ja">日本語</option>
-      <option value="en">English</option>
-    </select>
-  </header>
-
   <div id="viewer"></div>
-
-  <aside class="sidepanel">
-    <h3>Meta</h3>
-    <div id="meta">（統計情報などをここに表示予定）</div>
-
-    <h3>Node Info</h3>
-    <div id="node-info">ノードをクリックしてください</div>
-
-    <h3>Errors</h3>
-    <div id="errors">（バリデーション結果をここに表示予定）</div>
-  </aside>
-
-  <script type="module" src="scripts/app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
