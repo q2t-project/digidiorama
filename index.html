@@ -111,7 +111,15 @@
       async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
       // ---- Validation ----
-      const schema={type:\"object\",properties:{meta:{type:\"object\"},nodes:{type:\"array\"},edges:{type:\"array\"}},required:[\"meta\",\"nodes\",\"edges\"]};
+      const schema = {
+        type: "object",
+        properties: {
+          meta: { type: "object" },
+          nodes: { type: "array" },
+          edges: { type: "array" }
+        },
+        required: ["meta", "nodes", "edges"]
+      };
       const ajv=new Ajv({allErrors:true});
       const validate=ajv.compile(schema);
 
