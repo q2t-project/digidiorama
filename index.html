@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>digidiorama viewer — P6 Layers & HUD (fix)</title>
+    <title>digidiorama viewer — P6.1 Edge Opacity</title>
     <style>
       :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
       html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -43,7 +43,7 @@
   <body>
     <div id="app">
       <header>
-        <h1 data-i18n="title">digidiorama viewer — P6</h1>
+        <h1 data-i18n="title">digidiorama viewer — P6.1</h1>
         <div class="spacer"></div>
         <select id="fileSelect"></select>
         <select id="langSelect">
@@ -79,7 +79,7 @@
       import Ajv from 'ajv';
       import Stats from 'three/addons/libs/stats.module.js';
 
-      // ---- レイヤ状態フラグを先に宣言 ----
+      // ---- レイヤ状態フラグ ----
       let gridVisible = true,
           nodesVisible = true,
           labelsVisible = true,
@@ -152,8 +152,29 @@
             const labelObj=new CSS2DObject(div);labelObj.position.set(0,0.4,0);m.add(labelObj);
           }
         }
-        const lineMat=new THREE.LineBasicMaterial({color:0x9ec1ff});
-        for(const e of data.edges||[]){const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);edgeGroup.add(new THREE.Line(geo,lineMat));}
+
+        for(const e of data.edges||[]){
+          const a=nodeById.get(e.source),b=nodeById.get(e.target);
+          if(!a||!b)continue;
+          const opacity = e.opacity !== undefined ? e.opacity : 1.0;
+          const matOpts = {
+            color: e.color || 0x9ec1ff,
+            linewidth: e.width || 1,
+            transparent: opacity < 1.0,
+            opacity: opacity
+          };
+          let lineMat;
+          if(e.style === "dashed"){
+            lineMat = new THREE.LineDashedMaterial({ ...matOpts, dashSize:0.3, gapSize:0.15 });
+          } else {
+            lineMat = new THREE.LineBasicMaterial(matOpts);
+          }
+          const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
+          const line=new THREE.Line(geo,lineMat);
+          if(e.style === "dashed"){ line.computeLineDistances(); }
+          edgeGroup.add(line);
+        }
+
         showMeta(data.meta);
         updateCounts(data);
       }
