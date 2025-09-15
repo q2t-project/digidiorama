@@ -6,8 +6,15 @@
   <link rel="stylesheet" href="styles/style.css" />
 
   <!-- Import Maps (strict JSON) -->
-<script type="importmap" src="./importmap.json"></script>
-</head>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  </head>
 <body>
   <div id="viewer"></div>
   <script type="module" src="scripts/app.js"></script>
