@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer — P6 prototype</title>
+  <title>digidiorama viewer — P6 grid prototype</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -96,15 +96,10 @@
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
-    const gridGroup=new THREE.Group(); // Grid 要素をまとめる
+    const gridGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
-    // デフォルトの直交グリッド (XY/YZ/ZX)
-    const gridXY=new THREE.GridHelper(20,20,0x334477,0x223355);gridXY.rotation.x=Math.PI/2;gridGroup.add(gridXY);
-    const gridYZ=new THREE.GridHelper(20,20,0x334477,0x223355);gridYZ.rotation.z=Math.PI/2;gridGroup.add(gridYZ);
-    const gridZX=new THREE.GridHelper(20,20,0x334477,0x223355);gridZX.rotation.y=Math.PI/2;gridGroup.add(gridZX);
-
-    // 円形グリッド試作
+    // 円形グリッド生成関数
     function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466){
       const geom=new THREE.BufferGeometry();const verts=[];
       for(let i=1;i<=rings;i++){ // 同心円
@@ -125,7 +120,6 @@
       const mat=new THREE.LineBasicMaterial({color,opacity:0.4,transparent:true});
       return new THREE.LineSegments(geom,mat);
     }
-    const polarGrid=makePolarGrid(10,5,12);gridGroup.add(polarGrid);
 
     const ro=new ResizeObserver(()=>{const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();});
@@ -136,7 +130,7 @@
     async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
-    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"}},required:["meta","nodes","edges"]};
+    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},layers:{type:"array"}},required:["meta","nodes","edges"]};
     const ajv=new Ajv({allErrors:true});const validate=ajv.compile(schema);
 
     function runValidation(data){const valid=validate(data);if(!valid){
@@ -157,14 +151,18 @@
     }
 
     function buildScene(data){
-      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();nodeById.clear();
+      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();gridGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
+
+      // ノード
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
         nodeGroup.add(m);nodeById.set(n.id,m);
         if(n.label){m.add(makeLabelPlane(n.label,n.labelAttr||{}));}
       }
+
+      // エッジ
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -176,6 +174,28 @@
           labelGroup.add(edgeLabel);
         }
       }
+
+      // グリッド (JSON layers から構築)
+      for(const layer of data.layers||[]){
+        if(layer.type==="grid" && layer.grid){
+          const g=layer.grid;let obj;
+          if(g.shape==="rect"){
+            obj=new THREE.GridHelper(g.size||10,g.divisions||10,g.color||0x444466,g.color||0x333333);
+            if(g.plane==="xy") obj.rotation.x=Math.PI/2;
+            if(g.plane==="yz") obj.rotation.z=Math.PI/2;
+            if(g.plane==="zx") obj.rotation.y=Math.PI/2;
+          } else if(g.shape==="polar"){
+            obj=makePolarGrid(g.size||10,g.rings||5,g.segments||12,g.color||0x444466);
+          }
+          if(obj){
+            if(g.position) obj.position.set(...g.position);
+            obj.material.opacity=g.opacity ?? 0.4;
+            obj.material.transparent=true;
+            gridGroup.add(obj);
+          }
+        }
+      }
+
       showMeta(data.meta,data);
     }
 
