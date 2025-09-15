@@ -68,6 +68,18 @@
         "opacity": 0.4,
         "position": [0, 0.01, 0]
       }
+    }    {
+      "id": "polar-half",
+      "type": "grid",
+      "grid": {
+        "shape": "polar",
+        "size": 8,
+        "rings": 4,
+        "segments": 12,
+        "color": "#774477",
+        "opacity": 0.4,
+        "position": [4, 0.01, 0]
+      }
     }
   ]
 }
