@@ -112,24 +112,25 @@
 
     const nodeById=new Map();
 
-    // ===== ラベル生成（Plane方式、属性対応） =====
+    // ===== ラベル生成（Plane方式、縦横中央揃え） =====
     function makeLabelPlane(text, options={}){
       const fontSize = options.fontSize || 28;
       const color = options.color || "white";
       const offset = options.offset || [0,0,0]; // デフォルトはノード座標と一致
 
       const canvas=document.createElement('canvas');
-      canvas.width=256; canvas.height=64;
+      canvas.width=512; canvas.height=128;
       const ctx=canvas.getContext('2d');
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle=color;
       ctx.font=`${fontSize}px Arial`;
+      ctx.textAlign="center";
       ctx.textBaseline="middle";
-      ctx.fillText(text,10,canvas.height/2);
+      ctx.fillText(text, canvas.width/2, canvas.height/2);
 
       const texture=new THREE.CanvasTexture(canvas);
       const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide});
-      const geom=new THREE.PlaneGeometry(1.5,0.6);
+      const geom=new THREE.PlaneGeometry(2.5,1.0);
       const mesh=new THREE.Mesh(geom,mat);
       mesh.position.set(...offset);
       return mesh;
@@ -165,6 +166,13 @@
           const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
           const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});
           edgeLabel.position.copy(midpoint);
+
+          // エッジ方向に正対
+          const dirVec=new THREE.Vector3().subVectors(b.position,a.position).normalize();
+          const up=new THREE.Vector3(0,1,0);
+          const quat=new THREE.Quaternion().setFromUnitVectors(up, dirVec.clone().normalize());
+          edgeLabel.quaternion.copy(quat);
+
           labelGroup.add(edgeLabel);
         }
       }
@@ -194,13 +202,11 @@
       gridVisible=!gridVisible;grid.visible=gridVisible;
       nodesVisible=!nodesVisible;nodeGroup.visible=nodesVisible;edgeGroup.visible=nodesVisible;
       labelsVisible=!labelsVisible;
-      // ノードラベル
       nodeGroup.children.forEach(n=>{
         n.children.forEach(ch=>{
           if(ch.isMesh && ch.geometry.type==="PlaneGeometry"){ ch.visible=labelsVisible; }
         });
       });
-      // エッジラベル
       labelGroup.visible=labelsVisible;
     };
 
