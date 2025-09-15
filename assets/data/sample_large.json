@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "title": "Large Graph Demo",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "large"]
+  },
+  "nodes": [
+    { "id": "n1",  "label": "Node 1",  "position": [0, 0, 0],   "color": "#5aa9ff", "labelPos": "top" },
+    { "id": "n2",  "label": "Node 2",  "position": [2, 0, 0],   "color": "#ff5555", "labelPos": "right" },
+    { "id": "n3",  "label": "Node 3",  "position": [-2, 0, 0],  "color": "#55ff55", "labelPos": "left" },
+    { "id": "n4",  "label": "Node 4",  "position": [0, 2, 0],   "color": "#ffaa00", "labelPos": "front" },
+    { "id": "n5",  "label": "Node 5",  "position": [0, -2, 0],  "color": "#aa55ff", "labelPos": "back" },
+    { "id": "n6",  "label": "Node 6",  "position": [2, 2, 0],   "color": "#00ffaa", "labelPos": "top" },
+    { "id": "n7",  "label": "Node 7",  "position": [-2, -2, 0], "color": "#ffaa55", "labelPos": "bottom" },
+    { "id": "n8",  "label": "Node 8",  "position": [2, -2, 0],  "color": "#55aaff", "labelPos": "right" },
+    { "id": "n9",  "label": "Node 9",  "position": [-2, 2, 0],  "color": "#ff77aa", "labelPos": "left" },
+    { "id": "n10", "label": "Node 10", "position": [0, 0, 2],   "color": "#77ffaa", "labelPos": "front" },
+    { "id": "n11", "label": "Node 11", "position": [0, 0, -2],  "color": "#aa77ff", "labelPos": "back" },
+    { "id": "n12", "label": "Node 12", "position": [3, 1, -1],  "color": "#dddd44", "labelPos": "top" }
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2", "style": "solid", "color": "#ff0000", "directed": true },
+    { "source": "n2", "target": "n3", "style": "dashed", "color": "#00ff00", "opacity": 0.7 },
+    { "source": "n3", "target": "n4", "style": "curve", "color": "#0000ff", "directed": true },
+    { "source": "n4", "target": "n5", "style": "solid", "color": "#ffaa00", "bidirectional": true },
+    { "source": "n5", "target": "n6", "style": "loop", "color": "#ff00ff", "opacity": 0.6 },
+    { "source": "n6", "target": "n7", "style": "dashed", "color": "#55aaff", "opacity": 0.5 },
+    { "source": "n7", "target": "n8", "style": "curve", "color": "#ffaa55" },
+    { "source": "n8", "target": "n9", "style": "solid", "color": "#55ffaa", "directed": true },
+    { "source": "n9", "target": "n10", "style": "dashed", "color": "#aa55ff" },
+    { "source": "n10", "target": "n11", "style": "curve", "color": "#77ffaa", "bidirectional": true },
+    { "source": "n11", "target": "n12", "style": "solid", "color": "#ff77aa" },
+    { "source": "n12", "target": "n1", "style": "curve", "color": "#dddd44", "directed": true },
+    { "source": "n2", "target": "n10", "style": "solid", "color": "#ff8844", "opacity": 0.9 },
+    { "source": "n5", "target": "n11", "style": "dashed", "color": "#44aaff", "opacity": 0.6 },
+    { "source": "n3", "target": "n12", "style": "loop", "color": "#44ffaa", "opacity": 0.8 }
+  ]
+}

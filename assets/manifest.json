@@ -1,6 +1,9 @@
 [
-  {
-    "path": "./assets/data/sample.digidiorama.json",
-    "title": "Sample Diagram"
+  { "path": "./assets/data/sample.digidiorama.json","title": "Sample Diagram"
+  { "path": "assets/sample_labels.json", "title": "Label Directions" },
+  { "path": "assets/sample_edges.json", "title": "Edge Attributes Demo" },
+  { "path": "assets/sample_mixed.json", "title": "Mixed Features" },
+  { "path": "assets/sample_large.json", "title": "Large Graph Demo" }
+
   }
 ]

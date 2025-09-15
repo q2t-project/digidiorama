@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "title": "Huge Graph Stress Test",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "stress", "huge"]
+  },
+  "nodes": [
+    { "id": "n1",  "label": "N1",  "position": [0,0,0],   "color": "#5aa9ff", "labelPos": "top" }
+    // 以下に n2〜n120 を展開
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2", "style": "solid", "color": "#ff0000", "directed": true }
+    // 以下にランダムエッジを展開
+  ]
+}

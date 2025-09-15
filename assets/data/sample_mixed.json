@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "Mixed Features",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "mixed"]
+  },
+  "nodes": [
+    { "id": "n1", "label": "Top Node",    "position": [0, 0, 0], "color": "#5aa9ff", "labelPos": "top" },
+    { "id": "n2", "label": "Right Node",  "position": [2, 1, 0], "color": "#ff5555", "labelPos": "right" },
+    { "id": "n3", "label": "Front Node",  "position": [0, 2, 1], "color": "#55ff55", "labelPos": "front" },
+    { "id": "n4", "label": "Left Node",   "position": [-2, -1, 0], "color": "#ffaa00", "labelPos": "left" }
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2", "style": "solid", "color": "#ff0000", "directed": true },
+    { "source": "n2", "target": "n3", "style": "dashed", "color": "#00ff00", "opacity": 0.5 },
+    { "source": "n3", "target": "n4", "style": "curve", "color": "#0000ff", "directed": true },
+    { "source": "n4", "target": "n4", "style": "loop", "color": "#ff00ff", "opacity": 0.7 },
+    { "source": "n2", "target": "n4", "style": "solid", "color": "#ffaa00", "bidirectional": true }
+  ]
+}

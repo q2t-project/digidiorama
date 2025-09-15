@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "Label Directions",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "labelPos"]
+  },
+  "nodes": [
+    { "id": "a", "label": "Top",    "position": [0, 0, 0], "color": "#5aa9ff", "labelPos": "top" },
+    { "id": "b", "label": "Bottom", "position": [2, 0, 0], "color": "#ff5555", "labelPos": "bottom" },
+    { "id": "c", "label": "Left",   "position": [0, 2, 0], "color": "#55ff55", "labelPos": "left" },
+    { "id": "d", "label": "Right",  "position": [-2, 0, 0], "color": "#ffaa00", "labelPos": "right" },
+    { "id": "e", "label": "Front",  "position": [0, 0, 2], "color": "#aa55ff", "labelPos": "front" },
+    { "id": "f", "label": "Back",   "position": [0, 0, -2], "color": "#00ffaa", "labelPos": "back" }
+  ],
+  "edges": []
+}

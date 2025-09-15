@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "Edge Attributes Demo",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "edges"]
+  },
+  "nodes": [
+    { "id": "a", "label": "Alpha", "position": [0, 0, 0], "color": "#5aa9ff", "labelPos": "top" },
+    { "id": "b", "label": "Beta",  "position": [2, 0, 0], "color": "#ff5555", "labelPos": "right" },
+    { "id": "c", "label": "Gamma", "position": [1, 2, 0], "color": "#55ff55", "labelPos": "left" },
+    { "id": "d", "label": "Delta", "position": [-2, -1, 0], "color": "#ffaa00", "labelPos": "bottom" }
+  ],
+  "edges": [
+    { "source": "a", "target": "b", "style": "solid", "color": "#ff0000", "directed": true, "opacity": 1.0 },
+    { "source": "b", "target": "c", "style": "dashed", "color": "#00ff00", "opacity": 0.7 },
+    { "source": "c", "target": "a", "style": "curve", "color": "#0000ff", "directed": true, "opacity": 0.8 },
+    { "source": "a", "target": "a", "style": "loop", "color": "#ff00ff", "opacity": 0.6 },
+    { "source": "c", "target": "d", "style": "solid", "color": "#ffaa00", "bidirectional": true, "opacity": 1.0 }
+  ]
+}
