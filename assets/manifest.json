@@ -1,4 +1,10 @@
 {
+  [
+    {
+      "path": "./assets/data/sample.digidiorama.json",
+      "title": "Sample Diagram"
+    }
+  ]
   "nodes": [
     {
       "id": "a",
