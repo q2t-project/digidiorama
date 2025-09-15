@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer</title>
+  <title>digidiorama viewer — P6 prototype</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -49,13 +49,14 @@
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
-      <!-- Layers ボタン → メニュー展開式に変更 -->
+      <!-- Layers メニュー -->
       <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
         <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
-          <label><input type="checkbox" id="toggle-grid" checked /> Grid</label><br/>
           <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label><br/>
-          <label><input type="checkbox" id="toggle-labels" checked /> Labels</label>
+          <label><input type="checkbox" id="toggle-edges" checked /> Edges</label><br/>
+          <label><input type="checkbox" id="toggle-labels" checked /> Labels</label><br/>
+          <label><input type="checkbox" id="toggle-grids" checked /> Grids</label>
         </div>
       </div>
     </header>
@@ -64,7 +65,7 @@
       <div id="panel">
         <h2 data-i18n="meta">Meta</h2>
         <div id="meta"></div>
-        <div id="counts"></div> <!-- 件数表示をここに配置 -->
+        <div id="counts"></div>
         <h2 data-i18n="node">Node</h2>
         <div id="node"></div>
         <h2 data-i18n="errors">Errors</h2>
@@ -90,19 +91,47 @@
     const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
-    const grid=new THREE.GridHelper(20,20,0x334477,0x223355);scene.add(grid);
 
+    // ====== 表示グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
-    scene.add(edgeGroup,nodeGroup,labelGroup);
+    const gridGroup=new THREE.Group(); // Grid 要素をまとめる
+    scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
+
+    // デフォルトの直交グリッド (XY/YZ/ZX)
+    const gridXY=new THREE.GridHelper(20,20,0x334477,0x223355);gridXY.rotation.x=Math.PI/2;gridGroup.add(gridXY);
+    const gridYZ=new THREE.GridHelper(20,20,0x334477,0x223355);gridYZ.rotation.z=Math.PI/2;gridGroup.add(gridYZ);
+    const gridZX=new THREE.GridHelper(20,20,0x334477,0x223355);gridZX.rotation.y=Math.PI/2;gridGroup.add(gridZX);
+
+    // 円形グリッド試作
+    function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466){
+      const geom=new THREE.BufferGeometry();const verts=[];
+      for(let i=1;i<=rings;i++){ // 同心円
+        const r=radius*i/rings;
+        for(let j=0;j<segments;j++){
+          const t1=(j/segments)*2*Math.PI;
+          const t2=((j+1)/segments)*2*Math.PI;
+          verts.push(r*Math.cos(t1),0,r*Math.sin(t1));
+          verts.push(r*Math.cos(t2),0,r*Math.sin(t2));
+        }
+      }
+      for(let j=0;j<segments;j++){ // 放射線
+        const t=(j/segments)*2*Math.PI;
+        verts.push(0,0,0);
+        verts.push(radius*Math.cos(t),0,radius*Math.sin(t));
+      }
+      geom.setAttribute("position", new THREE.Float32BufferAttribute(verts,3));
+      const mat=new THREE.LineBasicMaterial({color,opacity:0.4,transparent:true});
+      return new THREE.LineSegments(geom,mat);
+    }
+    const polarGrid=makePolarGrid(10,5,12);gridGroup.add(polarGrid);
 
     const ro=new ResizeObserver(()=>{const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();});
     ro.observe(container);
 
-    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}
-    animate();
+    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
 
     async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
@@ -154,8 +183,7 @@
       const box=document.getElementById('meta');box.innerHTML='';
       if(meta){for(const [k,v] of Object.entries(meta)){
         const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
-      const countsBox=document.getElementById('counts');
-      countsBox.innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
 
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
@@ -168,11 +196,12 @@
     document.getElementById('fab').onclick=()=>{document.getElementById('panel').classList.toggle('open');};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
 
-    // Layers dropdown toggle
+    // Layers toggle
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
-    document.getElementById('toggle-grid').onchange=(ev)=>{grid.visible=ev.target.checked;};
-    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=edgeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;nodeGroup.children.forEach(n=>n.children.forEach(ch=>{if(ch.isMesh&&ch.geometry.type==="PlaneGeometry"){ch.visible=ev.target.checked;}}));};
+    document.getElementById('toggle-grids').onchange=(ev)=>{gridGroup.visible=ev.target.checked;};
 
     const select=document.getElementById('fileSelect');
     loadManifest().then(list=>{
