@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta charset="UTF-8" />
   <base href="/digidiorama/">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>digidiorama Viewer</title>
+  <title>digidiorama viewer P0</title>
 
-  <!-- Import Maps -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  <!-- Import Maps: JSONのみ -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
   }
-}
-</script>
-<script type="module">
-  import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv.min.js";
-  window.Ajv = Ajv;
-</script>
+  </script>
+
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <div id="viewer"></div>
-  <script type="module" src="scripts/app.js"></script>
+
+  <!-- Ajv は importmap 外で読み込み -->
+  <script type="module">
+    import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv.min.js";
+    window.Ajv = Ajv;
+    console.log("Ajv loaded", Ajv);
+  </script>
+
+  <!-- キャッシュバスターのため app.v2.js を参照 -->
+  <script type="module" src="scripts/app.v2.js"></script>
 </body>
 </html>
