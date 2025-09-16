@@ -22,19 +22,19 @@
       "id": "n4",
       "label": "ZX",
       "position": [0, 0, 2],
-      "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
+      "labelAttr": { "plane": "zxあいうえお", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n5",
       "label": "YZ",
-      "position": [0, 0, 2],
-      "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
+      "position": [0, 0, 1],
+      "labelAttr": { "plane": "yzかきく", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n6",
       "label": "XY",
-      "position": [0, 0, 2],
-      "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan" }
+      "position": [0, 0, 3],
+      "labelAttr": { "plane": "xyさしす", "direction": 0, "color": "cyan" }
     }
 
   ],
