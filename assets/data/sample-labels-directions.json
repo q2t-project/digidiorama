@@ -20,21 +20,21 @@
     },
     {
       "id": "n4",
-      "label": "ZX",
+      "label": "ZXあいうえお",
       "position": [0, 0, 2],
-      "labelAttr": { "plane": "zxあいうえお", "direction": 0, "color": "cyan" }
+      "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n5",
-      "label": "YZ",
+      "label": "YZかきく",
       "position": [0, 0, 1],
-      "labelAttr": { "plane": "yzかきく", "direction": 0, "color": "cyan" }
+      "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n6",
-      "label": "XY",
+      "label": "XYさしす",
       "position": [0, 0, 3],
-      "labelAttr": { "plane": "xyさしす", "direction": 0, "color": "cyan" }
+      "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan" }
     }
 
   ],
