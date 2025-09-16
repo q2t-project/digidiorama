@@ -23,13 +23,13 @@
       "label": "ZX",
       "position": [0, 0, 2],
       "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
-    }
+    },
     {
       "id": "n5",
       "label": "YZ",
       "position": [0, 0, 2],
       "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
-    }
+    },
     {
       "id": "n6",
       "label": "XY",
