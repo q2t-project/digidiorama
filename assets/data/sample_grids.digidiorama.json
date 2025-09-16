@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "title": "Grid Demo",
+    "author": "q2t-project",
+    "created": "2025-09-16",
+    "tags": ["demo", "grid"]
+  },
+  "nodes": [
+    { "id": "n1", "label": "Origin", "position": [0, 0, 0] },
+    { "id": "n2", "label": "X", "position": [2, 0, 0] },
+    { "id": "n3", "label": "Y", "position": [0, 2, 0] },
+    { "id": "n4", "label": "Z", "position": [0, 0, 2] }
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2", "label": "X-axis" },
+    { "source": "n1", "target": "n3", "label": "Y-axis" },
+    { "source": "n1", "target": "n4", "label": "Z-axis" }
+  ],
+  "layers": [
+    {
+      "id": "grid-xy",
+      "type": "grid",
+      "grid": {
+        "shape": "rect",
+        "size": 15,
+        "divisions": 10,
+        "plane": "xy",
+        "color": "#334477",
+        "opacity": 0.3,
+        "position": [0, -0.01, 0]
+      }
+    },
+        {
+      "id": "grid-xy",
+      "type": "grid",
+      "grid": {
+        "shape": "rect",
+        "size": 20,
+        "divisions": 10,
+        "plane": "xy",
+        "color": "#334477",
+        "opacity": 0.1,
+        "position": [0, -0.01, 10]
+      }
+    },
+    {
+      "id": "grid-yz",
+      "type": "grid",
+      "grid": {
+        "shape": "rect",
+        "size": 10,
+        "divisions": 20,
+        "plane": "yz",
+        "color": "#447733",
+        "opacity": 0.1,
+        "position": [0, 0, 0]
+      }
+    },
+    {
+      "id": "polar-main",
+      "type": "grid",
+      "grid": {
+        "shape": "polar",
+        "size": 8,
+        "rings": 4,
+        "segments": 12,
+        "arc": 3.1416,
+        "color": "#774477",
+        "opacity": 0.4,
+        "position": [0, 0.01, 0]
+      }
+    },
+    {
+      "id": "polar-half",
+      "type": "grid",
+      "grid": {
+        "shape": "polar",
+        "size": 8,
+        "rings": 4,
+        "segments": 12,
+        "arc": 1.5708,
+        "color": "#774477",
+        "opacity": 0.4,
+        "position": [4, 0.01, 0]
+      }
+    }
+  ]
+}

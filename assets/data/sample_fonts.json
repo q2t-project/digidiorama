@@ -1,0 +1,23 @@
+{
+  "meta": { "title": "Font Demo", "author": "q2t-project" },
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Default Font",
+      "position": [0, 0, 0]
+    },
+    {
+      "id": "n2",
+      "label": "Custom Font",
+      "position": [2, 0, 0],
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 28 }
+    },
+    {
+      "id": "n3",
+      "label": "Japanese Noto",
+      "position": [0, 2, 0],
+      "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }
+    }
+  ],
+  "edges": []
+}
