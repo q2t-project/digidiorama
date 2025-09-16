@@ -6,5 +6,6 @@
   { "path": "./assets/data/sample_large.json", "title": "Large Graph Demo" },
   { "path": "./assets/data/sample_huge.json", "title": "Huge Graph Demo" },
   { "path": "./assets/data/sample_ultra_huge.json", "title": "Ultra Huge Graph Demo" },
-  { "path": "./assets/data/sample-grids.digidiorama.json", "title": "Grid Demo" }
+  { "path": "./assets/data/sample-grids.digidiorama.json", "title": "Grid Demo" },
+  { "path": "./assets/data/sample-labels-directions.json", "title": "Grid Demo" }
 ]
