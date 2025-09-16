@@ -108,49 +108,51 @@
     scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
     // ==== ラベル生成 ====
-    function makeLabelPlane(text, options={}){
-      const fontSize = options.fontSize ?? 32;
-      const color = options.color ?? "white";
-      const opacity = options.opacity ?? 1.0;
-      const background = options.background ?? null;
+  function makeLabelPlane(text, options={}){
+    const fontSize = options.fontSize ?? 32;
+    const color = options.color ?? "white";
+    const opacity = options.opacity ?? 1.0;
+    const background = options.background ?? null;
 
-      const canvas=document.createElement('canvas');
-      canvas.width=512;canvas.height=128;
-      const ctx=canvas.getContext('2d');
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+    const canvas=document.createElement('canvas');
+    canvas.width=512;canvas.height=128;
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      if(background){
-        ctx.fillStyle=background;
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-      }
-
-      ctx.fillStyle=color;
-      ctx.font=`${fontSize}px Arial`;
-      ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(text,canvas.width/2,canvas.height/2);
-
-      const texture=new THREE.CanvasTexture(canvas);
-      const mat=new THREE.MeshBasicMaterial({
-        map:texture,
-        transparent:true,
-        side:THREE.DoubleSide,
-        opacity: opacity
-      });
-      const geom=new THREE.PlaneGeometry(2.5,1.0);
-      const mesh=new THREE.Mesh(geom,mat);
-
-      // plane
-      if(options.plane==="yz"){ mesh.rotation.y=Math.PI/2; }
-      else if(options.plane==="zx"){ mesh.rotation.x=Math.PI/2; }
-
-      // direction (deg→rad)
-      if(typeof options.direction==="number"){
-        mesh.rotation.z=THREE.MathUtils.degToRad(options.direction);
-      }
-
-      mesh.position.set(...(options.offset||[0,0,0]));
-      return mesh;
+    if(background){
+      ctx.fillStyle=background;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
     }
+
+    ctx.fillStyle=color;
+    ctx.font=`${fontSize}px Arial`;
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(text,canvas.width/2,canvas.height/2);
+
+    const texture=new THREE.CanvasTexture(canvas);
+    const mat=new THREE.MeshBasicMaterial({
+      map:texture,
+      transparent:true,
+      side:THREE.DoubleSide,
+      opacity: opacity
+    });
+    const geom=new THREE.PlaneGeometry(2.5,1.0);
+    const mesh=new THREE.Mesh(geom,mat);
+
+    // === デフォルト plane を zx に変更 ===
+    const plane = options.plane ?? "zx";
+    if(plane==="yz"){ mesh.rotation.y=Math.PI/2; }
+    else if(plane==="zx"){ mesh.rotation.x=Math.PI/2; }
+    // xy の場合は回転なし
+
+    // direction (deg→rad)
+    if(typeof options.direction==="number"){
+      mesh.rotation.z=THREE.MathUtils.degToRad(options.direction);
+    }
+
+    mesh.position.set(...(options.offset||[0,0,0]));
+    return mesh;
+  }
 
     // ==== グリッド ====
     function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466, arc=Math.PI*2){
