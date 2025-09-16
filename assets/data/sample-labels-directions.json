@@ -20,10 +20,23 @@
     },
     {
       "id": "n4",
-      "label": "Rotated ZX",
+      "label": "ZX",
       "position": [0, 0, 2],
-      "labelAttr": { "plane": "zx", "direction": 45, "color": "cyan" }
+      "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
     }
+    {
+      "id": "n5",
+      "label": "YZ",
+      "position": [0, 0, 2],
+      "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
+    }
+    {
+      "id": "n6",
+      "label": "XY",
+      "position": [0, 0, 2],
+      "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan" }
+    }
+
   ],
   "edges": [
     {
