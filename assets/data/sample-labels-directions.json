@@ -1,0 +1,36 @@
+{
+  "meta": { "title": "Label Attributes Demo", "author": "q2t-project" },
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Default Label",
+      "position": [0, 0, 0]
+    },
+    {
+      "id": "n2",
+      "label": "Colored Label",
+      "position": [2, 0, 0],
+      "labelAttr": { "color": "yellow", "fontSize": 40, "opacity": 1 }
+    },
+    {
+      "id": "n3",
+      "label": "Rotated YZ",
+      "position": [0, 2, 0],
+      "labelAttr": { "plane": "yz", "direction": 90, "color": "cyan", "opacity": 0.8 }
+    },
+    {
+      "id": "n4",
+      "label": "Backgrounded",
+      "position": [0, 0, 2],
+      "labelAttr": { "background": "rgba(0,0,0,0.5)", "color": "white", "fontSize": 28 }
+    }
+  ],
+  "edges": [
+    {
+      "source": "n1",
+      "target": "n2",
+      "label": "Edge Label",
+      "labelAttr": { "plane": "zx", "direction": 180, "color": "red", "opacity": 0.9 }
+    }
+  ]
+}
