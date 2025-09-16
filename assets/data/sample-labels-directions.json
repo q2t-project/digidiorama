@@ -3,26 +3,26 @@
   "nodes": [
     {
       "id": "n1",
-      "label": "Default Label",
+      "label": "Default",
       "position": [0, 0, 0]
     },
     {
       "id": "n2",
-      "label": "Colored Label",
+      "label": "Colored",
       "position": [2, 0, 0],
-      "labelAttr": { "color": "yellow", "fontSize": 40, "opacity": 1 }
+      "labelAttr": { "color": "yellow", "fontSize": 40 }
     },
     {
       "id": "n3",
-      "label": "Rotated YZ",
+      "label": "SemiTransparent",
       "position": [0, 2, 0],
-      "labelAttr": { "plane": "yz", "direction": 90, "color": "cyan", "opacity": 0.8 }
+      "labelAttr": { "opacity": 0.5, "background": "rgba(0,0,0,0.5)" }
     },
     {
       "id": "n4",
-      "label": "Backgrounded",
+      "label": "Rotated ZX",
       "position": [0, 0, 2],
-      "labelAttr": { "background": "rgba(0,0,0,0.5)", "color": "white", "fontSize": 28 }
+      "labelAttr": { "plane": "zx", "direction": 45, "color": "cyan" }
     }
   ],
   "edges": [
@@ -30,7 +30,7 @@
       "source": "n1",
       "target": "n2",
       "label": "Edge Label",
-      "labelAttr": { "plane": "zx", "direction": 180, "color": "red", "opacity": 0.9 }
+      "labelAttr": { "plane": "yz", "direction": 90, "color": "red", "fontSize": 20 }
     }
   ]
 }
