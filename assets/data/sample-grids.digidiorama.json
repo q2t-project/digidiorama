@@ -39,7 +39,7 @@
         "divisions": 10,
         "plane": "xy",
         "color": "#334477",
-        "opacity": 0.3,
+        "opacity": 0.1,
         "position": [0, -0.01, 10]
       }
     },
@@ -49,10 +49,10 @@
       "grid": {
         "shape": "rect",
         "size": 10,
-        "divisions": 30,
+        "divisions": 20,
         "plane": "yz",
         "color": "#447733",
-        "opacity": 0.3,
+        "opacity": 0.1,
         "position": [0, 0, 0]
       }
     },
