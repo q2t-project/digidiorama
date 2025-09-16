@@ -139,24 +139,23 @@ function makeLabelPlane(text, options={}){
   const geom=new THREE.PlaneGeometry(2.5,1.0);
   const mesh=new THREE.Mesh(geom,mat);
 
-  // === plane 処理 ===
-  const plane = options.plane ?? "zx";
+// === plane 処理 ===
+const plane = options.plane ?? "zx";
 
-  if(plane==="yz"){
-    mesh.rotation.y = Math.PI/2;
-    mesh.rotation.z = Math.PI/2;   // ← yzの0°をCCWに90°補正
-  }
-  else if(plane==="zx"){
-    mesh.rotation.x = Math.PI/2;
-    mesh.rotation.z = Math.PI;     // ← zxデフォルトを裏返しに
-  }
-  // plane=xy → rotationなし
+if(plane==="yz"){
+  mesh.rotation.y = Math.PI/2;
+  mesh.rotation.z = Math.PI/2;   // yzの基準を90°補正
+}
+else if(plane==="zx"){
+  mesh.rotation.x = Math.PI/2;
+  mesh.rotation.x += Math.PI;    // zx: 上下反転 (X軸回転180°)
+}
+// plane=xy → rotationなし
 
-  // direction (deg→rad) を追加適用
-  if(typeof options.direction==="number"){
-    mesh.rotation.z += THREE.MathUtils.degToRad(options.direction);
-  }
-
+// direction (deg→rad)
+if(typeof options.direction==="number"){
+  mesh.rotation.z += THREE.MathUtils.degToRad(options.direction);
+}
   mesh.position.set(...(options.offset||[0,0,0]));
   return mesh;
 }
