@@ -78,7 +78,7 @@
         "size": 8,
         "rings": 4,
         "segments": 12,
-        "arc": 1.5708
+        "arc": 1.5708,
         "color": "#774477",
         "opacity": 0.4,
         "position": [4, 0.01, 0]
