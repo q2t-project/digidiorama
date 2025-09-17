@@ -5,8 +5,23 @@
     "created": "2025-09-16",
     "tags": "demo" },
   "nodes": [
-    { "id": "logos", "label": "ロゴス", "position": [-512, 0.0, 0.0], "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 256 }},
-    { "id": "physis", "label": "ピュシス", "position": [512, 0.0, 0.0 ], "labelAttr": { "fontSize": 256 }}
+    {
+      "id": "logos",
+      "label": "Default Font",
+      "position": [0, 0, 0]
+    },
+    {
+      "id": "physis",
+      "label": "カスタムCustom Font",
+      "position": [2, 0, 0],
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 28 }
+    },
+    {
+      "id": "n3",
+      "label": "日本語Japanese Noto",
+      "position": [0, 2, 0],
+      "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }
+    }
   ],
   "edges": [{ "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true }]
 }
