@@ -29,5 +29,5 @@
     { "id": "〇 神", "label": "〇 神", "position": [-35.59481432735311, 35.75, 0.0 ] },
     { "id": "✕ 人間", "label": "✕ 人間", "position": [-35.59481432735311, 34.75, 0.0 ] }
   ],
-  "edges": []
+  "edges": [{ "source": "たてり", "target": "直交", "style": "solid", "color": "#ff0000", "directed": true }]
 }
