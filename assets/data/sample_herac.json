@@ -7,18 +7,18 @@
   "nodes": [
     {
       "id": "logos",
-      "label": "Default Font",
+      "label": "λογος",
       "position": [0, 0, 0]
     },
     {
       "id": "physis",
-      "label": "カスタムCustom Font",
+      "label": "φύσις",
       "position": [2, 0, 0],
       "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 28 }
     },
     {
       "id": "n3",
-      "label": "日本語Japanese Noto",
+      "label": "日本語",
       "position": [0, 2, 0],
       "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }
     }
