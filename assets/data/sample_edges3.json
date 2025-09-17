@@ -6,8 +6,8 @@
     "tags": "demo"
   },
   "nodes": [
-    { "id": "suijun", "label": "水準", "position": [20.2, -56.7, 0.0] },
-    { "id": "suijun2", "label": "水準2", "position": [20.2, 56.7, 0.0] }
+    { "id": "suijun", "label": "水準", "position": [20.2, -56.7, 0.0] ,"labelAttr": {"fontSize": 256 }},
+    { "id": "suijun2", "label": "水準2", "position": [20.2, 56.7, 0.0] ,"labelAttr": {"fontSize": 1024 }}
   ],
   "edges": [{ "source": "suijun", "target": "suijun2", "style": "solid", "color": "#ff0000", "directed": true }]
 }
