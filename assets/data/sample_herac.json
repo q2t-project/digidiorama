@@ -8,13 +8,14 @@
     {
       "id": "logos",
       "label": "λογος",
-      "position": [0, 0, 0]
+      "position": [0, 0, 0],
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 32 }
     },
     {
       "id": "physis",
       "label": "φύσις",
       "position": [2, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 28 }
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 32 }
     },
     {
       "id": "n3",
