@@ -8,7 +8,7 @@
     ]
   },
   "nodes": [
-    { "id": "logos", "label": "ロゴス", "position": [-512, 0.0, 0.0] ,"labelAttr": {"fontSize": 256 }},
+    { "id": "logos", "label": "ロゴス", "position": [-512, 0.0, 0.0], "labelAttr": {"fontSize": 256 }},
     { "id": "physis", "label": "ピュシス", "position": [512, 0.0, 0.0 ], "labelAttr": { "fontSize": 256 }}
   ],
   "edges": [{ "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true }]
