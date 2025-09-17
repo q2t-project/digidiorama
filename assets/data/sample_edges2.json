@@ -7,5 +7,5 @@
     { "id": "座標系", "label": "座標系", "position": [18.99999999999958, -53.2040909090909, 0] },
     { "id": "熊星", "label": "熊星", "position": [-135.5854545454546, 100.5918181818182, 0] , "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }}
   ],
-  "edges": []
+  "edges": [{ "source": "たてり", "target": "直交", "style": "solid", "color": "#ff0000", "directed": true }]
 }
