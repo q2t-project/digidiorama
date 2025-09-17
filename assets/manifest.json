@@ -1,5 +1,5 @@
 [
-  { "path": "./assets/data/sample.digidiorama.json","title": "Sample Diagram"},
+  { "path": "./assets/data/sample_hetac.json","title": "Sample Herac"},
   { "path": "./assets/data/sample_labels.json", "title": "Label Directions" },
   { "path": "./assets/data/sample_edges.json", "title": "Edge Attributes Demo" },
   { "path": "./assets/data/sample_edges2.json", "title": "Edge Attributes Demo" },
