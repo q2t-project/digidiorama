@@ -27,7 +27,7 @@
     { "id": "協働", "label": "協働", "position": [-15.89636363636356, 55.21, -10.0 ] },
     { "id": "ものたち", "label": "ものたち", "position": [-9.5, 54.75, -10.0 ] },
     { "id": "〇 神", "label": "〇 神", "position": [-35.59481432735311, 35.75, 0.0 ] },
-    { "id": "✕ 人間", "label": "✕ 人間", "position": [-35.59481432735311, 34.75, 0.0 ] }
+    { "id": "✕ 人間", "label": "✕ 人間", "position": [-35.59481432735311, 34.75, 0.0 ] "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32000 }}
   ],
   "edges": [{ "source": "たてり", "target": "直交", "style": "solid", "color": "#ff0000", "directed": true }]
 }
