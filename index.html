@@ -41,7 +41,7 @@
 <body>
   <div id="app">
     <header>
-      <h1 data-i18n="title">digidiorama viewer</h1>
+      <h1 data-i18n="title">デジジオラマ</h1>
       <div class="spacer"></div>
       <select id="fileSelect"></select>
       <select id="langSelect">
@@ -148,7 +148,7 @@ function makeLabelPlane(text, options={}){
   }
   else if(plane==="zx"){
     mesh.rotation.x = Math.PI/2;
-    mesh.rotation.y += Math.PI;   // ← 上下反転（ユーザーが試してうまくいった方法）
+    mesh.rotation.y += Math.PI;
   }
 
   if(typeof options.direction==="number"){
