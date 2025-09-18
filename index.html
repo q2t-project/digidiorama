@@ -93,9 +93,9 @@
 
     const controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    controls.zoomSpeed = 5 ;
+    controls.zoomSpeed = 2 ;
     controls.minDistance = 1;
-    controls.maxDistance = 1000;
+    controls.maxDistance = 200;
     controls.update();
 
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
@@ -137,6 +137,7 @@
       const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
 
+      // === 面ごとの回転処理（index-コピー(6).htmlのまま） ===
       switch (plane) {
         case "yz":
           mesh.rotation.y = Math.PI/2;
@@ -144,15 +145,13 @@
           break;
         case "zx":
           mesh.rotation.x = Math.PI/2;
-          mesh.rotation.y = Math.PI;   // Y軸反転
-          mesh.rotation.z = Math.PI;   // 上下反転
-          mesh.rotation.y += Math.PI;  // さらにY軸180°
+          mesh.rotation.y += Math.PI; // Y軸中心に180度旋回
           break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
       mesh.position.set(...(options.offset ?? [0,0,0]));
-      if(nodeId) mesh.userData.nodeId = nodeId; // ← ノードID保持
+      if(nodeId) mesh.userData.nodeId = nodeId; // ノードID保持
       return mesh;
     }
 
@@ -272,7 +271,7 @@
 
     loadLocale('ja');
 
-    // === ResizeObserver を追加 ===
+    // === ResizeObserver ===
     const ro=new ResizeObserver(()=>{
       const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,true); // 内部バッファも更新
