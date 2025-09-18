@@ -112,12 +112,17 @@
 
     // ==== ラベル生成 ====
 function makeLabelPlane(text, options = {}) {
-  const fontSize = options.fontSize ?? 32;       // px
-  const fontFamily = options.fontFamily ?? "Arial";
-  const color = options.color ?? "white";
-  const worldScale = options.worldScale ?? 0.1; // 1px→0.01world の換算係数
+  const fontSize  = options.fontSize  ?? 32;
+  const fontFamily= options.fontFamily?? "Arial";
+  const color     = options.color     ?? "white";
+  const opacity   = options.opacity   ?? 1.0;
+  const background= options.background?? null;
+  const plane     = options.plane     ?? "xy";    // ←決めてた仕様
+  const direction = options.direction ?? 0;       // 角度(度数)
 
-  // 1. キャンバスに描画
+  const worldScale = options.worldScale ?? 0.01;  // px→world 換算
+
+  // --- Canvas描画
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   ctx.font = `${fontSize}px ${fontFamily}`;
@@ -125,31 +130,30 @@ function makeLabelPlane(text, options = {}) {
   canvas.width  = metrics.width + 20;
   canvas.height = fontSize * 1.5;
   ctx.font = `${fontSize}px ${fontFamily}`;
+  if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
   ctx.fillStyle = color;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-  // 2. Texture → Mesh
+  // --- three.js Mesh
   const texture = new THREE.CanvasTexture(canvas);
-  const mat = new THREE.MeshBasicMaterial({
-    map: texture,
-    transparent: true,
-    side: THREE.DoubleSide
-  });
-
-  // 3. px→world単位に変換
-  const w = canvas.width  * worldScale;
-  const h = canvas.height * worldScale;
-  const geom = new THREE.PlaneGeometry(w, h);
+  const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity, side: THREE.DoubleSide });
+  const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
   const mesh = new THREE.Mesh(geom, mat);
 
-  // 必要なら固定方向を指定
-  if (options.rotation) mesh.rotation.set(...options.rotation);
+  // --- 面と方向
+  switch (plane) {
+    case "yz": mesh.rotation.y = Math.PI/2; break;
+    case "zx": mesh.rotation.x = Math.PI/2; break;
+    // xy はデフォルトで rotation 0
+  }
+  if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
-  mesh.position.set(...(options.offset ?? [0, 0, 0]));
+  mesh.position.set(...(options.offset ?? [0,0,0]));
   return mesh;
 }
+
 
     // ==== グリッド ====
     function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466, arc=Math.PI*2){
