@@ -117,14 +117,14 @@
       const background= options.background?? null;
       const plane     = options.plane     ?? "zx";  // デフォルト zx
       const direction = options.direction ?? 0;     // デフォルト 0
-      const worldScale = options.worldScale ?? 0.1;
+      const worldScale = options.worldScale ?? 0.01;
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       ctx.font = `${fontSize}px ${fontFamily}`;
       const metrics = ctx.measureText(text);
       canvas.width  = metrics.width + 20;
-      canvas.height = fontSize * 1.5;
+      canvas.height = fontSize * 1.4;
       ctx.font = `${fontSize}px ${fontFamily}`;
       if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
       ctx.fillStyle = color;
