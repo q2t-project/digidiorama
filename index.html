@@ -237,7 +237,7 @@
             obj=new THREE.GridHelper(g.size||10,g.divisions||10,g.color||0x444466,g.color||0x333333);
             if(g.plane==="xy") obj.rotation.x=Math.PI/2;
             if(g.plane==="yz") obj.rotation.z=Math.PI/2;
-            if(g.plane==="zx") obj.rotation.y=Math.PI/2;
+            if(g.plane==="zx") obj.rotation.y=-Math.PI/2;
           } else if(g.shape==="polar"){
             obj=makePolarGrid(g.size||10,g.rings||5,g.segments||12,g.color||0x444466,g.arc||Math.PI*2);
           }
