@@ -43,14 +43,12 @@
     <header>
       <h1 data-i18n="title">デジジオラマ</h1>
       <div class="spacer"></div>
-      <!-- ファイル選択 UI -->
       <select id="fileSelect"></select>
       <select id="langSelect">
         <option value="ja">日本語</option>
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
-      <!-- Layers メニュー -->
       <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
         <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
@@ -104,7 +102,7 @@
     // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
-    const labelGroup=new THREE.Group();
+    const labelGroup=new THREE.Group(); // エッジラベル専用
     const gridGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
@@ -115,16 +113,16 @@
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
       const background= options.background?? null;
-      const plane     = options.plane     ?? "zx";  // デフォルト zx
-      const direction = options.direction ?? 0;     // デフォルト 0
-      const worldScale = options.worldScale ?? 0.01;
+      const plane     = options.plane     ?? "zx";
+      const direction = options.direction ?? 0;
+      const worldScale = options.worldScale ?? 0.1;
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       ctx.font = `${fontSize}px ${fontFamily}`;
       const metrics = ctx.measureText(text);
       canvas.width  = metrics.width + 20;
-      canvas.height = fontSize * 1.4;
+      canvas.height = fontSize * 1.5;
       ctx.font = `${fontSize}px ${fontFamily}`;
       if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
       ctx.fillStyle = color;
@@ -137,7 +135,6 @@
       const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
 
-      // === 面ごとの回転処理（index-コピー(6).htmlのまま） ===
       switch (plane) {
         case "yz":
           mesh.rotation.y = Math.PI/2;
@@ -145,13 +142,13 @@
           break;
         case "zx":
           mesh.rotation.x = Math.PI/2;
-          mesh.rotation.y += Math.PI; // Y軸中心に180度旋回
+          mesh.rotation.y += Math.PI;
           break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
       mesh.position.set(...(options.offset ?? [0,0,0]));
-      if(nodeId) mesh.userData.nodeId = nodeId; // ノードID保持
+      if(nodeId) mesh.userData.nodeId = nodeId;
       return mesh;
     }
 
@@ -165,7 +162,8 @@
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse,camera);
-      const intersects = raycaster.intersectObjects(labelGroup.children,true);
+      // ノードラベルも対象に含める
+      const intersects = raycaster.intersectObjects(nodeGroup.children.concat(labelGroup.children),true);
       if(intersects.length>0){
         const mesh = intersects[0].object;
         if(mesh.userData.nodeId){
@@ -202,8 +200,7 @@
         nodeGroup.add(m);nodeById.set(n.id,m);
         if(n.label){
           const labelMesh=makeLabelPlane(n.label,n.labelAttr||{},n.id);
-          m.add(labelMesh); // ノードにラベルをアタッチ
-          labelGroup.add(labelMesh);
+          m.add(labelMesh); // ノードにアタッチ
         }
       }
 
@@ -215,7 +212,7 @@
         if(e.label){
           const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
           const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});edgeLabel.position.copy(midpoint);
-          labelGroup.add(edgeLabel);
+          labelGroup.add(edgeLabel); // エッジラベルは独立
         }
       }
 
@@ -271,10 +268,9 @@
 
     loadLocale('ja');
 
-    // === ResizeObserver ===
     const ro=new ResizeObserver(()=>{
       const {clientWidth:w,clientHeight:h}=container;
-      renderer.setSize(w,h,true); // 内部バッファも更新
+      renderer.setSize(w,h,true);
       camera.aspect=w/h;
       camera.updateProjectionMatrix();
     });
