@@ -20,7 +20,7 @@
     {
       "id": "god",
       "label": "神",
-      "position": [0, 0, 64],
+      "position": [0, 0, 128],
       "labelAttr": { "color": "cyan", "fontSize": 128 }
     }
   ],
