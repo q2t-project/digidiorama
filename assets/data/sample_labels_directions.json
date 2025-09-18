@@ -9,31 +9,31 @@
     {
       "id": "n2",
       "label": "Colored",
-      "position": [2, 0, 0],
+      "position": [4, 0, 0],
       "labelAttr": { "color": "yellow", "fontSize": 40 }
     },
     {
       "id": "n3",
       "label": "SemiTransparent",
-      "position": [0, 2, 0],
+      "position": [0, 4, 0],
       "labelAttr": { "opacity": 0.5, "background": "rgba(0,0,0,0.5)" }
     },
     {
       "id": "n4",
-      "label": "ZXあいうえお",
-      "position": [0, 0, 2],
+      "label": "ZXあ",
+      "position": [8, 8, 16],
       "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n5",
-      "label": "YZかきく",
-      "position": [0, 0, 1],
+      "label": "YZか",
+      "position": [0, 8, 16],
       "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n6",
-      "label": "XYさしす",
-      "position": [0, 0, 3],
+      "label": "XYさ",
+      "position": [0, 0, 16],
       "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan" }
     }
 
