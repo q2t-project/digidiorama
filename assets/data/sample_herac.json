@@ -6,10 +6,16 @@
     "tags": "demo" },
   "nodes": [
     {
+      "id": "Origin",
+      "label": "Origin",
+      "position": [0, 0, 0],
+      "labelAttr": { "color": "blue", "fontSize": 128 }
+    },
+    {
       "id": "logos",
       "label": "λογος",
       "position": [-512, 0, 0],
-      "labelAttr": { "color": "blue", "fontSize": 128 }
+      "labelAttr": { "color": "blue", "fontSize": 64 }
     },
     {
       "id": "physis",
