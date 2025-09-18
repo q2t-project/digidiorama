@@ -111,60 +111,42 @@
     scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
     // ==== ラベル生成 ====
-function makeLabelPlane(text, options={}){
+function makeLabelPlane(text, options={}) {
   const fontSize = options.fontSize ?? 32;
   const fontFamily = options.fontFamily ?? "Arial, sans-serif";
   const color = options.color ?? "white";
   const opacity = options.opacity ?? 1.0;
   const background = options.background ?? null;
 
-  const scale = fontSize * 0.1; // 0.1 はワールド単位への換算係数
-  sprite.scale.set(scale, scale, 1);
+  // 1) まずキャンバスに描画
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  const metrics = ctx.measureText(text);
+  canvas.width = metrics.width + 20;
+  canvas.height = fontSize * 1.5;  // 余白
 
-  const canvas=document.createElement('canvas');
-  canvas.width=512;canvas.height=128;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  if(background){
-    ctx.fillStyle=background;
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  ctx.fillStyle = color;
+  ctx.textBaseline = 'middle';
+  if (background) {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = color;
   }
+  ctx.fillText(text, 10, canvas.height / 2);
 
-  ctx.fillStyle=color;
-  ctx.font=`${fontSize}px ${fontFamily}`;
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.fillText(text,canvas.width/2,canvas.height/2);
+  // 2) Texture→Sprite生成
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity });
+  const sprite = new THREE.Sprite(material);
 
-  const texture=new THREE.CanvasTexture(canvas);
-  const mat=new THREE.MeshBasicMaterial({
-    map:texture,
-    transparent:true,
-    side:THREE.DoubleSide,
-    opacity: opacity
-  });
-  const geom=new THREE.PlaneGeometry(2.5,1.0);
-  const mesh=new THREE.Mesh(geom,mat);
+  // 3) キャンバスの実サイズからワールド単位へ換算
+  const worldScale = 0.01;  // 1px → 0.01 world units など
+  sprite.scale.set(canvas.width * worldScale, canvas.height * worldScale, 1);
 
-  const plane = options.plane ?? "zx";
-  if(plane==="yz"){
-    mesh.rotation.y = Math.PI/2;
-    mesh.rotation.z = Math.PI/2;
-  }
-  else if(plane==="zx"){
-    mesh.rotation.x = Math.PI/2;
-    mesh.rotation.y += Math.PI;
-  }
-
-  if(typeof options.direction==="number"){
-    mesh.rotation.z += THREE.MathUtils.degToRad(options.direction);
-  }
-
-  mesh.position.set(...(options.offset||[0,0,0]));
-  return mesh;
+  return sprite;
 }
-
 
     // ==== グリッド ====
     function makePolarGrid(radius=10, rings=5, segments=12, color=0x444466, arc=Math.PI*2){
