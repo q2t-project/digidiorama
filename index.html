@@ -43,6 +43,7 @@
     <header>
       <h1 data-i18n="title">デジジオラマ</h1>
       <div class="spacer"></div>
+      <!-- ファイル選択 UI -->
       <select id="fileSelect"></select>
       <select id="langSelect">
         <option value="ja">日本語</option>
@@ -137,6 +138,7 @@
       const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
 
+      // === 面ごとの回転処理 ===
       switch (plane) {
         case "yz":
           mesh.rotation.y = Math.PI/2;   // 基本
@@ -144,7 +146,7 @@
           break;
         case "zx":
           mesh.rotation.x = Math.PI/2;   // 基本
-          mesh.rotation.y = Math.PI;     // Y軸反転（天地逆修正）
+          mesh.rotation.y = Math.PI;     // Y軸中心で反転（天地修正）
           mesh.rotation.z = Math.PI;     // 上下反転
           break;
       }
@@ -251,7 +253,7 @@
       }
 
       showMeta(data.meta,data);
-      fitCameraToScene(); // ← 自動調整
+      fitCameraToScene();
     }
 
     function showMeta(meta,data){
@@ -278,4 +280,12 @@
 
     const select=document.getElementById('fileSelect');
     loadManifest().then(list=>{
-      const files=Array.isArray(list)?list:li
+      const files=Array.isArray(list)?list:list.files||[];
+      files.forEach(item=>{const opt=document.createElement('option');opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);});
+      if(files[0]){select.value=files[0].path;loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});}
+    });
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
+    loadLocale('ja');
+  </script>
+</body>
+</html>
