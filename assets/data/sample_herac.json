@@ -8,24 +8,24 @@
     {
       "id": "logos",
       "label": "11λογος",
-      "position": [-128, 0, 0],
+      "position": [-64, 0, 0],
       "labelAttr": { "color": "blue", "fontSize": 16 }
     },
     {
       "id": "physis",
       "label": "22φύσις",
-      "position": [128, 0, 0],
+      "position": [64, 0, 0],
       "labelAttr": { "color": "yellow", "fontSize": 64 }
     },
     {
       "id": "god",
       "label": "神",
-      "position": [128, 0, 128],
+      "position": [0, 0, 64],
       "labelAttr": { "color": "cyan", "fontSize": 32 }
     }
   ],
   "edges": [
-    { "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true },
+    { "source": "logos", "target": "physis", "style": "solid", "color": "blue", "directed": true },
     { "source": "god", "target": "physis", "style": "dot", "color": "red", "directed": true }
   ]
 }
