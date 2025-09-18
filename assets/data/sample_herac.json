@@ -8,20 +8,20 @@
     {
       "id": "logos",
       "label": "11λογος",
-      "position": [-512, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "blue", "fontSize": 256 }
+      "position": [-128, 0, 0],
+      "labelAttr": { "color": "blue", "fontSize": 16 }
     },
     {
       "id": "physis",
       "label": "22φύσις",
-      "position": [512, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 64 }
+      "position": [128, 0, 0],
+      "labelAttr": { "color": "yellow", "fontSize": 64 }
     },
     {
       "id": "god",
       "label": "神",
-      "position": [512, 0, 512],
-      "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 128 }
+      "position": [128, 0, 128],
+      "labelAttr": { "color": "cyan", "fontSize": 32 }
     }
   ],
   "edges": [
