@@ -115,7 +115,7 @@ function makeLabelPlane(text, options = {}) {
   const fontSize = options.fontSize ?? 32;       // px
   const fontFamily = options.fontFamily ?? "Arial";
   const color = options.color ?? "white";
-  const worldScale = options.worldScale ?? 0.01; // 1px→0.01world の換算係数
+  const worldScale = options.worldScale ?? 0.1; // 1px→0.01world の換算係数
 
   // 1. キャンバスに描画
   const canvas = document.createElement('canvas');
