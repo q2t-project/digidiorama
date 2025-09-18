@@ -7,15 +7,15 @@
   "nodes": [
     {
       "id": "logos",
-      "label": "λογος",
+      "label": "11λογος",
       "position": [-512, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 128 }
+      "labelAttr": { "fontFamily": "Courier New", "color": "blue", "fontSize": 256 }
     },
     {
       "id": "physis",
-      "label": "φύσις",
+      "label": "22φύσις",
       "position": [512, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 128 }
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 64 }
     },
     {
       "id": "god",
