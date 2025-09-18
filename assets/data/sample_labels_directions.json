@@ -10,31 +10,31 @@
       "id": "n2",
       "label": "Colored",
       "position": [4, 0, 0],
-      "labelAttr": { "color": "yellow", "fontSize": 40 }
+      "labelAttr": { "color": "yellow", "fontSize": 16 }
     },
     {
       "id": "n3",
       "label": "SemiTransparent",
       "position": [0, 4, 0],
-      "labelAttr": { "opacity": 0.5, "background": "rgba(0,0,0,0.5)" }
+      "labelAttr": { "opacity": 0.5, "background": "rgba(0,0,0,8)" }
     },
     {
       "id": "n4",
       "label": "ZXあ",
-      "position": [8, 8, 16],
+      "position": [8, 16, 32],
       "labelAttr": { "plane": "zx", "direction": 0, "color": "cyan" }
     },
     {
       "id": "n5",
       "label": "YZか",
-      "position": [0, 8, 16],
-      "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan" }
+      "position": [0, 16, 32],
+      "labelAttr": { "plane": "yz", "direction": 0, "color": "cyan", "fontSize": 64 }
     },
     {
       "id": "n6",
       "label": "XYさ",
-      "position": [0, 0, 16],
-      "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan" }
+      "position": [0, 0, 32],
+      "labelAttr": { "plane": "xy", "direction": 0, "color": "cyan", "fontSize": 64}
     }
 
   ],
@@ -43,7 +43,7 @@
       "source": "n1",
       "target": "n2",
       "label": "Edge Label",
-      "labelAttr": { "plane": "yz", "direction": 90, "color": "red", "fontSize": 20 }
+      "labelAttr": { "plane": "yz", "direction": 90, "color": "red", "fontSize": 32 }
     }
   ]
 }
