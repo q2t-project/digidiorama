@@ -18,11 +18,14 @@
       "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 32 }
     },
     {
-      "id": "n3",
-      "label": "日本語",
+      "id": "god",
+      "label": "神",
       "position": [0, 2, 0],
       "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }
     }
   ],
-  "edges": [{ "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true }]
+  "edges": [
+    { "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true },
+    { "source": "god", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true }
+  ]
 }
