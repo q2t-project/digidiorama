@@ -272,6 +272,15 @@
 
     loadLocale('ja');
 
+    // === ResizeObserver を追加 ===
+    const ro=new ResizeObserver(()=>{
+      const {clientWidth:w,clientHeight:h}=container;
+      renderer.setSize(w,h,true); // 内部バッファも更新
+      camera.aspect=w/h;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(container);
+
     function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
   </script>
 </body>
