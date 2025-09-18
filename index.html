@@ -93,9 +93,9 @@
 
     const controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    controls.zoomSpeed = 2 ;
+    controls.zoomSpeed = 5 ;
     controls.minDistance = 1;
-    controls.maxDistance = 200;
+    controls.maxDistance = 1000;
     controls.update();
 
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
