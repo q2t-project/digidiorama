@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer — Z-up XY反転 + LabelAttr</title>
+  <title>digidiorama viewer/title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -95,6 +95,9 @@
     const controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
     controls.target.set(0,0,0);
+    controls.zoomSpeed = 2 ;
+    controls.minDistance = 1;
+    controls.maxDistance = 200;
     controls.update();
 
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
