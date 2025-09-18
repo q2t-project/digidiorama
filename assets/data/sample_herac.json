@@ -7,21 +7,22 @@
   "nodes": [
     {
       "id": "logos",
-      "label": "11λογος",
-      "position": [-64, 0, 0],
-      "labelAttr": { "color": "blue", "fontSize": 16 }
+      "label": "λογος",
+      "position": [-512, 0, 0],
+      "labelAttr": { "c
+      olor": "blue", "fontSize": 128 }
     },
     {
       "id": "physis",
-      "label": "22φύσις",
-      "position": [64, 0, 0],
-      "labelAttr": { "color": "yellow", "fontSize": 64 }
+      "label": "φύσις",
+      "position": [512, 0, 0],
+      "labelAttr": { "color": "yellow", "fontSize": 256  }
     },
     {
       "id": "god",
       "label": "神",
       "position": [0, 0, 64],
-      "labelAttr": { "color": "cyan", "fontSize": 32 }
+      "labelAttr": { "color": "cyan", "fontSize": 128 }
     }
   ],
   "edges": [
