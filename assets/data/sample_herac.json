@@ -9,14 +9,13 @@
       "id": "logos",
       "label": "λογος",
       "position": [-512, 0, 0],
-      "labelAttr": { "c
-      olor": "blue", "fontSize": 128 }
+      "labelAttr": { "color": "blue", "fontSize": 128 }
     },
     {
       "id": "physis",
       "label": "φύσις",
       "position": [512, 0, 0],
-      "labelAttr": { "color": "yellow", "fontSize": 256  }
+      "labelAttr": { "color": "yellow", "fontSize": 256 }
     },
     {
       "id": "god",
