@@ -8,24 +8,24 @@
     {
       "id": "logos",
       "label": "λογος",
-      "position": [0, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 32 }
+      "position": [-512, 0, 0],
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 128 }
     },
     {
       "id": "physis",
       "label": "φύσις",
-      "position": [2, 0, 0],
-      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 32 }
+      "position": [512, 0, 0],
+      "labelAttr": { "fontFamily": "Courier New", "color": "yellow", "fontSize": 128 }
     },
     {
       "id": "god",
       "label": "神",
-      "position": [0, 2, 0],
-      "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 32 }
+      "position": [512, 0, 512],
+      "labelAttr": { "fontFamily": "Noto Sans JP", "color": "cyan", "fontSize": 128 }
     }
   ],
   "edges": [
     { "source": "logos", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true },
-    { "source": "god", "target": "physis", "style": "solid", "color": "#ff0000", "directed": true }
+    { "source": "god", "target": "physis", "style": "dot", "color": "red", "directed": true }
   ]
 }
