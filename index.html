@@ -118,6 +118,9 @@ function makeLabelPlane(text, options={}){
   const opacity = options.opacity ?? 1.0;
   const background = options.background ?? null;
 
+  const scale = fontSize * 0.1; // 0.1 はワールド単位への換算係数
+  sprite.scale.set(scale, scale, 1);
+
   const canvas=document.createElement('canvas');
   canvas.width=512;canvas.height=128;
   const ctx=canvas.getContext('2d');
