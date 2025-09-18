@@ -142,7 +142,7 @@ function makeLabelPlane(text, options={}) {
   const sprite = new THREE.Sprite(material);
 
   // 3) キャンバスの実サイズからワールド単位へ換算
-  const worldScale = 0.01;  // 1px → 0.01 world units など
+  const worldScale = 0.001;  // 1px → 0.01 world units など
   sprite.scale.set(canvas.width * worldScale, canvas.height * worldScale, 1);
 
   return sprite;
