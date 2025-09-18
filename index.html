@@ -138,8 +138,15 @@
       const mesh = new THREE.Mesh(geom, mat);
 
       switch (plane) {
-        case "yz": mesh.rotation.y = Math.PI/2; break;
-        case "zx": mesh.rotation.x = Math.PI/2; break;
+        case "yz":
+          mesh.rotation.y = Math.PI/2;   // 基本
+          mesh.rotation.z = Math.PI/2;   // X+側から見て90°CCW
+          break;
+        case "zx":
+          mesh.rotation.x = Math.PI/2;   // 基本
+          mesh.rotation.y = Math.PI;     // 裏表反転
+          mesh.rotation.z = Math.PI;     // 上下反転
+          break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
@@ -244,7 +251,7 @@
       }
 
       showMeta(data.meta,data);
-      fitCameraToScene(); // ← ここで自動調整
+      fitCameraToScene(); // ← 自動調整
     }
 
     function showMeta(meta,data){
