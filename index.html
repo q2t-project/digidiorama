@@ -3,31 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer</title>
+  <title>digidiorama viewer/</title>
   <style>
-    :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; --panel:#10172c; --border:#1d2748; }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto}
+    :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
     #app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr}
-    header{display:flex;gap:.5rem;align-items:center;padding:.5rem .75rem;background:#0e142a;border-bottom:1px solid var(--border)}
+    header{display:flex;gap:.5rem;align-items:center;padding:.5rem .75rem;background:#0e142a;border-bottom:1px solid #1d2748}
     header h1{font-size:14px;font-weight:600;margin:0;letter-spacing:.3px}
     header .spacer{flex:1}
     header select, header button{appearance:none;border:1px solid #2a3969;background:#131a33;color:var(--fg);padding:.35rem .6rem;border-radius:.4rem;cursor:pointer}
     header button:hover, header select:hover{border-color:#39529c;background:#1a2347}
-    #main{display:grid;grid-template-columns:1fr 280px;overflow:hidden}
+    #main{display:grid;grid-template-columns:1fr 250px;overflow:hidden}
     #viewer{position:relative;overflow:hidden}
-    #panel{background:var(--panel);border-left:1px solid var(--border);padding:.6rem .6rem;overflow-y:auto}
+    #panel{background:#10172c;border-left:1px solid #1d2748;padding:.5rem;overflow-y:auto}
     #panel h2{font-size:13px;margin:.5rem 0}
-    #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem;white-space:pre-wrap;word-break:break-word}
+    #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
     .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
     canvas{display:block;width:100%;height:100%;}
-    #layersMenu{position:relative}
-    #layersDropdown{display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;z-index:20}
-    #layersDropdown label{display:block;font-size:12px;margin:.15rem 0}
-    @media(max-width:720px){
+    @media(max-width:600px){
       #main{grid-template-columns:1fr;}
-      #panel{display:none;position:absolute;top:0;right:0;width:78%;height:100%;z-index:10}
+      #panel{display:none;position:absolute;top:0;right:0;width:70%;height:100%;z-index:10}
       #panel.open{display:block;background:#0b1020}
-      #fab{position:absolute;right:.75rem;bottom:.75rem;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:30}
+      #fab{position:absolute;right:.75rem;bottom:.75rem;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:20}
     }
   </style>
 
@@ -46,20 +43,19 @@
     <header>
       <h1 data-i18n="title">デジジオラマ</h1>
       <div class="spacer"></div>
-      <select id="fileSelect" title="manifest.json から読み込み"></select>
+      <select id="fileSelect"></select>
       <select id="langSelect">
         <option value="ja">日本語</option>
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
-      <div id="layersMenu">
+      <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
-        <div id="layersDropdown">
-          <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label>
-          <label><input type="checkbox" id="toggle-edges" checked /> Edges</label>
-          <label><input type="checkbox" id="toggle-labels" checked /> Labels</label>
-          <label><input type="checkbox" id="toggle-grids" checked /> Grids (legacy)</label>
-          <label><input type="checkbox" id="toggle-aux" checked /> Auxiliary</label>
+        <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
+          <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label><br/>
+          <label><input type="checkbox" id="toggle-edges" checked /> Edges</label><br/>
+          <label><input type="checkbox" id="toggle-labels" checked /> Labels</label><br/>
+          <label><input type="checkbox" id="toggle-grids" checked /> Grids</label>
         </div>
       </div>
     </header>
@@ -75,7 +71,7 @@
         <div id="errors"></div>
       </div>
     </div>
-    <button id="fab" title="Panel">≡</button>
+    <button id="fab">≡</button>
   </div>
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
@@ -84,7 +80,6 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import Ajv from 'ajv';
 
-    // ===== Core: Scene & Controls =====
     const container=document.getElementById('viewer');
     const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1020);
 
@@ -96,43 +91,38 @@
 
     const controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    controls.zoomSpeed = 2;
-    controls.minDistance = 0.2;
-    controls.maxDistance = 500;
+    controls.zoomSpeed = 2 ;
+    controls.minDistance = 1;
+    controls.maxDistance = 200;
     controls.update();
 
-    scene.add(new THREE.AmbientLight(0xffffff,0.65));
+    scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
-    // ===== Core: Groups =====
+    // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
-    const labelGroup=new THREE.Group();
-    const gridGroup=new THREE.Group(); // legacy grids (if any)
-    const auxGroup=new THREE.Group();  // auxiliary (grid/axis/comment/text)
-    scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup,auxGroup);
+    const labelGroup=new THREE.Group(); // エッジラベル専用
+    const gridGroup=new THREE.Group();
+    scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
-    // ===== Core: Data state =====
-    const nodeById=new Map();
-    let currentData=null;
-
-    // ===== Core: Label Plane =====
+    // ==== ラベル生成 ====
     function makeLabelPlane(text, options = {}, nodeId=null) {
-      const fontSize  = options.fontSize  ?? 28;
+      const fontSize  = options.fontSize  ?? 32;
       const fontFamily= options.fontFamily?? "Arial";
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
       const background= options.background?? null;
       const plane     = options.plane     ?? "zx";
       const direction = options.direction ?? 0;
-      const worldScale= options.worldScale?? 0.1;
+      const worldScale = options.worldScale ?? 0.1;
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       ctx.font = `${fontSize}px ${fontFamily}`;
       const metrics = ctx.measureText(text);
-      canvas.width  = Math.max(2, Math.ceil(metrics.width + 20));
-      canvas.height = Math.max(2, Math.ceil(fontSize * 1.6));
+      canvas.width  = metrics.width + 20;
+      canvas.height = fontSize * 1.5;
       ctx.font = `${fontSize}px ${fontFamily}`;
       if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
       ctx.fillStyle = color;
@@ -141,7 +131,6 @@
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
-      texture.minFilter = THREE.LinearFilter;
       const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity, side: THREE.DoubleSide });
       const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
@@ -157,339 +146,137 @@
           break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
+
       mesh.position.set(...(options.offset ?? [0,0,0]));
       if(nodeId) mesh.userData.nodeId = nodeId;
       return mesh;
     }
 
-    // ===== Core: Auxiliary =====
-    function addAuxiliary(a){
-      switch(a.type){
-        case "grid": {
-          const size = a.size ?? 1;
-          const color = a.color ?? "#444";
-          const opacity = a.opacity ?? 0.3;
-          let grid;
-          if(a.shape==="rect"){
-            grid=new THREE.GridHelper(size, a.divisions??10, color, color);
-            grid.material.opacity=opacity;
-            grid.material.transparent=true;
-          } else if(a.shape==="polar"){
-            const arc = (a.arc ?? 360) * Math.PI/180; // degrees -> rad
-            const segments=a.segments??48;
-            const rings=a.rings??8;
-            const verts=[];
-            // rings (circles or arcs)
-            for(let r=1;r<=rings;r++){
-              const radius=(size/rings)*r;
-              for(let i=0;i<segments;i++){
-                const t0=arc*i/segments, t1=arc*(i+1)/segments;
-                verts.push(Math.cos(t0)*radius,Math.sin(t0)*radius,0,
-                           Math.cos(t1)*radius,Math.sin(t1)*radius,0);
-              }
-            }
-            // radial lines
-            const radialCount = Math.max(4, Math.round(segments/6));
-            for(let k=0;k<radialCount;k++){
-              const t=arc*k/radialCount;
-              verts.push(0,0,0, Math.cos(t)*size, Math.sin(t)*size, 0);
-            }
-            const geom=new THREE.BufferGeometry();
-            geom.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
-            const mat=new THREE.LineBasicMaterial({color,transparent:true,opacity});
-            grid=new THREE.LineSegments(geom,mat);
-          }
-          if(grid){
-            if(a.position) grid.position.set(...a.position);
-            auxGroup.add(grid);
-          }
-          break;
-        }
-        case "axis": {
-          const length=a.length??1.0;
-          const axes=new THREE.AxesHelper(length);
-          if(a.position) axes.position.set(...a.position);
-          auxGroup.add(axes);
-          break;
-        }
-        case "comment": {
-          const mesh=makeLabelPlane(a.text??"",a);
-          if(a.position) mesh.position.set(...a.position);
-          auxGroup.add(mesh);
-          break;
-        }
-        case "text": {
-          const mesh=makeLabelPlane(a.text??"",a);
-          if(a.anchor==="screen"){
-            mesh.renderOrder=999;
-            mesh.onBeforeRender=(r)=>r.clearDepth();
-          }
-          if(a.position) mesh.position.set(...a.position);
-          auxGroup.add(mesh);
-          break;
+    const nodeById=new Map();
+
+    // ==== Raycaster for label click ====
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    function onClick(event){
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse,camera);
+      // ノードラベルも対象に含める
+      const intersects = raycaster.intersectObjects(nodeGroup.children.concat(labelGroup.children),true);
+      if(intersects.length>0){
+        const mesh = intersects[0].object;
+        if(mesh.userData.nodeId){
+          const node=nodeById.get(mesh.userData.nodeId).userData;
+          showNode(node);
         }
       }
     }
+    renderer.domElement.addEventListener('click',onClick);
 
-    // ===== Core: Build Scene =====
+    // === カメラ自動調整 ===
+    function fitCameraToScene(padding=1.2){
+      const box = new THREE.Box3().setFromObject(scene);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const fov = camera.fov * (Math.PI / 180);
+      let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+      cameraZ *= padding;
+
+      camera.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
+      controls.target.copy(center);
+      controls.update();
+    }
+
     function buildScene(data){
-      currentData = data;
-      nodeGroup.clear(); edgeGroup.clear(); labelGroup.clear(); gridGroup.clear(); auxGroup.clear(); nodeById.clear();
+      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();gridGroup.clear();nodeById.clear();
+      const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
-      const sphereGeom=new THREE.SphereGeometry(0.05,16,16);
-
-      // nodes
       for(const n of data.nodes||[]){
-        const color = n.nodeAttr?.color ?? 0xaaaaaa;
-        const opacity = n.nodeAttr?.opacity ?? 0.85;
-        const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity});
-        const m=new THREE.Mesh(sphereGeom,mat);
-        m.position.set(...n.position);
-        if(n.nodeAttr?.size) m.scale.setScalar(n.nodeAttr.size/0.05);
-        m.userData=n;
-        nodeGroup.add(m); nodeById.set(n.id,m);
+        const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
+        const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
+        nodeGroup.add(m);nodeById.set(n.id,m);
         if(n.label){
           const labelMesh=makeLabelPlane(n.label,n.labelAttr||{},n.id);
-          m.add(labelMesh);
+          m.add(labelMesh); // ノードにアタッチ
         }
       }
 
-      // edges
       for(const e of data.edges||[]){
-        const a=nodeById.get(e.source), b=nodeById.get(e.target); if(!a||!b) continue;
+        const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
-        const mat=new THREE.LineBasicMaterial({color:e.color||0x9ec1ff,transparent:true,opacity:e.opacity??1.0});
+        const mat=new THREE.LineBasicMaterial({color:e.color||0x9ec1ff,transparent:true,opacity:e.opacity||1.0});
         edgeGroup.add(new THREE.Line(geo,mat));
         if(e.label){
           const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
-          const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});
-          edgeLabel.position.copy(midpoint);
-          labelGroup.add(edgeLabel);
+          const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});edgeLabel.position.copy(midpoint);
+          labelGroup.add(edgeLabel); // エッジラベルは独立
         }
       }
-
-      // auxiliary
-      for(const a of data.auxiliary||[]){ addAuxiliary(a); }
 
       showMeta(data.meta,data);
-      updateCounts(data);
       fitCameraToScene();
-      renderOnce();
     }
 
-    // ===== UI: Layers toggle =====
-    const elLayersBtn = document.getElementById('btnLayers');
-    const elLayersDrop = document.getElementById('layersDropdown');
-    elLayersBtn.addEventListener('click', ()=>{
-      elLayersDrop.style.display = (elLayersDrop.style.display==='block'?'none':'block');
-    });
-    document.getElementById('toggle-nodes').addEventListener('change', e=>{ nodeGroup.visible=e.target.checked; renderOnce(); });
-    document.getElementById('toggle-edges').addEventListener('change', e=>{ edgeGroup.visible=e.target.checked; renderOnce(); });
-    document.getElementById('toggle-labels').addEventListener('change', e=>{ labelGroup.visible=e.target.checked; renderOnce(); });
-    document.getElementById('toggle-grids').addEventListener('change', e=>{ gridGroup.visible=e.target.checked; renderOnce(); });
-    document.getElementById('toggle-aux').addEventListener('change', e=>{ auxGroup.visible=e.target.checked; renderOnce(); });
-
-    // ===== UI: Panel toggle (mobile) =====
-    const fab=document.getElementById('fab');
-    const panel=document.getElementById('panel');
-    fab.addEventListener('click',()=>{ panel.classList.toggle('open'); });
-
-    // ===== UI: Reset =====
-    document.getElementById('btnReset').addEventListener('click', ()=>{
-      fitCameraToScene(); renderOnce();
-    });
-
-    // ===== DataAccess: manifest & file select =====
-    const fileSelect=document.getElementById('fileSelect');
-    async function loadManifest(){
-      try{
-        const res = await fetch('./assets/manifest.json', {cache:'no-cache'});
-        if(!res.ok) throw new Error(`manifest load failed: ${res.status}`);
-        const mani = await res.json();
-        if(Array.isArray(mani.files)){
-          fileSelect.innerHTML = mani.files.map((f,i)=>`<option value="${f.path}">${f.label ?? f.path}</option>`).join('');
-          // Load from URL param ?file=...
-          const urlFile = new URLSearchParams(location.search).get('file');
-          const initial = urlFile || mani.files[0]?.path;
-          if(initial){ fileSelect.value = initial; await loadJSON(initial); }
-        }else{
-          throw new Error('manifest.files missing');
-        }
-      }catch(err){
-        console.warn(err);
-        // fallback: try a default sample in the same dir
-        fileSelect.innerHTML = `<option value="./assets/data/sample_with_auxiliary.json">sample_with_auxiliary.json</option>`;
-        await loadJSON('./assets/data/sample_with_auxiliary.json');
-      }
-    }
-    fileSelect.addEventListener('change', async e=>{
-      await loadJSON(e.target.value);
-    });
-
-    // ===== Validation (Ajv) =====
-    const ajv = new Ajv({allErrors:true});
-    const schema = {
-      type: "object",
-      properties: {
-        meta: { type: "object" },
-        nodes: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: {"type":"string"},
-              label: {"type":"string"},
-              position: {"type":"array","minItems":3,"maxItems":3}
-            },
-            required: ["id","label","position"]
-          }
-        },
-        edges: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              source: {"type":"string"},
-              target: {"type":"string"}
-            },
-            required: ["source","target"]
-          }
-        },
-        auxiliary: { type: "array" }
-      },
-      required: ["meta","nodes","edges"]
-    };
-    const validate = ajv.compile(schema);
-
-    // ===== DataAccess: load JSON =====
-    async function loadJSON(path){
-      clearErrors();
-      try {
-        const res = await fetch(path, {cache:'no-cache'});
-        if(!res.ok) throw new Error(`JSON load failed: ${res.status}`);
-        const data = await res.json();
-        // validation
-        const ok = validate(data);
-        if(!ok){
-          const errs = validate.errors?.map(e=>`${e.instancePath} ${e.message}`) ?? ['Unknown schema error'];
-          showErrors(errs);
-        }
-        buildScene(data);
-      } catch (err) {
-        showErrors([String(err)]);
-        console.error(err);
-      }
-    }
-
-    // ===== UI helpers =====
     function showMeta(meta,data){
-      const box=document.getElementById('meta'); box.innerHTML='';
-      if(meta){
-        for(const [k,v] of Object.entries(meta)){
-          const d=document.createElement('div'); d.className='meta-item'; d.textContent = `${k}: ${v}`; box.appendChild(d);
-        }
-      }
+      const box=document.getElementById('meta');box.innerHTML='';
+      if(meta){for(const [k,v] of Object.entries(meta)){
+        const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
-    function updateCounts(data){
-      const box = document.getElementById('counts');
-      const n = (data.nodes||[]).length, e = (data.edges||[]).length, a=(data.auxiliary||[]).length;
-      box.innerHTML = `<p>Nodes: ${n}</p><p>Edges: ${e}</p><p>Aux: ${a}</p>`;
-    }
+
     function showNode(node){
-      const box=document.getElementById('node'); box.innerHTML='';
-      if(!node) return;
+      const box=document.getElementById('node');box.innerHTML='';
+      if(!node)return;
       for(const [k,v] of Object.entries(node)){
-        const d=document.createElement('div'); d.className='node-item'; d.textContent = `${k}: ${typeof v==='object'? JSON.stringify(v): v}`; box.appendChild(d);
+        const d=document.createElement('div');d.className='node-item';d.textContent=`${k}: ${v}`;box.appendChild(d);
       }
     }
-    function showErrors(errs){
-      const box=document.getElementById('errors'); box.innerHTML='';
-      (errs||[]).forEach(e=>{ const d=document.createElement('div'); d.className='error-item'; d.textContent=e; box.appendChild(d); });
-    }
-    function clearErrors(){ document.getElementById('errors').innerHTML=''; }
 
-    // ===== I18n (optional) =====
-    let i18nDict = {};
-    async function loadLocale(lang){
-      try{
-        const res = await fetch(`./assets/i18n/${lang}.json`, {cache:'no-cache'});
-        if(!res.ok) throw new Error(`i18n ${lang} not found`);
-        i18nDict = await res.json();
-      }catch{
-        i18nDict = { title: "デジジオラマ", reset: "Reset", layers: "Layers" };
-      }finally{
-        applyI18n();
-      }
-    }
-    function applyI18n(){
-      document.querySelectorAll('[data-i18n]').forEach(el=>{
-        const key = el.getAttribute('data-i18n');
-        if(i18nDict[key]) el.textContent = i18nDict[key];
-      });
-    }
-    document.getElementById('langSelect').addEventListener('change', e=>loadLocale(e.target.value));
+    function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
+      (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
-    // ===== Raycaster for node labels =====
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    renderer.domElement.addEventListener('click', (event)=>{
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(nodeGroup.children, true);
-      if(intersects.length){
-        const obj = intersects[0].object;
-        const nodeId = obj.userData.nodeId || obj.parent?.userData?.node?.id || obj.parent?.userData?.id || obj.userData?.id;
-        let node = null;
-        if(nodeId && currentData){
-          node = (currentData.nodes||[]).find(n=>n.id===nodeId) || obj.userData || obj.parent?.userData;
-        } else {
-          node = obj.userData || obj.parent?.userData;
-        }
-        showNode(node);
-      }
+    let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
+    function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
+
+    document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
+    document.getElementById('fab').onclick=()=>{document.getElementById('panel').classList.toggle('open');};
+    document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
+    document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
+    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-grids').onchange=(ev)=>{gridGroup.visible=ev.target.checked;};
+
+    const ajv=new Ajv({allErrors:true});
+    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},layers:{type:"array"}},required:["meta","nodes","edges"]};
+    const validate=ajv.compile(schema);
+    function runValidation(data){const valid=validate(data);if(!valid){showErrors(validate.errors.map(e=>`${e.instancePath} ${e.message}`));}else{showErrors([]);} }
+
+    async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
+    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
+
+    const select=document.getElementById('fileSelect');
+    loadManifest().then(list=>{
+      const files=Array.isArray(list)?list:list.files||[];
+      files.forEach(item=>{const opt=document.createElement('option');opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);});
+      if(files[0]){select.value=files[0].path;loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});}
     });
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
 
-    // ===== Fit camera =====
-    function fitCameraToScene(padding=1.2){
-      const box = new THREE.Box3().setFromObject(nodeGroup);
-      if(!box.isEmpty()){
-        const size = new THREE.Vector3(); box.getSize(size);
-        const center = new THREE.Vector3(); box.getCenter(center);
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const fov = camera.fov * (Math.PI / 180);
-        let camZ = Math.abs(maxDim / (2 * Math.tan(fov / 2))) * padding;
-        camZ = Math.max(camZ, 0.5);
-        camera.position.set(center.x + camZ, center.y + camZ, center.z + camZ);
-        camera.lookAt(center);
-        controls.target.copy(center);
-        controls.update();
-      } else {
-        camera.position.set(1.5,1.5,1.5);
-        controls.target.set(0,0,0);
-        controls.update();
-      }
-    }
+    loadLocale('ja');
 
-    // ===== Render Loop (on-demand) =====
-    function renderOnce(){ renderer.render(scene, camera); }
-    function onResize(){
-      const w = container.clientWidth || container.offsetWidth;
-      const h = container.clientHeight || container.offsetHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h; camera.updateProjectionMatrix();
-      renderOnce();
-    }
-    window.addEventListener('resize', onResize);
+    const ro=new ResizeObserver(()=>{
+      const {clientWidth:w,clientHeight:h}=container;
+      renderer.setSize(w,h,true);
+      camera.aspect=w/h;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(container);
 
-    // ===== Boot =====
-    (async function boot(){
-      onResize();
-      await loadLocale(document.getElementById('langSelect').value || 'ja');
-      await loadManifest();
-      renderOnce();
-    })();
+    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
   </script>
 </body>
 </html>
