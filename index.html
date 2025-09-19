@@ -1,5 +1,4 @@
-# We'll write a fully self-contained index.html with auxiliary support, data access, validation, UI, and i18n.
-index_full = r"""<!doctype html>
+<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
@@ -319,8 +318,8 @@ index_full = r"""<!doctype html>
       }catch(err){
         console.warn(err);
         // fallback: try a default sample in the same dir
-        fileSelect.innerHTML = `<option value="./sample_with_auxiliary.json">sample_with_auxiliary.json</option>`;
-        await loadJSON('./sample_with_auxiliary.json');
+        fileSelect.innerHTML = `<option value="./assets/data/sample_with_auxiliary.json">sample_with_auxiliary.json</option>`;
+        await loadJSON('./assets/data/sample_with_auxiliary.json');
       }
     }
     fileSelect.addEventListener('change', async e=>{
@@ -494,9 +493,3 @@ index_full = r"""<!doctype html>
   </script>
 </body>
 </html>
-"""
-# Write it out to /mnt/data/index.html
-with open("/mnt/data/index.html", "w", encoding="utf-8") as f:
-    f.write(index_full)
-
-index_full[:2000]
