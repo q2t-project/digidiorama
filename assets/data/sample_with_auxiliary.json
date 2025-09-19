@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "title": "Auxiliary Demo",
+    "author": "q2t-project",
+    "created": "2025-09-19",
+    "tags": ["demo", "auxiliary", "polar"]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Center",
+      "position": [0,0,0],
+      "nodeAttr": { "color": "#ff6666", "size": 0.08 },
+      "labelAttr": { "fontSize": 28, "color": "white", "background": "black" }
+    },
+    {
+      "id": "n2",
+      "label": "Outer",
+      "position": [0.5,0.5,0],
+      "nodeAttr": { "color": "#66ccff", "size": 0.06 }
+    }
+  ],
+  "edges": [
+    {
+      "source": "n1",
+      "target": "n2",
+      "color": "#ffffff",
+      "opacity": 0.8,
+      "label": "link",
+      "labelAttr": { "fontSize": 20, "color": "yellow" }
+    }
+  ],
+  "auxiliary": [
+    {
+      "type": "grid",
+      "shape": "polar",
+      "size": 1.0,
+      "rings": 5,
+      "segments": 24,
+      "arc": 180,
+      "color": "#00ff00",
+      "opacity": 0.4,
+      "position": [0,0,0]
+    },
+    {
+      "type": "axis",
+      "length": 1.2,
+      "position": [0,0,0]
+    },
+    {
+      "type": "comment",
+      "text": "Half-circle polar grid",
+      "position": [0.2,-0.2,0],
+      "fontSize": 20,
+      "background": "rgba(0,0,0,0.5)"
+    }
+  ]
+}

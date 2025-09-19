@@ -10,5 +10,6 @@
   { "path": "./assets/data/sample_ultra_huge.json", "title": "Ultra Huge Graph Demo" },
   { "path": "./assets/data/sample_grids.digidiorama.json", "title": "Grid Demo" },
   { "path": "./assets/data/sample_labels_directions.json", "title": "Label Direc Demo" },
-  { "path": "./assets/data/sample_fonts.json", "title": "Font Demo" }
+  { "path": "./assets/data/sample_fonts.json", "title": "Font Demo" },
+  { "path": "./assets/data/sample_with_auxiliary.json", "title": "Auxiliary Demo" }
 ]
