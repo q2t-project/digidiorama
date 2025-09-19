@@ -203,10 +203,35 @@
     // ===== DataAccess =====
     const fileSelect=document.getElementById('fileSelect');
     async function loadManifest(){
-      const res=await fetch('./assets/manifest.json');const mani=await res.json();
-      fileSelect.innerHTML=mani.files.map(f=>`<option value="${f.path}">${f.label}</option>`).join('');
-      await loadJSON(mani.files[0].path);
+    try{
+      const res = await fetch('./assets/manifest.json', {cache:'no-cache'});
+      if(!res.ok) throw new Error(`manifest load failed: ${res.status}`);
+      const mani = await res.json();
+      // どの形でも受けられるように正規化
+      const files = Array.isArray(mani)        ? mani
+                   : Array.isArray(mani.files) ? mani.files
+                   : Array.isArray(mani.items) ? mani.items
+                   : null;
+      if(!files || files.length===0) throw new Error('manifest has no files[]');
+ 
+      fileSelect.innerHTML = files
+        .map(f => `<option value="${f.path}">${f.label ?? f.path}</option>`)
+        .join('');
+ 
+      const urlFile = new URLSearchParams(location.search).get('file');
+      const initial = urlFile || files[0].path;
+      fileSelect.value = initial;
+      await loadJSON(initial);
+    }catch(err){
+      console.warn(err);
+     const box = document.getElementById('errors');
+      if (box) box.textContent = String(err);
+      // フォールバック（manifest が無い/壊れている場合）
+      fileSelect.innerHTML =
+        `<option value="./assets/data/sample_with_auxiliary.json">sample_with_auxiliary.json</option>`;
+      await loadJSON('./assets/data/sample_with_auxiliary.json');
     }
+  }
     async function loadJSON(path){
       const res=await fetch(path);const data=await res.json();
       buildScene(data);
