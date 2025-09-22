@@ -11,20 +11,29 @@
     header{display:flex;gap:.5rem;align-items:center;padding:.5rem .75rem;background:#0e142a;border-bottom:1px solid #1d2748}
     header h1{font-size:14px;font-weight:600;margin:0;letter-spacing:.3px}
     header .spacer{flex:1}
-    header select, header button{appearance:none;border:1px solid #2a3969;background:#131a33;color:var(--fg);padding:.35rem .6rem;border-radius:.4rem;cursor:pointer}
+    header select, header button{
+      appearance:none;border:1px solid #2a3969;background:#131a33;color:var(--fg);
+      padding:.5rem 1rem;border-radius:.4rem;cursor:pointer;min-height:44px
+    }
     header button:hover, header select:hover{border-color:#39529c;background:#1a2347}
     #main{display:grid;grid-template-columns:1fr 250px;overflow:hidden}
     #viewer{position:relative;overflow:hidden}
-    #panel{background:#10172c;border-left:1px solid #1d2748;padding:.5rem;overflow-y:auto}
+    #panel{background:#10172c;border-left:1px solid #1d2748;padding:.5rem;overflow-y:auto;transition:transform .3s ease}
     #panel h2{font-size:13px;margin:.5rem 0}
     #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
     .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
     canvas{display:block;width:100%;height:100%;}
+    /* モバイルドロワー */
     @media(max-width:600px){
       #main{grid-template-columns:1fr;}
-      #panel{display:none;position:absolute;top:0;right:0;width:70%;height:100%;z-index:10}
-      #panel.open{display:block;background:#0b1020}
-      #fab{position:absolute;right:.75rem;bottom:.75rem;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:20}
+      #panel{position:absolute;z-index:10;width:100%;height:40%;bottom:0;left:0;border-left:none;border-top:1px solid #1d2748;transform:translateY(100%)}
+      #panel.open{transform:translateY(0)}
+      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
+    }
+    @media(min-width:601px){
+      #panel{width:250px;right:0;top:0;height:100%;transform:translateX(0)}
+      #panel.closed{transform:translateX(100%)}
+      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
     }
   </style>
 
@@ -61,7 +70,7 @@
     </header>
     <div id="main">
       <div id="viewer"></div>
-      <div id="panel">
+      <div id="panel" class="closed">
         <h2 data-i18n="meta">Meta</h2>
         <div id="meta"></div>
         <div id="counts"></div>
@@ -91,7 +100,9 @@
 
     const controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    controls.zoomSpeed = 2 ;
+    controls.zoomSpeed = window.innerWidth<600 ? 1.2 : 2;
+    controls.rotateSpeed = window.innerWidth<600 ? 0.8 : 1.0;
+    controls.panSpeed = window.innerWidth<600 ? 0.5 : 1.0;
     controls.minDistance = 1;
     controls.maxDistance = 200;
     controls.update();
@@ -99,7 +110,6 @@
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
-    // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
@@ -157,7 +167,7 @@
     // ==== Raycaster ====
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    function onClick(event){
+    renderer.domElement.addEventListener('click',event=>{
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -170,8 +180,7 @@
           showNode(node);
         }
       }
-    }
-    renderer.domElement.addEventListener('click',onClick);
+    });
 
     // === カメラ自動調整 ===
     function fitCameraToScene(padding=1.2){
@@ -187,11 +196,12 @@
       controls.update();
     }
 
+    // === buildScene ===
     function buildScene(data){
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
-      // === Nodes ===
+      // Nodes
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
@@ -202,7 +212,7 @@
         }
       }
 
-      // === Edges ===
+      // Edges
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -215,9 +225,8 @@
         }
       }
 
-      // === Auxiliary ===
+      // Auxiliary
       for(const aux of data.auxiliary||[]){
-        // Grid
         if(aux.type === "grid" && aux.grid){
           const g = aux.grid;
           if(g.shape === "rect"){
@@ -255,7 +264,6 @@
             }
           }
         }
-        // Axis (色指定対応)
         if(aux.type === "axis"){
           const len = aux.length ?? 1;
           const colors = aux.colors || ["#ff0000","#00ff00","#0000ff"];
@@ -303,75 +311,30 @@
     let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
     function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
+    // パネル開閉
+    const panel=document.getElementById('panel');
+    const fab=document.getElementById('fab');
+    fab.onclick=()=>{panel.classList.toggle('open');panel.classList.toggle('closed');};
+
+    // スワイプ操作でパネル開閉
+    let touchStartX=0,touchStartY=0;
+    window.addEventListener("touchstart",e=>{
+      touchStartX=e.touches[0].clientX;
+      touchStartY=e.touches[0].clientY;
+    });
+    window.addEventListener("touchend",e=>{
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      const dy=e.changedTouches[0].clientY-touchStartY;
+      if(Math.abs(dx)>50 && window.innerWidth>600){
+        if(dx<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+      if(Math.abs(dy)>50 && window.innerWidth<=600){
+        if(dy<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+    });
+
+    // レイヤーメニュー制御
     document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
-    document.getElementById('fab').onclick=()=>{document.getElementById('panel').classList.toggle('open');};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
-    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
-
-    const ajv=new Ajv({allErrors:true});
-    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
-    const validate=ajv.compile(schema);
-    function runValidation(data){const valid=validate(data);if(!valid){showErrors(validate.errors.map(e=>`${e.instancePath} ${e.message}`));}else{showErrors([]);} }
-
-    async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
-    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
-
-    const select=document.getElementById('fileSelect');
-    loadManifest().then(list=>{
-      select.innerHTML = "";
-      let firstPath = null;
-
-      if(Array.isArray(list)){ 
-        // 旧形式
-        list.forEach((item,idx)=>{
-          const opt=document.createElement('option');
-          opt.value=item.path;
-          opt.textContent=item.title||item.path;
-          select.appendChild(opt);
-          if(idx===0) firstPath=item.path;
-        });
-      } else if(list.groups){
-        // 新形式: グループ化
-        list.groups.forEach(group=>{
-          const optgroup=document.createElement('optgroup');
-          optgroup.label=group.title;
-          group.files.forEach((item)=>{
-            const opt=document.createElement('option');
-            opt.value=item.path;
-            opt.textContent=item.title||item.path;
-            optgroup.appendChild(opt);
-            if(!firstPath) firstPath=item.path;
-          });
-          select.appendChild(optgroup);
-        });
-      }
-
-      if(firstPath){
-        select.value=firstPath;
-        loadDigidiorama(firstPath).then(data=>{
-          runValidation(data);
-          buildScene(data);
-        });
-      }
-    });
-
-    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
-
-    loadLocale('ja');
-
-    const ro=new ResizeObserver(()=>{
-      const {clientWidth:w,clientHeight:h}=container;
-      renderer.setSize(w,h,true);
-      camera.aspect=w/h;
-      camera.updateProjectionMatrix();
-    });
-    ro.observe(container);
-
-    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
-  </script>
-</body>
-</html>
+    document.getElementById('toggle-nodes').onchange=(ev
