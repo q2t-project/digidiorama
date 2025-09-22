@@ -23,17 +23,27 @@
     #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
     .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
     canvas{display:block;width:100%;height:100%;}
-    /* モバイルドロワー */
+    /* タブUI（モバイルのみ表示） */
+    #tabs { display:none; margin-bottom:.5rem; }
+    #tabs button { flex:1; padding:.5rem; border:none; background:#2a3969; color:#fff; border-radius:.3rem; cursor:pointer; }
+    #tabs button.active { background:var(--accent); }
+    .tab-pane { display:block; }
+    /* モバイル時: ドロワー＋タブ */
     @media(max-width:600px){
       #main{grid-template-columns:1fr;}
       #panel{position:absolute;z-index:10;width:100%;height:40%;bottom:0;left:0;border-left:none;border-top:1px solid #1d2748;transform:translateY(100%)}
       #panel.open{transform:translateY(0)}
       #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
+      #tabs { display:flex; gap:.5rem; }
+      #tab-content .tab-pane { display:none; }
+      #tab-content .tab-pane.active { display:block; }
     }
     @media(min-width:601px){
       #panel{width:250px;right:0;top:0;height:100%;transform:translateX(0)}
       #panel.closed{transform:translateX(100%)}
       #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
+      #tabs { display:none; }
+      #tab-content .tab-pane { display:block; }
     }
   </style>
 
@@ -71,13 +81,16 @@
     <div id="main">
       <div id="viewer"></div>
       <div id="panel" class="closed">
-        <h2 data-i18n="meta">Meta</h2>
-        <div id="meta"></div>
-        <div id="counts"></div>
-        <h2 data-i18n="node">Node</h2>
-        <div id="node"></div>
-        <h2 data-i18n="errors">Errors</h2>
-        <div id="errors"></div>
+        <div id="tabs">
+          <button data-tab="node" class="active">Node</button>
+          <button data-tab="errors">Errors</button>
+          <button data-tab="meta">Meta</button>
+        </div>
+        <div id="tab-content">
+          <div id="meta" class="tab-pane">Meta Info here</div>
+          <div id="node" class="tab-pane">Node Info here</div>
+          <div id="errors" class="tab-pane">Errors here</div>
+        </div>
       </div>
     </div>
     <button id="fab">≡</button>
@@ -110,14 +123,12 @@
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
-    // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
     const auxiliaryGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
 
-    // ==== ラベル生成 ====
     function makeLabelPlane(text, options = {}, nodeId=null) {
       const fontSize  = options.fontSize  ?? 32;
       const fontFamily= options.fontFamily?? "Arial";
@@ -165,7 +176,6 @@
 
     const nodeById=new Map();
 
-    // ==== Raycaster ====
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     renderer.domElement.addEventListener('click',event=>{
@@ -183,7 +193,6 @@
       }
     });
 
-    // === カメラ自動調整 ===
     function fitCameraToScene(padding=1.2){
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
@@ -197,12 +206,10 @@
       controls.update();
     }
 
-    // === buildScene ===
     function buildScene(data){
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
-      // Nodes
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
@@ -213,7 +220,6 @@
         }
       }
 
-      // Edges
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -226,7 +232,6 @@
         }
       }
 
-      // Auxiliary
       for(const aux of data.auxiliary||[]){
         if(aux.type === "grid" && aux.grid){
           const g = aux.grid;
@@ -313,12 +318,24 @@
     let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
     function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
-    // パネル開閉
+    // タブ切替（モバイル用）
+    document.querySelectorAll('#tabs button').forEach(btn=>{
+      btn.onclick=()=>{
+        const tab=btn.dataset.tab;
+        document.querySelectorAll('#tab-content .tab-pane').forEach(p=>{
+          p.classList.toggle('active',p.id===tab);
+        });
+        document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b===btn));
+      };
+    });
+    if(window.innerWidth<=600){
+      document.querySelector('#node').classList.add('active');
+    }
+
     const panel=document.getElementById('panel');
     const fab=document.getElementById('fab');
     fab.onclick=()=>{panel.classList.toggle('open');panel.classList.toggle('closed');};
 
-    // スワイプ操作でパネル開閉
     let touchStartX=0,touchStartY=0;
     window.addEventListener("touchstart",e=>{
       if(!e.touches || e.touches.length===0) return;
@@ -337,7 +354,6 @@
       }
     }, {passive:true});
 
-    // レイヤーメニュー制御
     document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
@@ -346,24 +362,20 @@
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
     document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
 
-    // バリデーション
     const ajv=new Ajv({allErrors:true});
     const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
     const validate=ajv.compile(schema);
     function runValidation(data){const valid=validate(data);if(!valid){showErrors(validate.errors.map(e=>`${e.instancePath} ${e.message}`));}else{showErrors([]);} }
 
-    // データロード
     async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
-    // ファイルセレクト初期化（グループ対応）
     const select=document.getElementById('fileSelect');
     loadManifest().then(list=>{
       select.innerHTML = "";
       let firstPath = null;
 
       if(Array.isArray(list)){ 
-        // 旧形式: 単純配列
         list.forEach((item,idx)=>{
           const opt=document.createElement('option');
           opt.value=item.path;
@@ -372,7 +384,6 @@
           if(idx===0) firstPath=item.path;
         });
       } else if(list.groups){
-        // 新形式: グループ化
         list.groups.forEach(group=>{
           const optgroup=document.createElement('optgroup');
           optgroup.label=group.title;
@@ -395,10 +406,8 @@
 
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
 
-    // i18n 初期化
     loadLocale('ja');
 
-    // レイアウト追従
     const ro=new ResizeObserver(()=>{
       const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,true);
