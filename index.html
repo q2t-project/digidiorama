@@ -55,7 +55,7 @@
           <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label><br/>
           <label><input type="checkbox" id="toggle-edges" checked /> Edges</label><br/>
           <label><input type="checkbox" id="toggle-labels" checked /> Labels</label><br/>
-          <label><input type="checkbox" id="toggle-grids" checked /> Grids</label>
+          <label><input type="checkbox" id="toggle-aux" checked /> Auxiliary</label>
         </div>
       </div>
     </header>
@@ -103,8 +103,8 @@
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
-    const gridGroup=new THREE.Group();
-    scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
+    const auxiliaryGroup=new THREE.Group();
+    scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
 
     // ==== ラベル生成 ====
     function makeLabelPlane(text, options = {}, nodeId=null) {
@@ -188,7 +188,7 @@
     }
 
     function buildScene(data){
-      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();gridGroup.clear();nodeById.clear();
+      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
       // === Nodes ===
@@ -215,10 +215,10 @@
         }
       }
 
-      // === Layers (grid/polar) ===
-      for(const layer of data.layers||[]){
-        if(layer.type === "grid" && layer.grid){
-          const g = layer.grid;
+      // === Auxiliary ===
+      for(const aux of data.auxiliary||[]){
+        if(aux.type === "grid" && aux.grid){
+          const g = aux.grid;
           if(g.shape === "rect"){
             const size = g.size ?? 10;
             const divisions = g.divisions ?? 10;
@@ -229,7 +229,8 @@
             if(g.plane==="yz"){grid.rotation.z=Math.PI/2;}
             if(g.plane==="zx"){grid.rotation.x=Math.PI/2;}
             if(g.position){grid.position.set(...g.position);}
-            gridGroup.add(grid);
+            if(aux.visible===false) grid.visible=false;
+            auxiliaryGroup.add(grid);
           }
           if(g.shape === "polar"){
             const rings = g.rings ?? 5;
@@ -248,7 +249,8 @@
               if(g.plane==="yz"){circle.rotation.y=Math.PI/2;}
               if(g.plane==="zx"){circle.rotation.x=Math.PI/2;}
               if(g.position){circle.position.set(...g.position);}
-              gridGroup.add(circle);
+              if(aux.visible===false) circle.visible=false;
+              auxiliaryGroup.add(circle);
             }
           }
         }
@@ -286,10 +288,10 @@
     document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
     document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-grids').onchange=(ev)=>{gridGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
 
     const ajv=new Ajv({allErrors:true});
-    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},layers:{type:"array"}},required:["meta","nodes","edges"]};
+    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
     const validate=ajv.compile(schema);
     function runValidation(data){const valid=validate(data);if(!valid){showErrors(validate.errors.map(e=>`${e.instancePath} ${e.message}`));}else{showErrors([]);} }
 
