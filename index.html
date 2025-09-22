@@ -102,7 +102,7 @@
     // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
-    const labelGroup=new THREE.Group(); // エッジラベル専用
+    const labelGroup=new THREE.Group();
     const gridGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,gridGroup);
 
@@ -154,7 +154,7 @@
 
     const nodeById=new Map();
 
-    // ==== Raycaster for label click ====
+    // ==== Raycaster ====
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     function onClick(event){
@@ -162,7 +162,6 @@
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse,camera);
-      // ノードラベルも対象に含める
       const intersects = raycaster.intersectObjects(nodeGroup.children.concat(labelGroup.children),true);
       if(intersects.length>0){
         const mesh = intersects[0].object;
@@ -179,12 +178,10 @@
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = camera.fov * (Math.PI / 180);
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
       cameraZ *= padding;
-
       camera.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
       controls.target.copy(center);
       controls.update();
@@ -194,16 +191,18 @@
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();gridGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
+      // === Nodes ===
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
         nodeGroup.add(m);nodeById.set(n.id,m);
         if(n.label){
           const labelMesh=makeLabelPlane(n.label,n.labelAttr||{},n.id);
-          m.add(labelMesh); // ノードにアタッチ
+          m.add(labelMesh);
         }
       }
 
+      // === Edges ===
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -212,7 +211,46 @@
         if(e.label){
           const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
           const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});edgeLabel.position.copy(midpoint);
-          labelGroup.add(edgeLabel); // エッジラベルは独立
+          labelGroup.add(edgeLabel);
+        }
+      }
+
+      // === Layers (grid/polar) ===
+      for(const layer of data.layers||[]){
+        if(layer.type === "grid" && layer.grid){
+          const g = layer.grid;
+          if(g.shape === "rect"){
+            const size = g.size ?? 10;
+            const divisions = g.divisions ?? 10;
+            const color = g.color ?? 0x444444;
+            const grid = new THREE.GridHelper(size, divisions, color, color);
+            grid.material.opacity = g.opacity ?? 0.3;
+            grid.material.transparent = true;
+            if(g.plane==="yz"){grid.rotation.z=Math.PI/2;}
+            if(g.plane==="zx"){grid.rotation.x=Math.PI/2;}
+            if(g.position){grid.position.set(...g.position);}
+            gridGroup.add(grid);
+          }
+          if(g.shape === "polar"){
+            const rings = g.rings ?? 5;
+            const segments = g.segments ?? 36;
+            const radius = g.size ?? 5;
+            const mat = new THREE.LineBasicMaterial({color:g.color??0x444444, transparent:true, opacity:g.opacity??0.3});
+            for(let r=1;r<=rings;r++){
+              const geom = new THREE.BufferGeometry();
+              const pts=[];
+              for(let i=0;i<=segments;i++){
+                const theta = (i/segments)*2*Math.PI;
+                pts.push(new THREE.Vector3(Math.cos(theta)*radius*r/rings, Math.sin(theta)*radius*r/rings, 0));
+              }
+              geom.setFromPoints(pts);
+              const circle=new THREE.LineLoop(geom,mat);
+              if(g.plane==="yz"){circle.rotation.y=Math.PI/2;}
+              if(g.plane==="zx"){circle.rotation.x=Math.PI/2;}
+              if(g.position){circle.position.set(...g.position);}
+              gridGroup.add(circle);
+            }
+          }
         }
       }
 
