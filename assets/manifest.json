@@ -1,15 +1,37 @@
-[
-  { "path": "./assets/data/sample_herac.json","title": "Sample Herac"},
-  { "path": "./assets/data/sample_labels.json", "title": "Label Directions" },
-  { "path": "./assets/data/sample_edges.json", "title": "Edge Attributes Demo" },
-  { "path": "./assets/data/sample_edges2.json", "title": "Edge Attributes Demo" },
-  { "path": "./assets/data/sample_edges3.json", "title": "Edge Attributes Demo" },
-  { "path": "./assets/data/sample_mixed.json", "title": "Mixed Features" },
-  { "path": "./assets/data/sample_large.json", "title": "Large Graph Demo" },
-  { "path": "./assets/data/sample_huge.json", "title": "Huge Graph Demo" },
-  { "path": "./assets/data/sample_ultra_huge.json", "title": "Ultra Huge Graph Demo" },
-  { "path": "./assets/data/sample_grids.digidiorama.json", "title": "Grid Demo" },
-  { "path": "./assets/data/sample_labels_directions.json", "title": "Label Direc Demo" },
-  { "path": "./assets/data/sample_fonts.json", "title": "Font Demo" },
-  { "path": "./assets/data/sample_with_auxiliary.json", "title": "Auxiliary Demo" }
-]
+{
+  "groups": [
+    {
+      "title": "基本サンプル",
+      "files": [
+        { "path": "./assets/data/sample_herac.json", "title": "Sample Herac" },
+        { "path": "./assets/data/sample_labels.json", "title": "Label Directions" },
+        { "path": "./assets/data/sample_labels_directions.json", "title": "Label Direc Demo" }
+      ]
+    },
+    {
+      "title": "エッジ検証",
+      "files": [
+        { "path": "./assets/data/sample_edges.json", "title": "Edge Attributes Demo 1" },
+        { "path": "./assets/data/sample_edges2.json", "title": "Edge Attributes Demo 2" },
+        { "path": "./assets/data/sample_edges3.json", "title": "Edge Attributes Demo 3" }
+      ]
+    },
+    {
+      "title": "応用サンプル",
+      "files": [
+        { "path": "./assets/data/sample_mixed.json", "title": "Mixed Features" },
+        { "path": "./assets/data/sample_with_auxiliary.json", "title": "Auxiliary Demo" },
+        { "path": "./assets/data/sample_fonts.json", "title": "Font Demo" },
+        { "path": "./assets/data/sample_grids.digidiorama.json", "title": "Grid Demo" }
+      ]
+    },
+    {
+      "title": "規模別テスト",
+      "files": [
+        { "path": "./assets/data/sample_large.json", "title": "Large Graph Demo" },
+        { "path": "./assets/data/sample_huge.json", "title": "Huge Graph Demo" },
+        { "path": "./assets/data/sample_ultra_huge.json", "title": "Ultra Huge Graph Demo" }
+      ]
+    }
+  ]
+}

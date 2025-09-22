@@ -322,10 +322,43 @@
 
     const select=document.getElementById('fileSelect');
     loadManifest().then(list=>{
-      const files=Array.isArray(list)?list:list.files||[];
-      files.forEach(item=>{const opt=document.createElement('option');opt.value=item.path;opt.textContent=item.title||item.path;select.appendChild(opt);});
-      if(files[0]){select.value=files[0].path;loadDigidiorama(files[0].path).then(data=>{runValidation(data);buildScene(data);});}
+      select.innerHTML = "";
+      let firstPath = null;
+
+      if(Array.isArray(list)){ 
+        // 旧形式
+        list.forEach((item,idx)=>{
+          const opt=document.createElement('option');
+          opt.value=item.path;
+          opt.textContent=item.title||item.path;
+          select.appendChild(opt);
+          if(idx===0) firstPath=item.path;
+        });
+      } else if(list.groups){
+        // 新形式: グループ化
+        list.groups.forEach(group=>{
+          const optgroup=document.createElement('optgroup');
+          optgroup.label=group.title;
+          group.files.forEach((item)=>{
+            const opt=document.createElement('option');
+            opt.value=item.path;
+            opt.textContent=item.title||item.path;
+            optgroup.appendChild(opt);
+            if(!firstPath) firstPath=item.path;
+          });
+          select.appendChild(optgroup);
+        });
+      }
+
+      if(firstPath){
+        select.value=firstPath;
+        loadDigidiorama(firstPath).then(data=>{
+          runValidation(data);
+          buildScene(data);
+        });
+      }
     });
+
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
 
     loadLocale('ja');
