@@ -62,6 +62,10 @@
       "type": "hud",
       "items": ["fps", "counts"],
       "visible": true
+    },
+    { "type":"hud",
+      "items":["fps","counts"],
+      "visible":true
     }
   ]
 }
