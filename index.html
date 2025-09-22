@@ -217,6 +217,7 @@
 
       // === Auxiliary ===
       for(const aux of data.auxiliary||[]){
+        // Grid
         if(aux.type === "grid" && aux.grid){
           const g = aux.grid;
           if(g.shape === "rect"){
@@ -253,6 +254,14 @@
               auxiliaryGroup.add(circle);
             }
           }
+        }
+        // Axis
+        if(aux.type === "axis"){
+          const len = aux.length ?? 1;
+          const axis = new THREE.AxesHelper(len);
+          if(aux.position){axis.position.set(...aux.position);}
+          if(aux.visible===false) axis.visible=false;
+          auxiliaryGroup.add(axis);
         }
       }
 
