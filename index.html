@@ -110,6 +110,7 @@
     scene.add(new THREE.AmbientLight(0xffffff,0.6));
     const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
+    // ====== グループ ======
     const nodeGroup=new THREE.Group();
     const edgeGroup=new THREE.Group();
     const labelGroup=new THREE.Group();
@@ -308,6 +309,7 @@
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
       (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
+    // i18n
     let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
     function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
@@ -319,10 +321,12 @@
     // スワイプ操作でパネル開閉
     let touchStartX=0,touchStartY=0;
     window.addEventListener("touchstart",e=>{
+      if(!e.touches || e.touches.length===0) return;
       touchStartX=e.touches[0].clientX;
       touchStartY=e.touches[0].clientY;
-    });
+    }, {passive:true});
     window.addEventListener("touchend",e=>{
+      if(!e.changedTouches || e.changedTouches.length===0) return;
       const dx=e.changedTouches[0].clientX-touchStartX;
       const dy=e.changedTouches[0].clientY-touchStartY;
       if(Math.abs(dx)>50 && window.innerWidth>600){
@@ -331,10 +335,79 @@
       if(Math.abs(dy)>50 && window.innerWidth<=600){
         if(dy<0) panel.classList.add('open'); else panel.classList.remove('open');
       }
-    });
+    }, {passive:true});
 
     // レイヤーメニュー制御
     document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
-    document.getElementById('toggle-nodes').onchange=(ev
+    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
+
+    // バリデーション
+    const ajv=new Ajv({allErrors:true});
+    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
+    const validate=ajv.compile(schema);
+    function runValidation(data){const valid=validate(data);if(!valid){showErrors(validate.errors.map(e=>`${e.instancePath} ${e.message}`));}else{showErrors([]);} }
+
+    // データロード
+    async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
+    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
+
+    // ファイルセレクト初期化（グループ対応）
+    const select=document.getElementById('fileSelect');
+    loadManifest().then(list=>{
+      select.innerHTML = "";
+      let firstPath = null;
+
+      if(Array.isArray(list)){ 
+        // 旧形式: 単純配列
+        list.forEach((item,idx)=>{
+          const opt=document.createElement('option');
+          opt.value=item.path;
+          opt.textContent=item.title||item.path;
+          select.appendChild(opt);
+          if(idx===0) firstPath=item.path;
+        });
+      } else if(list.groups){
+        // 新形式: グループ化
+        list.groups.forEach(group=>{
+          const optgroup=document.createElement('optgroup');
+          optgroup.label=group.title;
+          (group.files||[]).forEach(item=>{
+            const opt=document.createElement('option');
+            opt.value=item.path;
+            opt.textContent=item.title||item.path;
+            optgroup.appendChild(opt);
+            if(!firstPath) firstPath=item.path;
+          });
+          select.appendChild(optgroup);
+        });
+      }
+
+      if(firstPath){
+        select.value=firstPath;
+        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
+      }
+    });
+
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
+
+    // i18n 初期化
+    loadLocale('ja');
+
+    // レイアウト追従
+    const ro=new ResizeObserver(()=>{
+      const {clientWidth:w,clientHeight:h}=container;
+      renderer.setSize(w,h,true);
+      camera.aspect=w/h;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(container);
+
+    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
+  </script>
+</body>
+</html>
