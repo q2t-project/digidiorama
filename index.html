@@ -20,18 +20,6 @@
     #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
     .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
     canvas{display:block;width:100%;height:100%;}
-    #hud {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      font-size: 12px;
-      color: #0ff;
-      background: rgba(0,0,0,0.4);
-      padding: 2px 6px;
-      border-radius: 4px;
-      pointer-events: none;
-      z-index: 5;
-    }
     @media(max-width:600px){
       #main{grid-template-columns:1fr;}
       #panel{display:none;position:absolute;top:0;right:0;width:70%;height:100%;z-index:10}
@@ -49,7 +37,6 @@
       }
     }
   </script>
-  <script src="https://unpkg.com/stats.js/build/stats.min.js"></script>
 </head>
 <body>
   <div id="app">
@@ -86,7 +73,6 @@
     </div>
     <button id="fab">≡</button>
   </div>
-  <div id="hud"></div>
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
   <script type="module">
@@ -119,28 +105,6 @@
     const labelGroup=new THREE.Group();
     const auxiliaryGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
-
-    // ==== HUD ====
-    const hudBox=document.getElementById("hud");
-    let stats=null;
-    let hudConfig=null;
-    function setupHUD(items,data){
-      hudConfig=items;
-      hudBox.innerHTML="";
-      hudBox.style.display=(items&&items.length>0)?"block":"none";
-      if(items.includes("fps")){
-        stats=new Stats();
-        stats.showPanel(0);
-        stats.dom.style.position="relative";
-        hudBox.appendChild(stats.dom);
-      }
-      if(items.includes("counts")){
-        const p=document.createElement("div");
-        p.id="hud-counts";
-        p.textContent=`Nodes: ${(data.nodes||[]).length}, Edges: ${(data.edges||[]).length}`;
-        hudBox.appendChild(p);
-      }
-    }
 
     // ==== ラベル生成 ====
     function makeLabelPlane(text, options = {}, nodeId=null) {
@@ -225,7 +189,6 @@
 
     function buildScene(data){
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
-      hudBox.innerHTML="";hudBox.style.display="none";stats=null;hudConfig=null;
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
       // === Nodes ===
@@ -292,17 +255,26 @@
             }
           }
         }
-        // Axis
+        // Axis (色指定対応)
         if(aux.type === "axis"){
           const len = aux.length ?? 1;
-          const axis = new THREE.AxesHelper(len);
-          if(aux.position){axis.position.set(...aux.position);}
-          if(aux.visible===false) axis.visible=false;
-          auxiliaryGroup.add(axis);
-        }
-        // HUD
-        if(aux.type === "hud" && aux.visible!==false){
-          setupHUD(aux.items||[], data);
+          const colors = aux.colors || ["#ff0000","#00ff00","#0000ff"];
+          const axes = [
+            { dir: new THREE.Vector3(1,0,0), color: colors[0] },
+            { dir: new THREE.Vector3(0,1,0), color: colors[1] },
+            { dir: new THREE.Vector3(0,0,1), color: colors[2] }
+          ];
+          axes.forEach(axisDef=>{
+            const geom = new THREE.BufferGeometry().setFromPoints([
+              new THREE.Vector3(0,0,0),
+              axisDef.dir.clone().multiplyScalar(len)
+            ]);
+            const mat = new THREE.LineBasicMaterial({ color: axisDef.color });
+            const line = new THREE.Line(geom,mat);
+            if(aux.position){line.position.set(...aux.position);}
+            if(aux.visible===false) line.visible=false;
+            auxiliaryGroup.add(line);
+          });
         }
       }
 
@@ -338,7 +310,7 @@
     document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
     document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;hudBox.style.display=ev.target.checked?"block":"none";};
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
 
     const ajv=new Ajv({allErrors:true});
     const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
@@ -366,14 +338,7 @@
     });
     ro.observe(container);
 
-    function animate(){
-      if(stats) stats.begin();
-      controls.update();
-      renderer.render(scene,camera);
-      if(stats) stats.end();
-      requestAnimationFrame(animate);
-    }
-    animate();
+    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
   </script>
 </body>
 </html>
