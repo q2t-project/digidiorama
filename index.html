@@ -3,210 +3,267 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>digidiorama viewer/</title>
+  <title>digidiorama viewer</title>
 
-  <!-- 404対策: インラインSVGファビコン（ファイル不要） -->
-  <link rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230b1020'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='%235aa9ff'%3EΔ%3C/text%3E%3C/svg%3E">
+  <!-- favicon（404対策・プロジェクトの assets/ に配置想定） -->
+  <link rel="icon" href="./assets/favicon.ico" />
 
   <style>
-    :root { --bg:#0b1020; --fg:#e6edf3; --accent:#5aa9ff; }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
-    #app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr}
-    header{display:flex;gap:.5rem;align-items:center;padding:.5rem .75rem;background:#0e142a;border-bottom:1px solid #1d2748}
-    header h1{font-size:14px;font-weight:600;margin:0;letter-spacing:.3px}
-    header .spacer{flex:1}
-    header select,header button{appearance:none;border:1px solid #2a3969;background:#131a33;color:var(--fg);padding:.5rem 1rem;border-radius:.4rem;cursor:pointer;min-height:44px}
-    header button:hover,header select:hover{border-color:#39529c;background:#1a2347}
-    #main{display:grid;grid-template-columns:1fr 250px;overflow:hidden}
-    #viewer{position:relative;overflow:hidden}
-    #panel{background:#10172c;border-left:1px solid #1d2748;padding:.5rem;overflow-y:auto;transition:transform .3s ease}
-    #panel h2{font-size:13px;margin:.5rem 0}
-    #panel .meta-item,#panel .error-item,#panel .node-item{font-size:12px;margin-bottom:.25rem}
-    .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
-    canvas{display:block;width:100%;height:100%;}
-    #tabs{display:none;margin-bottom:.5rem}
-    #tabs button{flex:1;padding:.5rem;border:none;background:#2a3969;color:#fff;border-radius:.3rem;cursor:pointer}
-    #tabs button.active{background:var(--accent)}
-    .tab-pane{display:block}
-    @media(max-width:600px){
-      #main{grid-template-columns:1fr}
-      #panel{position:absolute;z-index:10;width:100%;height:40%;bottom:0;left:0;border-left:none;border-top:1px solid #1d2748;transform:translateY(100%)}
-      #panel.open{transform:translateY(0)}
-      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
-      #tabs{display:flex;gap:.5rem}
-      #tab-content .tab-pane{display:none}
-      #tab-content .tab-pane.active{display:block}
+    :root{
+      --bg:#0e1522;
+      --panel:#0f1a2b;
+      --text:#e8eefc;
+      --muted:#a8b3c9;
+      --accent:#6aa9ff;
+      --ok:#41d1a7;
+      --warn:#ffb454;
+      --err:#ff6464;
+      --btn:#16233b;
+      --btn-hover:#1c2b4d;
+      --badge:#23365e;
     }
-    @media(min-width:601px){
-      #panel{width:250px;right:0;top:0;height:100%;transform:translateX(0)}
-      #panel.closed{transform:translateX(100%)}
-      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
-      #tabs{display:none}
-      #tab-content .tab-pane{display:block}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Meiryo","Helvetica Neue",Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none}
+    .toolbar{
+      position:fixed;inset:0 0 auto 0;height:56px;display:flex;gap:10px;
+      align-items:center;padding:8px 12px;background:#0e1522ee;backdrop-filter:saturate(150%) blur(4px);z-index:10;
+      border-bottom:1px solid #0f2544;
     }
+    .spacer{flex:1}
+    .btn{
+      display:inline-flex;align-items:center;gap:.5rem;height:40px;padding:0 14px;border-radius:10px;border:1px solid #223456;
+      background:var(--btn);color:var(--text);cursor:pointer;user-select:none;
+    }
+    .btn:hover{background:var(--btn-hover)}
+    .btn.active{outline:2px solid var(--accent)}
+    .select{height:40px;border-radius:10px;border:1px solid #223456;background:var(--btn);color:var(--text);padding:0 10px}
+    #stage{position:fixed;inset:56px 0 24px 0}
+    #hud{position:fixed;inset:auto 0 0 0;height:24px;display:flex;align-items:center;gap:12px;padding:2px 10px;color:var(--muted);background:#0e1522cc;border-top:1px solid #0f2544;font-size:12px}
+    .menu{
+      position:relative
+    }
+    .menu > .panel{
+      position:absolute;right:0;top:48px;background:var(--panel);border:1px solid #223456;border-radius:12px;min-width:220px;
+      box-shadow:0 10px 30px #0006;padding:10px;display:none;z-index:20
+    }
+    .menu.open > .panel{display:block}
+    .row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+    .row label{color:var(--muted)}
+    .switch{width:44px;height:24px;border-radius:999px;background:#1c2b4d;position:relative;cursor:pointer;border:1px solid #223456}
+    .switch input{appearance:none;width:0;height:0;opacity:0;position:absolute}
+    .switch i{
+      position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#8898b3;transition:transform .18s ease, background .18s ease
+    }
+    .switch input:checked + i{transform:translateX(20px);background:#9fe870}
+    .meta{padding:6px 10px;border-radius:10px;background:var(--badge);color:#cfe1ff;font-size:12px}
+    .badge{padding:2px 8px;border-radius:999px;background:#1e2c49; color:#cfe1ff;font-size:12px}
+    .vis-chip{display:inline-flex;gap:6px;align-items:center}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    canvas{display:block}
   </style>
-
-  <!-- importmap は JSON のみ（JSは入れないこと！） -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "ajv": "https://esm.sh/ajv@8/dist/2020?bundle"
-      }
-    }
-  </script>
 </head>
 <body>
-  <div id="app">
-    <header>
-      <h1 data-i18n="title">デジジオラマ</h1>
-      <div class="spacer"></div>
+  <div class="toolbar">
+    <select id="fileSelect" class="select" title="デモデータ">
+      <option value="">Loading…</option>
+    </select>
 
-      <select id="fileSelect"></select>
-      <select id="langSelect">
-        <option value="ja">日本語</option>
-        <option value="en">English</option>
-      </select>
+    <button id="btnLang" class="btn" title="言語切替">日本語</button>
+    <button id="btnReset" class="btn" title="初期ビューへ戻す">Reset</button>
+    <button id="btnFit" class="btn" title="ノードにフィット">Fit</button>
 
-      <button id="btnReset" data-i18n="reset">Reset</button>
-      <!-- 追加: Fit ボタン -->
-      <button id="btnFit" title="Fit camera to scene">Fit</button>
-
-      <div id="layersMenu" style="position:relative;">
-        <button id="btnLayers" data-i18n="layers">Layers ▼</button>
-        <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
-          <label><input type="checkbox" id="toggle-nodes" checked> Nodes</label><br>
-          <label><input type="checkbox" id="toggle-edges" checked> Edges</label><br>
-          <label><input type="checkbox" id="toggle-labels" checked> Labels</label><br>
-          <label><input type="checkbox" id="toggle-aux" checked> Auxiliary</label>
+    <div class="menu" id="layersMenu">
+      <button id="btnLayers" class="btn">Layers ▾</button>
+      <div class="panel">
+        <div class="row"><label>Nodes</label>
+          <span class="vis-chip">
+            <span id="count-nodes" class="badge">0</span>
+            <span class="switch"><input id="toggle-nodes" type="checkbox" checked><i></i></span>
+          </span>
         </div>
-      </div>
-    </header>
-
-    <div id="main">
-      <div id="viewer"></div>
-      <div id="panel" class="closed">
-        <div id="tabs">
-          <button data-tab="node" class="active">Node</button>
-          <button data-tab="errors">Errors</button>
-          <button data-tab="meta">Meta</button>
+        <div class="row"><label>Edges</label>
+          <span class="vis-chip">
+            <span id="count-edges" class="badge">0</span>
+            <span class="switch"><input id="toggle-edges" type="checkbox" checked><i></i></span>
+          </span>
         </div>
-        <div id="tab-content">
-          <div id="node" class="tab-pane active"></div>
-          <div id="errors" class="tab-pane"></div>
-          <div id="meta" class="tab-pane">
-            <!-- showMeta() が参照する counts プレースホルダ -->
-            <div id="counts"></div>
-          </div>
+        <div class="row"><label>Labels</label>
+          <span class="switch"><input id="toggle-labels" type="checkbox" checked><i></i></span>
+        </div>
+        <div class="row"><label>Aux</label>
+          <span class="switch"><input id="toggle-aux" type="checkbox" checked><i></i></span>
         </div>
       </div>
     </div>
-    <button id="fab">≡</button>
+
+    <div class="spacer"></div>
+
+    <span class="meta" id="metaTitle">—</span>
   </div>
-  <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
-  <!-- 以降は通常の module スクリプト -->
+  <div id="stage"></div>
+
+  <div id="hud">
+    <span>MIT © q2t-project</span>
+    <span id="version" class="mono"></span>
+    <span id="counts" class="mono"></span>
+    <span id="msg" class="mono"></span>
+  </div>
+
+  <!-- Three.js + controls はローカルの scripts/ 配下から相対import -->
   <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import Ajv from 'ajv';
+    /******************************************************************
+     * Imports
+     ******************************************************************/
+    import * as THREE from './scripts/three.module.js';
+    import { OrbitControls } from './scripts/OrbitControls.js';
+    // Ajv ESM(2020 bundle)。存在しない場合は try/catch でスキップ可能に
+    let Ajv = null;
+    try {
+      const m = await import('./scripts/2020.bundle.mjs').catch(()=>import('./scripts/2020bundle.mjs')).catch(()=>null);
+      Ajv = m?.default ?? m?.Ajv ?? null;
+    } catch(_){ Ajv = null }
 
-    const container = document.getElementById('viewer');
+    /******************************************************************
+     * Globals
+     ******************************************************************/
+    const NS = 'ddv:v2:';                   // localStorage 名前空間
+    const VERSION = 'v2.0.0';               // 表示用バージョン
+    document.getElementById('version').textContent = ` ${VERSION}`;
+
+    // Three.js essentials
+    const container = document.getElementById('stage');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b1020);
-
-    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-    camera.up.set(0,0,1);
-
-    const renderer = new THREE.WebGLRenderer({ antialias:true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    scene.background = new THREE.Color(0x0e1522);
+    const camera = new THREE.PerspectiveCamera(60, 16/9, 0.1, 1e7);
+    const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
-
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.update();
-
-    // lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const dir = new THREE.DirectionalLight(0xffffff, 0.8);
-    dir.position.set(5,10,7);
-    scene.add(dir);
 
     // groups
+    const root = new THREE.Group();
     const nodeGroup = new THREE.Group();
     const edgeGroup = new THREE.Group();
     const labelGroup = new THREE.Group();
     const auxiliaryGroup = new THREE.Group();
-    scene.add(edgeGroup, nodeGroup, labelGroup, auxiliaryGroup);
+    root.add(nodeGroup, edgeGroup, labelGroup, auxiliaryGroup);
+    scene.add(root);
 
-    // label helper
-    function makeLabelPlane(text, options={}, nodeId=null){
-      const fontSize  = options.fontSize  ?? 32;
-      const fontFamily= options.fontFamily?? 'Arial';
-      const color     = options.color     ?? 'white';
-      const opacity   = options.opacity   ?? 1.0;
-      const background= options.background?? null;
-      const plane     = options.plane     ?? 'zx';
-      const direction = options.direction ?? 0;
-      const worldScale= options.worldScale?? 0.1;
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      const metrics = ctx.measureText(text);
-      canvas.width = metrics.width + 20;
-      canvas.height = fontSize * 1.5;
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      if(background){ ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
-      ctx.fillStyle = color;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, canvas.width/2, canvas.height/2);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true, opacity, side:THREE.DoubleSide });
-      const geom = new THREE.PlaneGeometry(canvas.width*worldScale, canvas.height*worldScale);
-      const mesh = new THREE.Mesh(geom, mat);
-
-      switch(plane){
-        case 'yz': mesh.rotation.y = Math.PI/2; mesh.rotation.z = Math.PI/2; break;
-        case 'zx': mesh.rotation.x = Math.PI/2; mesh.rotation.y += Math.PI; break;
-      }
-      if(direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
-      if(options.offset) mesh.position.set(...options.offset);
-      if(nodeId) mesh.userData.nodeId = nodeId;
-      return mesh;
+    // lights
+    {
+      const a = new THREE.AmbientLight(0xffffff, .45);
+      const d = new THREE.DirectionalLight(0xffffff, .6);
+      d.position.set(1,2,3);
+      scene.add(a, d);
     }
 
-    const nodeById = new Map();
+    // viewport / resize
+    function resize(){
+      const w = container.clientWidth, h = container.clientHeight;
+      camera.aspect = w/h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+    new ResizeObserver(resize).observe(container);
 
-    // pick node/label
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    renderer.domElement.addEventListener('click', e=>{
-      const r = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-      mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(nodeGroup.children.concat(labelGroup.children), true);
-      if(hits.length){
-        const m = hits[0].object;
-        if(m.userData.nodeId){
-          const n = nodeById.get(m.userData.nodeId).userData;
-          showNode(n);
-        }
+    // HUD
+    const $msg = document.getElementById('msg');
+    const $metaTitle = document.getElementById('metaTitle');
+    const $counts = document.getElementById('counts');
+    const $cn = (id)=>document.getElementById(id);
+
+    // menu toggle
+    const layersMenu = document.getElementById('layersMenu');
+    document.getElementById('btnLayers').addEventListener('click', ()=>{
+      layersMenu.classList.toggle('open');
+    });
+    window.addEventListener('click', (e)=>{
+      if (!layersMenu.contains(e.target) && layersMenu.classList.contains('open')){
+        layersMenu.classList.remove('open');
       }
     });
 
-    // ★Fit: シーン全体にカメラを合わせる
-    function fitCameraToScene(padding=1.2){
-      const box = new THREE.Box3().setFromObject(scene);
+    /******************************************************************
+     * Home pose / layer defaults
+     ******************************************************************/
+    let home = {
+      pos: new THREE.Vector3(300, 300, 300),
+      target: new THREE.Vector3(0,0,0),
+      up: new THREE.Vector3(0,0,1),
+      fov: 60
+    };
+    const layersDefault = { nodes:true, edges:true, labels:true, aux:true };
+
+    function rememberHomeFromCurrentView(){
+      home.pos.copy(camera.position);
+      home.target.copy(controls.target);
+      home.up.copy(camera.up);
+      home.fov = camera.fov;
+    }
+    function resetView(){
+      camera.fov = home.fov;
+      camera.position.copy(home.pos);
+      camera.up.copy(home.up);
+      camera.updateProjectionMatrix();
+      controls.target.copy(home.target);
+      controls.update();
+
+      // レイヤーを既定に
+      const pairs = [
+        ['toggle-nodes',  nodeGroup,      layersDefault.nodes],
+        ['toggle-edges',  edgeGroup,      layersDefault.edges],
+        ['toggle-labels', labelGroup,     layersDefault.labels],
+        ['toggle-aux',    auxiliaryGroup, layersDefault.aux],
+      ];
+      for (const [id, group, def] of pairs){
+        const el = $cn(id); if (el) el.checked = def;
+        group.visible = def;
+      }
+      saveLayers();
+    }
+
+    /******************************************************************
+     * Fit camera
+     ******************************************************************/
+    function fitCameraToScene(padding=1.25){
+      const box = new THREE.Box3().setFromObject(root);
+      if (box.isEmpty()){
+        camera.position.set(300,300,300);
+        controls.target.set(0,0,0);
+        controls.update();
+        return;
+      }
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
       const maxDim = Math.max(size.x,size.y,size.z) || 1;
-      const fov = camera.fov * (Math.PI/180);
+      const fov = camera.fov * Math.PI/180;
+      let dist = Math.abs(maxDim/2 / Math.tan(fov/2));
+      dist *= padding;
+      camera.position.set(center.x + dist, center.y + dist, center.z + dist);
+      controls.target.copy(center);
+      controls.update();
+    }
+    function fitCameraToNodes(nodes, padding=1.25){
+      const box = new THREE.Box3();
+      if (Array.isArray(nodes) && nodes.length){
+        for (const n of nodes){
+          if (n?.position && n.position.length===3){
+            box.expandByPoint(new THREE.Vector3(...n.position));
+          }
+        }
+      }
+      if (box.isEmpty()){
+        fitCameraToScene(padding);
+        return;
+      }
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const maxDim = Math.max(size.x,size.y,size.z) || 1;
+      const fov = camera.fov * Math.PI/180;
       let dist = Math.abs(maxDim/2 / Math.tan(fov/2));
       dist *= padding;
       camera.position.set(center.x + dist, center.y + dist, center.z + dist);
@@ -214,217 +271,311 @@
       controls.update();
     }
 
-    function buildScene(data){
-      nodeGroup.clear(); edgeGroup.clear(); labelGroup.clear(); auxiliaryGroup.clear(); nodeById.clear();
-      const sphere = new THREE.SphereGeometry(0.05, 8, 8);
-
-      for(const n of (data.nodes||[])){
-        const mat = new THREE.MeshBasicMaterial({ color:0xaaaaaa, transparent:true, opacity:0.3 });
-        const m = new THREE.Mesh(sphere, mat); m.position.set(...n.position); m.userData = n;
-        nodeGroup.add(m); nodeById.set(n.id, m);
-        if(n.label){ m.add(makeLabelPlane(n.label, n.labelAttr||{}, n.id)); }
-      }
-
-      for(const e of (data.edges||[])){
-        const a = nodeById.get(e.source), b = nodeById.get(e.target);
-        if(!a || !b) continue;
-        const geo = new THREE.BufferGeometry().setFromPoints([a.position, b.position]);
-        const mat = new THREE.LineBasicMaterial({ color:e.color||0x9ec1ff, transparent:true, opacity:e.opacity||1.0 });
-        edgeGroup.add(new THREE.Line(geo, mat));
-        if(e.label){
-          const mid = new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
-          const L = makeLabelPlane(e.label, e.labelAttr||{});
-          L.position.copy(mid); labelGroup.add(L);
-        }
-      }
-
-      for(const aux of (data.auxiliary||[])){
-        if(aux.type==='grid' && aux.grid){
-          const g = aux.grid;
-          if(g.shape==='rect'){
-            const size=g.size??10, div=g.divisions??10, color=g.color??0x444444;
-            const grid=new THREE.GridHelper(size,div,color,color);
-            grid.material.opacity=g.opacity??0.3; grid.material.transparent=true;
-            if(g.plane==='yz') grid.rotation.z=Math.PI/2;
-            if(g.plane==='zx') grid.rotation.x=Math.PI/2;
-            if(g.position) grid.position.set(...g.position);
-            if(aux.visible===false) grid.visible=false;
-            auxiliaryGroup.add(grid);
-          }
-        }
-        if(aux.type==='axis'){
-          const len=aux.length??1, colors=aux.colors||['#f00','#0f0','#00f'];
-          [[1,0,0],[0,1,0],[0,0,1]].forEach((d,i)=>{
-            const geom=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...d).multiplyScalar(len)]);
-            const mat=new THREE.LineBasicMaterial({color:colors[i]});
-            const line=new THREE.Line(geom,mat);
-            if(aux.position) line.position.set(...aux.position);
-            if(aux.visible===false) line.visible=false;
-            auxiliaryGroup.add(line);
-          });
-        }
-      }
-
-      showMeta(data.meta, data);
-      fitCameraToScene();
+    /******************************************************************
+     * Data loading (manifest + model)
+     ******************************************************************/
+    async function loadManifest(){
+      // ルート or assets に置かれた manifest を読む
+      const res = await fetch('./assets/manifest.json').catch(()=>fetch('./manifest.json'));
+      if (!res.ok) throw new Error('manifest not found');
+      return res.json();
+    }
+    async function loadDigidiorama(path){
+      const bust = `?v=${Date.now()}`;
+      const res = await fetch(path + (path.includes('?')?'&':'?') + 'v=' + Date.now());
+      if (!res.ok) throw new Error(`load error: ${path}`);
+      return res.json();
     }
 
-    function showMeta(meta,data){
-      const box=document.getElementById('meta');
-      box.innerHTML='';
-      if(meta){ for(const [k,v] of Object.entries(meta)){ const d=document.createElement('div'); d.className='meta-item'; d.textContent=`${k}: ${v}`; box.appendChild(d); } }
-      const countsEl = document.getElementById('counts');
-      if(countsEl){ countsEl.innerHTML = `<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`; }
-    }
-
-    function showNode(node){
-      const box=document.getElementById('node'); box.innerHTML='';
-      if(!node) return;
-      for(const [k,v] of Object.entries(node)){ const d=document.createElement('div'); d.className='node-item'; d.textContent=`${k}: ${v}`; box.appendChild(d); }
-    }
-
-    function showErrors(errs){
-      const box=document.getElementById('errors'); box.innerHTML='';
-      (errs||[]).forEach(e=>{ const d=document.createElement('div'); d.className='error-item'; d.textContent=e; box.appendChild(d); });
-    }
-
-    // i18n
-    let dict = {};
-    async function loadLocale(locale='ja'){
-      const url = `./assets/i18n/${locale}.json?v=${Date.now()}`;
-      try{
-        const res = await fetch(url, {cache:'no-store'});
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        dict = await res.json();
-      }catch(e){
-        console.warn(`i18n ${locale} not found at ${url}`, e);
-        dict = {};
-      }
-      applyI18n();
-    }
-    function applyI18n(){
-      document.querySelectorAll('[data-i18n]').forEach(el=>{
-        const k = el.dataset.i18n;
-        if(k in dict) el.textContent = dict[k];
-      });
-    }
-
-    // タブ / パネル
-    document.querySelectorAll('#tabs button').forEach(btn=>{
-      btn.onclick=()=>{
-        const tab=btn.dataset.tab;
-        document.querySelectorAll('#tab-content .tab-pane').forEach(p=>p.classList.toggle('active',p.id===tab));
-        document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b===btn));
-      };
-    });
-    if(window.innerWidth<=600){ document.querySelector('#node').classList.add('active'); }
-    const panel=document.getElementById('panel');
-    const fab=document.getElementById('fab');
-    fab.onclick=()=>{ panel.classList.toggle('open'); panel.classList.toggle('closed'); };
-
-    // Layers（保存なし：そのまま切り替えのみ）
-    document.getElementById('btnLayers').onclick=()=>{
-      const dd=document.getElementById('layersDropdown');
-      dd.style.display = (dd.style.display==='none' ? 'block' : 'none');
-    };
-    document.getElementById('toggle-nodes').onchange = e=>{ nodeGroup.visible = e.target.checked; };
-    document.getElementById('toggle-edges').onchange = e=>{ edgeGroup.visible = e.target.checked; };
-    document.getElementById('toggle-labels').onchange= e=>{ labelGroup.visible = e.target.checked; };
-    document.getElementById('toggle-aux').onchange   = e=>{ auxiliaryGroup.visible = e.target.checked; };
-
-    // AJV スキーマ
-    const ajv = new Ajv({ allErrors:true, strict:false, validateSchema:false });
+    /******************************************************************
+     * AJV validation (optional)
+     ******************************************************************/
     let validateModel = null, validateManifest = null;
-
     async function loadSchemas(){
       try{
-        const [modelSchema,manifestSchema] = await Promise.all([
+        if (!Ajv) throw new Error('Ajv not available');
+        const [modelSchema, manifestSchema] = await Promise.all([
           fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
           fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
         ]);
-        validateModel   = ajv.compile(modelSchema);
-        validateManifest= ajv.compile(manifestSchema);
+        const ajv = new Ajv({ strict:false, allErrors:true, allowUnionTypes:true });
+        validateModel = ajv.compile(modelSchema);
+        validateManifest = ajv.compile(manifestSchema);
       }catch(err){
         console.warn('Schema load failed, fallback to minimal schema', err);
-        const fallback = {type:'object',properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},required:['meta','nodes','edges']};
-        validateModel = ajv.compile(fallback);
+        const ajv = Ajv ? new Ajv({strict:false}) : null;
+        const fallback = { type:'object', properties:{ meta:{type:'object'}, nodes:{type:'array'}, edges:{type:'array'}, auxiliary:{type:'array'} } };
+        validateModel = ajv ? ajv.compile(fallback) : (data)=>true;
+        validateManifest = ajv ? ajv.compile({type:'object'}) : (data)=>true;
       }
-    }
-
-    function extraChecks(data){
-      const msgs=[], ids=new Set();
-      for(const n of (data.nodes||[])){
-        if(!n || typeof n.id!=='string') continue;
-        if(ids.has(n.id)) msgs.push(`Duplicate node id: ${n.id}`);
-        ids.add(n.id);
-      }
-      for(const e of (data.edges||[])){
-        if(e && typeof e.source==='string' && !ids.has(e.source)) msgs.push(`Edge source not found: ${e.source}`);
-        if(e && typeof e.target==='string' && !ids.has(e.target)) msgs.push(`Edge target not found: ${e.target}`);
-      }
-      return msgs;
     }
 
     function runValidation(data){
-      const msgs=[];
-      if(typeof validateModel==='function'){
+      const msgs = [];
+      if (validateModel){
         const ok = validateModel(data);
-        if(!ok) msgs.push(...validateModel.errors.map(e=>`${e.instancePath||'/'} ${e.message}`));
+        if (!ok) msgs.push(...validateModel.errors.map(e=> `${e.instancePath || '/'} ${e.message}`));
       }
+      // 追加の整合チェック（ID重複など軽く）
       msgs.push(...extraChecks(data));
       showErrors(msgs);
     }
+    function extraChecks(data){
+      const msgs = [];
+      const ids = new Set();
+      if (Array.isArray(data?.nodes)){
+        for (const n of data.nodes){
+          if (!n || typeof n.id !== 'string') continue;
+          if (ids.has(n.id)) msgs.push(`Duplicate node id: ${n.id}`);
+          ids.add(n.id);
+        }
+      }
+      if (Array.isArray(data?.edges)){
+        const idset = new Set((data.nodes||[]).map(n=>n.id));
+        for (const e of data.edges){
+          if (e && typeof e.source==='string' && !idset.has(e.source)) msgs.push(`Edge source not found: ${e.source}`);
+          if (e && typeof e.target==='string' && !idset.has(e.target)) msgs.push(`Edge target not found: ${e.target}`);
+        }
+      }
+      return msgs;
+    }
+    function showErrors(errs){
+      if (!errs || !errs.length){ $msg.textContent=''; return; }
+      $msg.textContent = '⚠ ' + errs.slice(0,3).join(' | ') + (errs.length>3 ? ` …(+${errs.length-3})`:'');
+    }
 
-    async function loadManifest(){ const res = await fetch('./assets/manifest.json'); return res.json(); }
-    async function loadDigidiorama(path){ const res = await fetch(path); return res.json(); }
+    /******************************************************************
+     * Scene building helpers
+     ******************************************************************/
+    const NODE_GEOM = new THREE.SphereGeometry(2, 10, 10);
+    const NODE_MAT  = new THREE.MeshStandardMaterial({color:0x88aaff, roughness:.35, metalness:.1});
 
-    // 初期ロード
-    const select=document.getElementById('fileSelect');
-    loadSchemas().then(()=>loadManifest()).then(list=>{
-      select.innerHTML = '';
-      let firstPath = null;
+    function makeLabelSprite(text, attr={}){
+      const fontSize = Math.max(12, attr.fontSize||24);
+      const color = attr.color || '#ffffff';
+      const bg = attr.background || null;
 
-      if(Array.isArray(list)){
-        list.forEach((item,idx)=>{
-          const opt=document.createElement('option');
-          opt.value=item.path; opt.textContent=item.title||item.path;
-          select.appendChild(opt);
-          if(idx===0) firstPath=item.path;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const padding = Math.round(fontSize*0.3);
+      ctx.font = `bold ${fontSize}px "Segoe UI", "Noto Sans JP", sans-serif`;
+      const metrics = ctx.measureText(text);
+      const w = Math.ceil(metrics.width)+padding*2, h = fontSize+padding*2;
+      canvas.width = w; canvas.height = h;
+
+      // paint
+      if (bg){
+        ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+      }
+      ctx.font = `bold ${fontSize}px "Segoe UI", "Noto Sans JP", sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, padding, h/2);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.minFilter = THREE.LinearFilter;
+      const mat = new THREE.SpriteMaterial({map:tex, transparent: !!bg});
+      const spr = new THREE.Sprite(mat);
+      // 尺度調整（1px=0.5Unit程度）
+      spr.scale.set(w*0.5, h*0.5, 1);
+      return spr;
+    }
+
+    function clearGroup(grp){
+      for (let i=grp.children.length-1; i>=0; i--){
+        const o = grp.children[i];
+        if (o.geometry) o.geometry.dispose();
+        if (o.material){
+          if (Array.isArray(o.material)) o.material.forEach(m=>m.dispose()); else o.material.dispose();
+        }
+        if (o.texture) o.texture.dispose?.();
+        grp.remove(o);
+      }
+    }
+
+    function buildScene(data){
+      clearGroup(nodeGroup); clearGroup(edgeGroup); clearGroup(labelGroup); clearGroup(auxiliaryGroup);
+
+      const mapPos = new Map();
+      if (Array.isArray(data?.nodes)){
+        for (const n of data.nodes){
+          const p = Array.isArray(n.position) && n.position.length===3 ? n.position : [0,0,0];
+          mapPos.set(n.id, new THREE.Vector3(p[0], p[1], p[2]));
+          const mesh = new THREE.Mesh(NODE_GEOM, NODE_MAT.clone());
+          mesh.position.set(p[0], p[1], p[2]);
+          nodeGroup.add(mesh);
+
+          // label
+          const label = (n.label ?? n.id ?? '').toString();
+          if (label){
+            const spr = makeLabelSprite(label, n.labelAttr||{});
+            spr.position.set(p[0], p[1], p[2]);
+            spr.position.y += 6;
+            labelGroup.add(spr);
+          }
+        }
+      }
+
+      if (Array.isArray(data?.edges)){
+        const matLine = new THREE.LineBasicMaterial({color:0x88ffbb, transparent:true, opacity:.8});
+        for (const e of data.edges){
+          const a = mapPos.get(e.source), b = mapPos.get(e.target);
+          if (!a || !b) continue;
+          const geo = new THREE.BufferGeometry().setFromPoints([a,b]);
+          const line = new THREE.Line(geo, matLine);
+          edgeGroup.add(line);
+        }
+      }
+
+      // Meta / counts 表示
+      showMeta(data?.meta||{}, data);
+
+      // ノードにフィット → これをホームとして記憶
+      fitCameraToNodes(data?.nodes||[]);
+      rememberHomeFromCurrentView();
+      saveLayers(); // 現在値を保存（初回）
+    }
+
+    function showMeta(meta={}, data={}){
+      const title = meta.title || '—';
+      $metaTitle.textContent = title;
+
+      const cn = Array.isArray(data.nodes) ? data.nodes.length : 0;
+      const ce = Array.isArray(data.edges) ? data.edges.length : 0;
+      $cn('count-nodes').textContent = String(cn);
+      $cn('count-edges').textContent = String(ce);
+      $counts.textContent = ` nodes:${cn} | edges:${ce}`;
+    }
+
+    /******************************************************************
+     * Layers toggle + persistence
+     ******************************************************************/
+    const LAYERS_KEYS = ['nodes','edges','labels','aux'];
+    function loadLayers(){
+      try{
+        const raw = localStorage.getItem(NS+'layers');
+        if (!raw) return;
+        const v = JSON.parse(raw);
+        LAYERS_KEYS.forEach(k=>{
+          if (k in v){
+            const el = $cn('toggle-'+k);
+            if (el){ el.checked = !!v[k]; }
+            if (k==='nodes') nodeGroup.visible = !!v[k];
+            if (k==='edges') edgeGroup.visible = !!v[k];
+            if (k==='labels') labelGroup.visible = !!v[k];
+            if (k==='aux') auxiliaryGroup.visible = !!v[k];
+          }
         });
-      }else if(list.groups){
-        list.groups.forEach(group=>{
-          const og=document.createElement('optgroup'); og.label=group.title;
-          (group.files||[]).forEach(item=>{
-            const opt=document.createElement('option');
-            opt.value=item.path; opt.textContent=item.title||item.path;
-            og.appendChild(opt); if(!firstPath) firstPath=item.path;
+      }catch(_){}
+    }
+    function saveLayers(){
+      const v = {
+        nodes: !!$cn('toggle-nodes')?.checked,
+        edges: !!$cn('toggle-edges')?.checked,
+        labels:!!$cn('toggle-labels')?.checked,
+        aux:   !!$cn('toggle-aux')?.checked
+      };
+      try{ localStorage.setItem(NS+'layers', JSON.stringify(v)); }catch(_){}
+    }
+    // wire toggles
+    $cn('toggle-nodes').addEventListener('change', e=>{ nodeGroup.visible = e.target.checked; saveLayers(); });
+    $cn('toggle-edges').addEventListener('change', e=>{ edgeGroup.visible = e.target.checked; saveLayers(); });
+    $cn('toggle-labels').addEventListener('change', e=>{ labelGroup.visible = e.target.checked; saveLayers(); });
+    $cn('toggle-aux')  .addEventListener('change', e=>{ auxiliaryGroup.visible = e.target.checked; saveLayers(); });
+
+    /******************************************************************
+     * UI: lang, fit, reset, select
+     ******************************************************************/
+    let currentData = null;
+    document.getElementById('btnFit').addEventListener('click', ()=>{
+      if (currentData) fitCameraToNodes(currentData.nodes);
+      else fitCameraToScene();
+    });
+    document.getElementById('btnReset').addEventListener('click', resetView);
+
+    // 言語切替（ダミー・ボタン表示だけ切替）
+    const btnLang = document.getElementById('btnLang');
+    btnLang.addEventListener('click', ()=>{
+      const now = btnLang.textContent.trim();
+      const next = now==='日本語' ? 'English' : '日本語';
+      btnLang.textContent = next;
+      try{ localStorage.setItem(NS+'lang', next); }catch(_){}
+    });
+    (function initLang(){
+      const v = localStorage.getItem(NS+'lang');
+      if (v) btnLang.textContent = v;
+    })();
+
+    const select = document.getElementById('fileSelect');
+    select.addEventListener('change', async ()=>{
+      if (!select.value) return;
+      try{
+        const data = await loadDigidiorama(select.value);
+        currentData = data;
+        runValidation(data);
+        buildScene(data);
+        try{ localStorage.setItem(NS+'lastFile', select.value); }catch(_){}
+      }catch(err){
+        console.error(err);
+        $msg.textContent = '✖ ' + err.message;
+      }
+    });
+
+    /******************************************************************
+     * Bootstrap
+     ******************************************************************/
+    async function bootstrap(){
+      resize();
+      await loadSchemas().catch(()=>{});
+      // manifest から select を構築
+      let items = [];
+      try{
+        const mani = await loadManifest();
+        if (validateManifest && !validateManifest(mani)){
+          console.warn('manifest validation errors', validateManifest.errors);
+        }
+        // manifest { groups:[{title, files:[{path,title}]}] }
+        mani.groups?.forEach(g=>{
+          (g.files||[]).forEach(f=>{
+            items.push({ path:f.path, title:f.title || f.path });
           });
-          select.appendChild(og);
         });
+      }catch(_){
+        // フォールバック（smoke test のみ）
+        items = [
+          { path:'./assets/data/smoke_test.json', title:'Smoke Test' }
+        ];
+      }
+      // select構築
+      select.innerHTML = '';
+      for (const it of items){
+        const opt = document.createElement('option');
+        opt.value = it.path;
+        opt.textContent = it.title;
+        select.appendChild(opt);
       }
 
-      if(firstPath){
-        select.value=firstPath;
-        loadDigidiorama(firstPath).then(data=>{ runValidation(data); buildScene(data); });
-      }
-    });
-    select.onchange = ()=>{ loadDigidiorama(select.value).then(data=>{ runValidation(data); buildScene(data); }); };
+      // 直近の選択を復元
+      const last = localStorage.getItem(NS+'lastFile');
+      if (last && items.some(i=>i.path===last)) select.value = last;
 
-    loadLocale('ja');
+      // レイヤー復元
+      loadLayers();
 
-    // 追加: Fit ボタンのバインド（ここなら importmap と無関係）
-    document.getElementById('btnFit')?.addEventListener('click', ()=> fitCameraToScene());
+      // 最初のロード
+      if (select.value) select.dispatchEvent(new Event('change'));
+      else if (items[0]){ select.value = items[0].path; select.dispatchEvent(new Event('change')); }
 
-    // レイアウト更新
-    const ro = new ResizeObserver(()=>{
-      const {clientWidth:w, clientHeight:h} = container;
-      renderer.setSize(w,h,true);
-      camera.aspect = w/h;
-      camera.updateProjectionMatrix();
-    });
-    ro.observe(container);
+      animate();
+    }
 
-    (function animate(){ controls.update(); renderer.render(scene,camera); requestAnimationFrame(animate); })();
+    function animate(){
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    bootstrap();
   </script>
 </body>
 </html>
