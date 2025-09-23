@@ -438,9 +438,6 @@ async function ensureAjv2020(){
     // As a final fallback we just proceed; validateSchema:false avoids hard failure.
   }catch(_){ /* no-op */ }
 }
-    }
-  }catch(_){ /* no-op */ }
-}
 
 async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
