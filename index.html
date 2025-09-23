@@ -60,7 +60,7 @@
 <body>
   <div id="app">
     <header>
-      <h1 data-i18n="title">デジジオラマ</h1>
+      <h1 data-i18n="title">デジジオラマ1</h1>
       <div class="spacer"></div>
       <select id="fileSelect"></select>
       <select id="langSelect">
@@ -159,7 +159,6 @@
 
       switch (plane) {
         case "xy":
-          // デフォルト平面なので rotation不要
           break;
         case "yz":
           mesh.rotation.y = Math.PI/2;
@@ -197,7 +196,7 @@
     });
 
     function fitCameraToScene(padding=1.2){
-      controls.reset();  // 完全リセット
+      controls.reset(); 
 
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
@@ -408,7 +407,6 @@
       if(firstPath){
         select.value=firstPath;
         loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);
-          // レイヤー状態を復元
           nodeGroup.visible=layerVisibility.nodes;
           edgeGroup.visible=layerVisibility.edges;
           labelGroup.visible=layerVisibility.labels;
