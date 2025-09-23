@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
-  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -24,10 +23,12 @@
     #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
     .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
     canvas{display:block;width:100%;height:100%;}
+    /* タブUI（モバイルのみ表示） */
     #tabs { display:none; margin-bottom:.5rem; }
     #tabs button { flex:1; padding:.5rem; border:none; background:#2a3969; color:#fff; border-radius:.3rem; cursor:pointer; }
     #tabs button.active { background:var(--accent); }
     .tab-pane { display:block; }
+    /* モバイル時: ドロワー＋タブ */
     @media(max-width:600px){
       #main{grid-template-columns:1fr;}
       #panel{position:absolute;z-index:10;width:100%;height:40%;bottom:0;left:0;border-left:none;border-top:1px solid #1d2748;transform:translateY(100%)}
@@ -51,7 +52,7 @@
       "imports": {
         "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
         "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "ajv": "https://cdn.skypack.dev/ajv@8"
+        "ajv": "https://cdn.skypack.dev/ajv@8/dist/2020"
       }
     }
   </script>
@@ -88,9 +89,7 @@
         <div id="tab-content">
           <div id="node" class="tab-pane active"></div>
           <div id="errors" class="tab-pane"></div>
-          <div id="meta" class="tab-pane">
-            <div id="counts"></div>
-          </div>
+          <div id="meta" class="tab-pane"></div>
         </div>
       </div>
     </div>
@@ -109,7 +108,7 @@
     const camera=new THREE.PerspectiveCamera(60,1,0.1,1000);
     camera.up.set(0,0,1);
     const renderer=new THREE.WebGLRenderer({antialias:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     container.appendChild(renderer.domElement);
 
     const controls=new OrbitControls(camera,renderer.domElement);
@@ -130,93 +129,43 @@
     const auxiliaryGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
 
-    // ---- Label (minimal but high-impact defaults) ----
-    function roundedRect(ctx,x,y,w,h,r){
-      const rr = Math.min(r, Math.min(w,h)/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr, y);
-      ctx.arcTo(x+w, y,   x+w, y+h, rr);
-      ctx.arcTo(x+w, y+h, x,   y+h, rr);
-      ctx.arcTo(x,   y+h, x,   y,   rr);
-      ctx.arcTo(x,   y,   x+w, y,   rr);
-      ctx.closePath();
-    }
-
     function makeLabelPlane(text, options = {}, nodeId=null) {
       const fontSize  = options.fontSize  ?? 32;
       const fontFamily= options.fontFamily?? "Arial";
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
       const background= options.background?? null;
-      const padding   = options.padding   ?? 8;
-      const radius    = options.radius    ?? 6;
-      const outlineW  = options.outlineWidth ?? 2;
-      const outlineC  = options.outlineColor ?? null;
       const plane     = options.plane     ?? "zx";
       const direction = options.direction ?? 0;
       const worldScale = options.worldScale ?? 0.1;
-      const depthTest = options.depthTest ?? false;
-
-      const dpr = Math.min(window.devicePixelRatio||1, 2);
-
-      // measure
-      const tmp = document.createElement('canvas').getContext('2d');
-      tmp.font = `${fontSize}px ${fontFamily}`;
-      const w0 = Math.ceil(tmp.measureText(text).width);
-      const h0 = Math.ceil(fontSize * 1.5);
-      const logicalW = w0 + padding*2;
-      const logicalH = h0 + padding*2;
 
       const canvas = document.createElement('canvas');
-      canvas.width  = Math.max(2, Math.ceil(logicalW * dpr));
-      canvas.height = Math.max(2, Math.ceil(logicalH * dpr));
       const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
-
-      if (background) {
-        ctx.fillStyle = background;
-        roundedRect(ctx, 0, 0, logicalW, logicalH, radius);
-        ctx.fill();
-      }
-
       ctx.font = `${fontSize}px ${fontFamily}`;
+      const metrics = ctx.measureText(text);
+      canvas.width  = metrics.width + 20;
+      canvas.height = fontSize * 1.5;
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
+      ctx.fillStyle = color;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.lineJoin = 'round';
-      ctx.miterLimit = 2;
-
-      if (outlineW > 0) {
-        ctx.lineWidth = outlineW;
-        ctx.strokeStyle = outlineC;
-        ctx.strokeText(text, logicalW/2, logicalH/2);
-      }
-      ctx.fillStyle = color;
-      ctx.fillText(text, logicalW/2, logicalH/2);
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
-      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      texture.generateMipmaps = true;
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.premultiplyAlpha = true;
-
-      const mat = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        opacity,
-        side: THREE.DoubleSide,
-        depthTest: depthTest,
-        depthWrite: false,
-        toneMapped: false
-      });
-
-      const geom = new THREE.PlaneGeometry(logicalW * worldScale, logicalH * worldScale);
+      const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity, side: THREE.DoubleSide });
+      const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
 
       switch (plane) {
-        case "xy": break;
-        case "yz": mesh.rotation.y = Math.PI/2; mesh.rotation.z = Math.PI/2; break;
-        case "zx": mesh.rotation.x = Math.PI/2; mesh.rotation.y += Math.PI; break;
+        case "yz":
+          mesh.rotation.y = Math.PI/2;
+          mesh.rotation.z = Math.PI/2;
+          break;
+        case "zx":
+          mesh.rotation.x = Math.PI/2;
+          mesh.rotation.y += Math.PI;
+          break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
@@ -224,7 +173,6 @@
       if(nodeId) mesh.userData.nodeId = nodeId;
       return mesh;
     }
-    // -----------------------------------------------
 
     const nodeById=new Map();
 
@@ -246,7 +194,8 @@
     });
 
     function fitCameraToScene(padding=1.2){
-      controls.reset();
+      controls.reset();  // ★追加：毎回リセット
+
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
@@ -262,6 +211,7 @@
     function buildScene(data){
       nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
       const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
+
       for(const n of data.nodes||[]){
         const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
         const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
@@ -271,6 +221,7 @@
           m.add(labelMesh);
         }
       }
+
       for(const e of data.edges||[]){
         const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
         const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
@@ -283,6 +234,66 @@
         }
       }
 
+      for(const aux of data.auxiliary||[]){
+        if(aux.type === "grid" && aux.grid){
+          const g = aux.grid;
+          if(g.shape === "rect"){
+            const size = g.size ?? 10;
+            const divisions = g.divisions ?? 10;
+            const color = g.color ?? 0x444444;
+            const grid = new THREE.GridHelper(size, divisions, color, color);
+            grid.material.opacity = g.opacity ?? 0.3;
+            grid.material.transparent = true;
+            if(g.plane==="yz"){grid.rotation.z=Math.PI/2;}
+            if(g.plane==="zx"){grid.rotation.x=Math.PI/2;}
+            if(g.position){grid.position.set(...g.position);}
+            if(aux.visible===false) grid.visible=false;
+            auxiliaryGroup.add(grid);
+          }
+          if(g.shape === "polar"){
+            const rings = g.rings ?? 5;
+            const segments = g.segments ?? 36;
+            const radius = g.size ?? 5;
+            const mat = new THREE.LineBasicMaterial({color:g.color??0x444444, transparent:true, opacity:g.opacity??0.3});
+            for(let r=1;r<=rings;r++){
+              const geom = new THREE.BufferGeometry();
+              const pts=[];
+              for(let i=0;i<=segments;i++){
+                const theta = (i/segments)*2*Math.PI;
+                pts.push(new THREE.Vector3(Math.cos(theta)*radius*r/rings, Math.sin(theta)*radius*r/rings, 0));
+              }
+              geom.setFromPoints(pts);
+              const circle=new THREE.LineLoop(geom,mat);
+              if(g.plane==="yz"){circle.rotation.y=Math.PI/2;}
+              if(g.plane==="zx"){circle.rotation.x=Math.PI/2;}
+              if(g.position){circle.position.set(...g.position);}
+              if(aux.visible===false) circle.visible=false;
+              auxiliaryGroup.add(circle);
+            }
+          }
+        }
+        if(aux.type === "axis"){
+          const len = aux.length ?? 1;
+          const colors = aux.colors || ["#ff0000","#00ff00","#0000ff"];
+          const axes = [
+            { dir: new THREE.Vector3(1,0,0), color: colors[0] },
+            { dir: new THREE.Vector3(0,1,0), color: colors[1] },
+            { dir: new THREE.Vector3(0,0,1), color: colors[2] }
+          ];
+          axes.forEach(axisDef=>{
+            const geom = new THREE.BufferGeometry().setFromPoints([
+              new THREE.Vector3(0,0,0),
+              axisDef.dir.clone().multiplyScalar(len)
+            ]);
+            const mat = new THREE.LineBasicMaterial({ color: axisDef.color });
+            const line = new THREE.Line(geom,mat);
+            if(aux.position){line.position.set(...aux.position);}
+            if(aux.visible===false) line.visible=false;
+            auxiliaryGroup.add(line);
+          });
+        }
+      }
+
       showMeta(data.meta,data);
       fitCameraToScene();
     }
@@ -291,8 +302,7 @@
       const box=document.getElementById('meta');box.innerHTML='';
       if(meta){for(const [k,v] of Object.entries(meta)){
         const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
-      const countsBox=document.getElementById('counts');
-      if(countsBox){countsBox.innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;}
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
 
     function showNode(node){
@@ -318,43 +328,97 @@
         document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b===btn));
       };
     });
-    if(window.innerWidth<=600){document.querySelector('#node').classList.add('active');}
+    if(window.innerWidth<=600){
+      document.querySelector('#node').classList.add('active');
+    }
 
     const panel=document.getElementById('panel');
     const fab=document.getElementById('fab');
     fab.onclick=()=>{panel.classList.toggle('open');panel.classList.toggle('closed');};
 
-    // レイヤー可視性（セッション内で維持）
-    let layerVisibility={nodes:true,edges:true,labels:true,aux:true};
-    document.getElementById('toggle-nodes').onchange=(ev)=>{layerVisibility.nodes=ev.target.checked;nodeGroup.visible=layerVisibility.nodes;};
-    document.getElementById('toggle-edges').onchange=(ev)=>{layerVisibility.edges=ev.target.checked;edgeGroup.visible=layerVisibility.edges;};
-    document.getElementById('toggle-labels').onchange=(ev)=>{layerVisibility.labels=ev.target.checked;labelGroup.visible=layerVisibility.labels;};
-    document.getElementById('toggle-aux').onchange=(ev)=>{layerVisibility.aux=ev.target.checked;auxiliaryGroup.visible=layerVisibility.aux;};
+    let touchStartX=0,touchStartY=0;
+    window.addEventListener("touchstart",e=>{
+      if(!e.touches || e.touches.length===0) return;
+      touchStartX=e.touches[0].clientX;
+      touchStartY=e.touches[0].clientY;
+    }, {passive:true});
+    window.addEventListener("touchend",e=>{
+      if(!e.changedTouches || e.changedTouches.length===0) return;
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      const dy=e.changedTouches[0].clientY-touchStartY;
+      if(Math.abs(dx)>50 && window.innerWidth>600){
+        if(dx<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+      if(Math.abs(dy)>50 && window.innerWidth<=600){
+        if(dy<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+    }, {passive:true});
 
-    const ajv=new Ajv({allErrors:true});
-    const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
-    const validate=ajv.compile(schema);
-    function runValidation(data){
+    document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
+    document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
+    document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
+    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
+
+    const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
+let validateModel = null;
+let validateManifest = null;
+
+async function loadSchemas(){
+  try{
+    
+    const [modelSchema, manifestSchema] = await Promise.all([
+      fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+      fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+    ]);
+    validateModel = ajv.compile(modelSchema);
+    validateManifest = ajv.compile(manifestSchema);
+  }catch(err){
+    console.warn('Schema load failed, fallback to minimal schema', err);
+    const fallback = {type:'object',properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},required:['meta','nodes','edges']};
+    validateModel = ajv.compile(fallback);
+  }
+}
+
+    function extraChecks(data){
+  const msgs=[];
+  const ids=new Set();
+  for(const n of (data.nodes||[])){
+    if(!n || typeof n.id!=='string') continue;
+    if(ids.has(n.id)) msgs.push(`Duplicate node id: ${n.id}`);
+    ids.add(n.id);
+  }
+  for(const e of (data.edges||[])){
+    if(e && typeof e.source==='string' && !ids.has(e.source)) msgs.push(`Edge source not found: ${e.source}`);
+    if(e && typeof e.target==='string' && !ids.has(e.target)) msgs.push(`Edge target not found: ${e.target}`);
+  }
+  return msgs;
+}
+function runValidation(data){
   const msgs = [];
-  // Ajv(外部または最小) どちらにも対応
+  // Ajv(外部スキーマ or 最小スキーマ) どちらにも対応
   if (typeof validateModel === 'function') {
     const ok = validateModel(data);
-    if (!ok) { msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/' } ${e.message}`)); }
-  } else if (typeof validate === 'function') {
+    if (!ok) msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/' } ${e.message}`));
+  } else if (typeof validate === 'function') { // 旧インラインschema互換
     const ok = validate(data);
-    if (!ok) { msgs.push(...validate.errors.map(e => `${e.instancePath || '/' } ${e.message}`)); }
+    if (!ok) msgs.push(...validate.errors.map(e => `${e.instancePath || '/' } ${e.message}`));
   }
   // 追加の整合チェック（ID重複 / 参照不整合）
   msgs.push(...extraChecks(data));
   showErrors(msgs);
 }
+
 async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
     const select=document.getElementById('fileSelect');
-    loadManifest().then(list=>{
+    loadSchemas().then(()=> loadManifest()).then(list=>{
       select.innerHTML = "";
       let firstPath = null;
+
       if(Array.isArray(list)){ 
         list.forEach((item,idx)=>{
           const opt=document.createElement('option');
@@ -377,24 +441,14 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
           select.appendChild(optgroup);
         });
       }
+
       if(firstPath){
         select.value=firstPath;
-        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);
-          // レイヤー状態を復元
-          nodeGroup.visible=layerVisibility.nodes;
-          edgeGroup.visible=layerVisibility.edges;
-          labelGroup.visible=layerVisibility.labels;
-          auxiliaryGroup.visible=layerVisibility.aux;
-        });
+        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
       }
-    }).catch(e=>{ showErrors([`manifest load error: ${e}`]); });
+    });
 
-    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);
-      nodeGroup.visible=layerVisibility.nodes;
-      edgeGroup.visible=layerVisibility.edges;
-      labelGroup.visible=layerVisibility.labels;
-      auxiliaryGroup.visible=layerVisibility.aux;
-    }).catch(e=>{ showErrors([`digidiorama load error: ${e}`]); });};
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
 
     loadLocale('ja');
 
