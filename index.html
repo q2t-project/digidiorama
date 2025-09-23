@@ -135,7 +135,7 @@
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
       const background= options.background?? null;
-      const plane     = options.plane     ?? "zx";
+      const plane     = options.plane     ?? "xy";
       const direction = options.direction ?? 0;
       const worldScale = options.worldScale ?? 0.1;
 
@@ -158,6 +158,9 @@
       const mesh = new THREE.Mesh(geom, mat);
 
       switch (plane) {
+        case "xy":
+          // デフォルト平面なので rotation不要
+          break;
         case "yz":
           mesh.rotation.y = Math.PI/2;
           mesh.rotation.z = Math.PI/2;
@@ -194,7 +197,7 @@
     });
 
     function fitCameraToScene(padding=1.2){
-      controls.reset();  // ★追加：毎回リセット
+      controls.reset();  // 完全リセット
 
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
@@ -357,10 +360,14 @@
     document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
-    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
+
+    // レイヤー可視性状態を保持
+    let layerVisibility={nodes:true,edges:true,labels:true,aux:true};
+
+    document.getElementById('toggle-nodes').onchange=(ev)=>{layerVisibility.nodes=ev.target.checked;nodeGroup.visible=layerVisibility.nodes;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{layerVisibility.edges=ev.target.checked;edgeGroup.visible=layerVisibility.edges;};
+    document.getElementById('toggle-labels').onchange=(ev)=>{layerVisibility.labels=ev.target.checked;labelGroup.visible=layerVisibility.labels;};
+    document.getElementById('toggle-aux').onchange=(ev)=>{layerVisibility.aux=ev.target.checked;auxiliaryGroup.visible=layerVisibility.aux;};
 
     const ajv=new Ajv({allErrors:true});
     const schema={type:"object",properties:{meta:{type:"object"},nodes:{type:"array"},edges:{type:"array"},auxiliary:{type:"array"}},required:["meta","nodes","edges"]};
@@ -400,11 +407,22 @@
 
       if(firstPath){
         select.value=firstPath;
-        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
+        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);
+          // レイヤー状態を復元
+          nodeGroup.visible=layerVisibility.nodes;
+          edgeGroup.visible=layerVisibility.edges;
+          labelGroup.visible=layerVisibility.labels;
+          auxiliaryGroup.visible=layerVisibility.aux;
+        });
       }
     });
 
-    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);
+      nodeGroup.visible=layerVisibility.nodes;
+      edgeGroup.visible=layerVisibility.edges;
+      labelGroup.visible=layerVisibility.labels;
+      auxiliaryGroup.visible=layerVisibility.aux;
+    });};
 
     loadLocale('ja');
 
