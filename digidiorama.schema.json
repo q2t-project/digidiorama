@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/digidiorama.schema.json",
+  "title": "Digidiorama Model",
+  "type": "object",
+  "required": [
+    "meta",
+    "nodes",
+    "edges"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "meta": {
+      "type": "object"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Edge"
+      }
+    },
+    "auxiliary": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Aux"
+      }
+    }
+  },
+  "$defs": {
+    "Vec3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    },
+    "LabelAttr": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "plane": {
+          "type": "string",
+          "enum": [
+            "xy",
+            "yz",
+            "zx"
+          ],
+          "default": "zx"
+        },
+        "color": {
+          "type": "string",
+          "default": "#ffffff"
+        },
+        "fontSize": {
+          "type": "number",
+          "default": 32
+        },
+        "fontFamily": {
+          "type": "string",
+          "default": "Arial"
+        },
+        "opacity": {
+          "type": "number",
+          "default": 1.0
+        },
+        "direction": {
+          "type": "number",
+          "default": 0
+        },
+        "worldScale": {
+          "type": "number",
+          "default": 0.1
+        },
+        "offset": {
+          "$ref": "#/$defs/Vec3",
+          "default": [
+            0,
+            0,
+            0
+          ]
+        },
+        "outlineWidth": {
+          "type": "number",
+          "minimum": 0,
+          "default": 2
+        },
+        "outlineColor": {
+          "type": "string",
+          "default": "rgba(0,0,0,0.85)"
+        },
+        "background": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "padding": {
+          "type": "number",
+          "default": 8
+        },
+        "radius": {
+          "type": "number",
+          "default": 6
+        },
+        "depthTest": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Node": {
+      "type": "object",
+      "required": [
+        "id",
+        "position"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "position": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "label": {
+          "type": "string"
+        },
+        "labelAttr": {
+          "$ref": "#/$defs/LabelAttr"
+        }
+      }
+    },
+    "Edge": {
+      "type": "object",
+      "required": [
+        "source",
+        "target"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "type": "string"
+        },
+        "opacity": {
+          "type": "number"
+        },
+        "label": {
+          "type": "string"
+        },
+        "labelAttr": {
+          "$ref": "#/$defs/LabelAttr"
+        }
+      }
+    },
+    "Aux": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "grid",
+            "axis"
+          ]
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "length": {
+          "type": "number"
+        },
+        "colors": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "string"
+          }
+        },
+        "grid": {
+          "type": "object",
+          "properties": {
+            "shape": {
+              "type": "string",
+              "enum": [
+                "rect",
+                "polar"
+              ]
+            },
+            "size": {
+              "type": "number"
+            },
+            "divisions": {
+              "type": "number"
+            },
+            "rings": {
+              "type": "number"
+            },
+            "segments": {
+              "type": "number"
+            },
+            "color": {
+              "type": "string"
+            },
+            "opacity": {
+              "type": "number"
+            },
+            "plane": {
+              "type": "string",
+              "enum": [
+                "xy",
+                "yz",
+                "zx"
+              ]
+            },
+            "position": {
+              "$ref": "#/$defs/Vec3"
+            }
+          },
+          "required": [
+            "shape"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
