@@ -316,21 +316,27 @@
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
       (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
-    let dict={};
-    async function loadLocale(locale = 'ja') {
-      const url = `./assets/i18n/ja.json`;
-      try {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ja.json`);
-        return await res.json();
-      } catch (e) {
-        console.warn(`i18n ja not found at ja.json, fallback to defaults.`, e);
-        return {};   // 既定文言にフォールバック
-      }
+  let dict = {};
+  async function loadLocale(locale='ja'){
+    const url = `./assets/i18n/${locale}.json?v=${Date.now()}`;
+    try{
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      dict = await res.json();
+    }catch(e){
+      console.warn(`i18n ${locale} not found at ${url} — fallback to defaults.`, e);
+      dict = {};
     }
+    applyI18n();
+  }
 
-    function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
-
+      function t(key){return dict[key]||key;}
+      function applyI18n(){
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const k = el.dataset.i18n;
+      if (k in dict) el.textContent = dict[k];
+    });
+  }
     document.querySelectorAll('#tabs button').forEach(btn=>{
       btn.onclick=()=>{
         const tab=btn.dataset.tab;
