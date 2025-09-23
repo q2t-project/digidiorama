@@ -396,11 +396,22 @@ async function loadSchemas(){
   return msgs;
 }
 function runValidation(data){
-  const msgs=[];
-  if(validateModel){
+  const msgs = [];
+  // validateModel を使う版（外部スキーマ対応）
+  if (typeof validateModel === 'function') {
     const ok = validateModel(data);
-    if(!ok){ msgs.push(...validateModel.errors.map(e=>`${e.instancePath||'/'} ${e.message}`)); }
+    if (!ok) {
+      msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
   }
+  // 旧版との後方互換（validate がある環境）
+  else if (typeof validate === 'function') {
+    const ok = validate(data);
+    if (!ok) {
+      msgs.push(...validate.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
+  }
+  // 追加の整合チェック（ID重複/参照不整合）
   msgs.push(...extraChecks(data));
   showErrors(msgs);
 }
