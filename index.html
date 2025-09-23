@@ -415,9 +415,8 @@ function runValidation(data){
   msgs.push(...extraChecks(data));
   showErrors(msgs);
 }
- ${e.message}`));}else{showErrors([]);} }
 
-    async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
+async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
     const select=document.getElementById('fileSelect');
