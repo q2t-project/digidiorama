@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
-  <!-- Inline favicon to avoid 404 -->
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
@@ -110,7 +109,7 @@
     const camera=new THREE.PerspectiveCamera(60,1,0.1,1000);
     camera.up.set(0,0,1);
     const renderer=new THREE.WebGLRenderer({antialias:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     container.appendChild(renderer.domElement);
 
     const controls=new OrbitControls(camera,renderer.domElement);
@@ -131,45 +130,93 @@
     const auxiliaryGroup=new THREE.Group();
     scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
 
+    // ---- Label (minimal but high-impact defaults) ----
+    function roundedRect(ctx,x,y,w,h,r){
+      const rr = Math.min(r, Math.min(w,h)/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y,   x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x,   y+h, rr);
+      ctx.arcTo(x,   y+h, x,   y,   rr);
+      ctx.arcTo(x,   y,   x+w, y,   rr);
+      ctx.closePath();
+    }
+
     function makeLabelPlane(text, options = {}, nodeId=null) {
       const fontSize  = options.fontSize  ?? 32;
       const fontFamily= options.fontFamily?? "Arial";
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
-      const background= options.background?? null;
-      const plane     = options.plane     ?? "zx"; // ← デフォルトを zx に戻す
+      const background= options.background?? "rgba(0,0,0,0.45)"; // デフォルトで半透明黒BG
+      const padding   = options.padding   ?? 8;
+      const radius    = options.radius    ?? 6;
+      const outlineW  = options.outlineWidth ?? 2;               // デフォルトで細めの縁取り
+      const outlineC  = options.outlineColor ?? "rgba(0,0,0,0.85)";
+      const plane     = options.plane     ?? "zx";
       const direction = options.direction ?? 0;
       const worldScale = options.worldScale ?? 0.1;
+      const depthTest = options.depthTest ?? false;
+
+      const dpr = Math.min(window.devicePixelRatio||1, 2);
+
+      // measure
+      const tmp = document.createElement('canvas').getContext('2d');
+      tmp.font = `${fontSize}px ${fontFamily}`;
+      const w0 = Math.ceil(tmp.measureText(text).width);
+      const h0 = Math.ceil(fontSize * 1.5);
+      const logicalW = w0 + padding*2;
+      const logicalH = h0 + padding*2;
 
       const canvas = document.createElement('canvas');
+      canvas.width  = Math.max(2, Math.ceil(logicalW * dpr));
+      canvas.height = Math.max(2, Math.ceil(logicalH * dpr));
       const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      if (background) {
+        ctx.fillStyle = background;
+        roundedRect(ctx, 0, 0, logicalW, logicalH, radius);
+        ctx.fill();
+      }
+
       ctx.font = `${fontSize}px ${fontFamily}`;
-      const metrics = ctx.measureText(text);
-      canvas.width  = Math.max(2, Math.ceil(metrics.width + 20));
-      canvas.height = Math.max(2, Math.ceil(fontSize * 1.5));
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
-      ctx.fillStyle = color;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      ctx.lineJoin = 'round';
+      ctx.miterLimit = 2;
+
+      if (outlineW > 0) {
+        ctx.lineWidth = outlineW;
+        ctx.strokeStyle = outlineC;
+        ctx.strokeText(text, logicalW/2, logicalH/2);
+      }
+      ctx.fillStyle = color;
+      ctx.fillText(text, logicalW/2, logicalH/2);
 
       const texture = new THREE.CanvasTexture(canvas);
-      const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity, side: THREE.DoubleSide });
-      const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      texture.generateMipmaps = true;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.premultiplyAlpha = true;
+
+      const mat = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        opacity,
+        side: THREE.DoubleSide,
+        depthTest: depthTest,
+        depthWrite: false,
+        toneMapped: false
+      });
+
+      const geom = new THREE.PlaneGeometry(logicalW * worldScale, logicalH * worldScale);
       const mesh = new THREE.Mesh(geom, mat);
 
       switch (plane) {
-        case "xy":
-          break;
-        case "yz":
-          mesh.rotation.y = Math.PI/2;
-          mesh.rotation.z = Math.PI/2;
-          break;
-        case "zx":
-          mesh.rotation.x = Math.PI/2;
-          mesh.rotation.y += Math.PI;
-          break;
+        case "xy": break;
+        case "yz": mesh.rotation.y = Math.PI/2; mesh.rotation.z = Math.PI/2; break;
+        case "zx": mesh.rotation.x = Math.PI/2; mesh.rotation.y += Math.PI; break;
       }
       if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
 
@@ -177,6 +224,7 @@
       if(nodeId) mesh.userData.nodeId = nodeId;
       return mesh;
     }
+    // -----------------------------------------------
 
     const nodeById=new Map();
 
@@ -198,7 +246,7 @@
     });
 
     function fitCameraToScene(padding=1.2){
-      controls.reset(); // 完全リセット
+      controls.reset();
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
@@ -232,66 +280,6 @@
           const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
           const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});edgeLabel.position.copy(midpoint);
           labelGroup.add(edgeLabel);
-        }
-      }
-
-      for(const aux of data.auxiliary||[]){
-        if(aux.type === "grid" && aux.grid){
-          const g = aux.grid;
-          if(g.shape === "rect"){
-            const size = g.size ?? 10;
-            const divisions = g.divisions ?? 10;
-            const color = g.color ?? 0x444444;
-            const grid = new THREE.GridHelper(size, divisions, color, color);
-            grid.material.opacity = g.opacity ?? 0.3;
-            grid.material.transparent = true;
-            if(g.plane==="yz"){grid.rotation.z=Math.PI/2;}
-            if(g.plane==="zx"){grid.rotation.x=Math.PI/2;}
-            if(g.position){grid.position.set(...g.position);}
-            if(aux.visible===false) grid.visible=false;
-            auxiliaryGroup.add(grid);
-          }
-          if(g.shape === "polar"){
-            const rings = g.rings ?? 5;
-            const segments = g.segments ?? 36;
-            const radius = g.size ?? 5;
-            const mat = new THREE.LineBasicMaterial({color:g.color??0x444444, transparent:true, opacity:g.opacity??0.3});
-            for(let r=1;r<=rings;r++){
-              const geom = new THREE.BufferGeometry();
-              const pts=[];
-              for(let i=0;i<=segments;i++){
-                const theta = (i/segments)*2*Math.PI;
-                pts.push(new THREE.Vector3(Math.cos(theta)*radius*r/rings, Math.sin(theta)*radius*r/rings, 0));
-              }
-              geom.setFromPoints(pts);
-              const circle=new THREE.LineLoop(geom,mat);
-              if(g.plane==="yz"){circle.rotation.y=Math.PI/2;}
-              if(g.plane==="zx"){circle.rotation.x=Math.PI/2;}
-              if(g.position){circle.position.set(...g.position);}
-              if(aux.visible===false) circle.visible=false;
-              auxiliaryGroup.add(circle);
-            }
-          }
-        }
-        if(aux.type === "axis"){
-          const len = aux.length ?? 1;
-          const colors = aux.colors || ["#ff0000","#00ff00","#0000ff"];
-          const axes = [
-            { dir: new THREE.Vector3(1,0,0), color: colors[0] },
-            { dir: new THREE.Vector3(0,1,0), color: colors[1] },
-            { dir: new THREE.Vector3(0,0,1), color: colors[2] }
-          ];
-          axes.forEach(axisDef=>{
-            const geom = new THREE.BufferGeometry().setFromPoints([
-              new THREE.Vector3(0,0,0),
-              axisDef.dir.clone().multiplyScalar(len)
-            ]);
-            const mat = new THREE.LineBasicMaterial({ color: axisDef.color });
-            const line = new THREE.Line(geom,mat);
-            if(aux.position){line.position.set(...aux.position);}
-            if(aux.visible===false) line.visible=false;
-            auxiliaryGroup.add(line);
-          });
         }
       }
 
