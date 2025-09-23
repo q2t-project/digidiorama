@@ -3,10 +3,6 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <div id="meta" class="tab-pane">
-  <!-- …他の内容… -->
-  <div id="counts"></div>   <!-- ← これを必ず置く -->
-  </div>
   <title>digidiorama viewer/</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
@@ -62,6 +58,9 @@
   </script>
 </head>
 <body>
+  <div id="meta" class="tab-pane">
+  <div id="counts"></div>   <!-- ← ここに常設 -->
+  </div>
   <div id="app">
     <header>
       <h1 data-i18n="title">デジジオラマ</h1>
