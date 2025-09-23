@@ -417,10 +417,6 @@ function runValidation(data){
   showErrors(msgs);
 }
 
-    }
-  }catch(_){ /* no-op */ }
-}
-
 async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
     async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
