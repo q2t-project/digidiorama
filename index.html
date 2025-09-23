@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ja">
-<link rel="icon" href="data:,">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -70,7 +69,6 @@
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
-      <button id="btnFit">Fit</button>
       <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
         <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
@@ -429,38 +427,6 @@ async function loadSchemas(){
     validateModel = ajv.compile(fallback);
   }
 }
-
-// --- Fit（シーン全体にビューを合わせる） ---
-function fitCameraToScene(padding = 1.2) {
-  // 一旦慣性などをリセット（既存の OrbitControls を想定）
-  if (typeof controls?.reset === 'function') controls.reset();
-
-  // 何も無い時のフェイルセーフ
-  const box = new THREE.Box3().setFromObject(scene);
-  if (!isFinite(box.min.x) || !isFinite(box.max.x)) {
-    // 何もない場合は原点付近を見る
-    camera.position.set(3, 3, 3);
-    if (controls) controls.target.set(0, 0, 0);
-    if (controls) controls.update();
-    return;
-  }
-
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-
-  // 視野角から必要距離を計算
-  const fov = camera.fov * (Math.PI / 180);
-  let dist = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-  dist *= padding;
-
-  // 斜め上から見下ろす位置に配置（軸はあなたの既存設定に合わせて下さい）
-  camera.position.set(center.x + dist, center.y + dist, center.z + dist);
-
-  if (controls) {
-    controls.target.copy(center);
-    controls.update();
-  }
 }
 
     function extraChecks(data){
@@ -536,7 +502,6 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
     });
 
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
-    document.getElementById('btnFit').addEventListener('click', () => fitCameraToScene());
 
     loadLocale('ja');
 
