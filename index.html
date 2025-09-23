@@ -316,7 +316,19 @@
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
       (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
-    let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
+    let dict={};
+    async function loadLocale(locale = 'ja') {
+      const url = `./assets/i18n/ja.json`;
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ja.json`);
+        return await res.json();
+      } catch (e) {
+        console.warn(`i18n ja not found at ja.json, fallback to defaults.`, e);
+        return {};   // 既定文言にフォールバック
+      }
+    }
+
     function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
     document.querySelectorAll('#tabs button').forEach(btn=>{
