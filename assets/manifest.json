@@ -1,6 +1,12 @@
 {
   "groups": [
     {
+  "meta": { "title": "SmokeTest" },
+  "nodes": [],
+  "edges": [],
+  "auxiliary": []
+},
+    {
       "title": "基本サンプル",
       "files": [
         { "path": "./assets/data/sample_herac.json", "title": "Sample Herac" },
