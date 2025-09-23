@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
+  <!-- Inline favicon to avoid 404 -->
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -135,7 +137,7 @@
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
       const background= options.background?? null;
-      const plane     = options.plane     ?? "xy";
+      const plane     = options.plane     ?? "zx"; // ← デフォルトを zx に戻す
       const direction = options.direction ?? 0;
       const worldScale = options.worldScale ?? 0.1;
 
@@ -143,8 +145,8 @@
       const ctx = canvas.getContext('2d');
       ctx.font = `${fontSize}px ${fontFamily}`;
       const metrics = ctx.measureText(text);
-      canvas.width  = metrics.width + 20;
-      canvas.height = Math.ceil(fontSize * 1.5);
+      canvas.width  = Math.max(2, Math.ceil(metrics.width + 20));
+      canvas.height = Math.max(2, Math.ceil(fontSize * 1.5));
       ctx.font = `${fontSize}px ${fontFamily}`;
       if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
       ctx.fillStyle = color;
@@ -196,7 +198,7 @@
     });
 
     function fitCameraToScene(padding=1.2){
-      controls.reset();
+      controls.reset(); // 完全リセット
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
@@ -334,7 +336,7 @@
     const fab=document.getElementById('fab');
     fab.onclick=()=>{panel.classList.toggle('open');panel.classList.toggle('closed');};
 
-    // Layer visibility (session only)
+    // レイヤー可視性（セッション内で維持）
     let layerVisibility={nodes:true,edges:true,labels:true,aux:true};
     document.getElementById('toggle-nodes').onchange=(ev)=>{layerVisibility.nodes=ev.target.checked;nodeGroup.visible=layerVisibility.nodes;};
     document.getElementById('toggle-edges').onchange=(ev)=>{layerVisibility.edges=ev.target.checked;edgeGroup.visible=layerVisibility.edges;};
@@ -378,21 +380,21 @@
       if(firstPath){
         select.value=firstPath;
         loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);
-          // restore layer visibility after rebuild
+          // レイヤー状態を復元
           nodeGroup.visible=layerVisibility.nodes;
           edgeGroup.visible=layerVisibility.edges;
           labelGroup.visible=layerVisibility.labels;
           auxiliaryGroup.visible=layerVisibility.aux;
         });
       }
-    });
+    }).catch(e=>{ showErrors([`manifest load error: ${e}`]); });
 
     select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);
       nodeGroup.visible=layerVisibility.nodes;
       edgeGroup.visible=layerVisibility.edges;
       labelGroup.visible=layerVisibility.labels;
       auxiliaryGroup.visible=layerVisibility.aux;
-    });};
+    }).catch(e=>{ showErrors([`digidiorama load error: ${e}`]); });};
 
     loadLocale('ja');
 
