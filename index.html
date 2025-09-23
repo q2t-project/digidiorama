@@ -411,7 +411,7 @@
     const ro=new ResizeObserver(()=>{
       const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,true);
-      camera.aspect=w/h;av
+      camera.aspect=w/h;
       camera.updateProjectionMatrix();
     });
     ro.observe(container);
