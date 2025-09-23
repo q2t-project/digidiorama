@@ -144,14 +144,14 @@
 
     function makeLabelPlane(text, options = {}, nodeId=null) {
       const fontSize  = options.fontSize  ?? 32;
-      const fontFamily= options.fontFamily?? "Arial";
+      const fontFamily= options.fontFamily ?? "Arial";
       const color     = options.color     ?? "white";
       const opacity   = options.opacity   ?? 1.0;
-      const background= options.background?? null;
+      const background= options.background ?? null;
       const padding   = options.padding   ?? 8;
       const radius    = options.radius    ?? 6;
       const outlineW  = options.outlineWidth ?? 2;
-      const outlineC  = options.outlineColor ?? null;
+      const outlineC = options.outlineColor ?? "rgba(0,0,0,0.85)";
       const plane     = options.plane     ?? "zx";
       const direction = options.direction ?? 0;
       const worldScale = options.worldScale ?? 0.1;
