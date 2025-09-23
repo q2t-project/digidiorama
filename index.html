@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -420,10 +421,23 @@ function runValidation(data){
 async function ensureAjv2020(){
   const key = 'https://json-schema.org/draft/2020-12/schema';
   try{
-    if(!ajv.getSchema(key)){
-      const url = 'https://cdn.jsdelivr.net/npm/ajv@8/dist/refs/json-schema-draft-2020-12.json';
-      const meta = await fetch(url).then(r=> r.ok ? r.json() : null).catch(()=>null);
-      if(meta){ ajv.addMetaSchema(meta); }
+    if (ajv.getSchema(key)) return;
+    const candidates = [
+      './schemas/json-schema-draft-2020-12.json', // local (optional)
+      'https://unpkg.com/ajv@8/dist/refs/json-schema-draft-2020-12.json' // CDN fallback
+    ];
+    for (const url of candidates){
+      try{
+        const r = await fetch(url);
+        if(!r.ok) continue;
+        const meta = await r.json();
+        ajv.addMetaSchema(meta);
+        return;
+      }catch(_){ /* try next */ }
+    }
+    // As a final fallback we just proceed; validateSchema:false avoids hard failure.
+  }catch(_){ /* no-op */ }
+}
     }
   }catch(_){ /* no-op */ }
 }
