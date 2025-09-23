@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" href="data:,">
   <title>digidiorama viewer/</title>
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
@@ -56,6 +55,14 @@
         "ajv": "https://esm.sh/ajv@8/dist/2020?bundle"
       }
     }
+  
+    // Fit button & version text
+    (function(){
+      const btnFit = document.getElementById("btnFit");
+      if(btnFit){ btnFit.addEventListener("click", ()=> fitCameraToScene()); }
+      const vEl = document.getElementById("appVersion");
+      if(vEl){ vEl.textContent = `schema v2 • ${new Date().toISOString().slice(0,10)}`; }
+    })();
   </script>
 </head>
 <body>
@@ -69,6 +76,7 @@
         <option value="en">English</option>
       </select>
       <button id="btnReset" data-i18n="reset">Reset</button>
+      <button id="btnFit" title="Fit camera to scene">Fit</button>
       <div id="layersMenu" style="position:relative;">
         <button id="btnLayers" data-i18n="layers">Layers ▼</button>
         <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
@@ -96,7 +104,7 @@
     </div>
     <button id="fab">≡</button>
   </div>
-  <div class="credit">MIT © q2t-project / Content © respective authors</div>
+  <div class="credit">MIT © q2t-project / Content © respective authors &nbsp;|&nbsp; <span id="appVersion"></span></div>
 
   <script type="module">
     import * as THREE from 'three';
@@ -299,29 +307,12 @@
       fitCameraToScene();
     }
 
-function showMeta(meta, data) {
-  const box = document.getElementById('meta');
-  box.replaceChildren(); // 毎回きれいにする
-
-  // メタ項目
-  if (meta) {
-    for (const [k, v] of Object.entries(meta)) {
-      const d = document.createElement('div');
-      d.className = 'meta-item';
-      d.textContent = `${k}: ${v}`;
-      box.appendChild(d);
+    function showMeta(meta,data){
+      const box=document.getElementById('meta');box.innerHTML='';
+      if(meta){for(const [k,v] of Object.entries(meta)){
+        const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
-  }
-
-  // counts を毎回生成して追加（idは不要）
-  const counts = document.createElement('div');
-  counts.className = 'meta-item';
-  counts.innerHTML =
-    `<p>Nodes: ${(data.nodes || []).length}</p>` +
-    `<p>Edges: ${(data.edges || []).length}</p>`;
-  box.appendChild(counts);
-}
-
 
     function showNode(node){
       const box=document.getElementById('node');box.innerHTML='';
@@ -393,40 +384,42 @@ function showMeta(meta, data) {
     document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
     document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
     document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
-    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
-    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
+    
+    function persistLayers(){
+      try{ localStorage.setItem(LS_NS("layers"), JSON.stringify(layerVisibility)); }catch(e){}
+    }
+    // 初期反映
+    document.getElementById("toggle-nodes").checked = layerVisibility.nodes;
+    document.getElementById("toggle-edges").checked = layerVisibility.edges;
+    document.getElementById("toggle-labels").checked = layerVisibility.labels;
+    document.getElementById("toggle-aux").checked = layerVisibility.aux;
+    nodeGroup.visible = layerVisibility.nodes;
+    edgeGroup.visible = layerVisibility.edges;
+    labelGroup.visible = layerVisibility.labels;
+    auxiliaryGroup.visible = layerVisibility.aux;
+document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;} ; persistLayers();
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;} ; persistLayers();
+    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;} ; persistLayers();
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;} ; persistLayers();
 
     const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
 let validateModel = null;
 let validateManifest = null;
 
 async function loadSchemas(){
-  try {
+  try{
+    
     const [modelSchema, manifestSchema] = await Promise.all([
-      fetch('./digidiorama_schema_v2.json', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-      fetch('./manifest_schema_v2.json', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+      fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+      fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
     ]);
     validateModel = ajv.compile(modelSchema);
     validateManifest = ajv.compile(manifestSchema);
-  } catch (err) {
+  }catch(err){
     console.warn('Schema load failed, fallback to minimal schema', err);
-    const fallback = {
-      type: 'object',
-      properties: {
-        meta: { type: 'object' },
-        nodes: { type: 'array' },
-        edges: { type: 'array' },
-        auxiliary: { type: 'array' }
-      },
-      required: ['meta','nodes','edges']
-    };
+    const fallback = {type:'object',properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},required:['meta','nodes','edges']};
     validateModel = ajv.compile(fallback);
   }
-}
 }
 
     function extraChecks(data){
@@ -514,6 +507,14 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
     ro.observe(container);
 
     function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
+  
+    // Fit button & version text
+    (function(){
+      const btnFit = document.getElementById("btnFit");
+      if(btnFit){ btnFit.addEventListener("click", ()=> fitCameraToScene()); }
+      const vEl = document.getElementById("appVersion");
+      if(vEl){ vEl.textContent = `schema v2 • ${new Date().toISOString().slice(0,10)}`; }
+    })();
   </script>
 </body>
 </html>
