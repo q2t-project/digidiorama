@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="ja">
 <head>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
-  <link rel="icon" type="image/svg+xml"
-        href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>'>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -54,7 +56,7 @@
       "imports": {
         "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
         "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "ajv": "https://cdn.skypack.dev/ajv@8/dist/2020"
+        "ajv": "https://cdn.skypack.dev/ajv@8"
       }
     }
   </script>
@@ -100,6 +102,10 @@
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
   <script type="module">
+    // ---- cache bypass helpers ----
+    const __CACHE_TS__ = Date.now();
+    const bust = (url)=> url + (url.includes("?") ? "&" : "?") + "v=" + __CACHE_TS__;
+
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import Ajv from 'ajv';
@@ -370,10 +376,10 @@ let validateManifest = null;
 
 async function loadSchemas(){
   try{
-    
+    await ensureAjv2020();
     const [modelSchema, manifestSchema] = await Promise.all([
-      fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-      fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+      fetch(bust('./digidiorama.schema.json'), { cache: 'no-store' }).then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+      fetch(bust('./manifest.schema.json'), { cache: 'no-store' }).then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
     ]);
     validateModel = ajv.compile(modelSchema);
     validateManifest = ajv.compile(manifestSchema);
@@ -400,21 +406,60 @@ async function loadSchemas(){
 }
 function runValidation(data){
   const msgs = [];
-  // Ajv(外部スキーマ or 最小スキーマ) どちらにも対応
+  // validateModel を使う版（外部スキーマ対応）
   if (typeof validateModel === 'function') {
     const ok = validateModel(data);
-    if (!ok) msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/' } ${e.message}`));
-  } else if (typeof validate === 'function') { // 旧インラインschema互換
-    const ok = validate(data);
-    if (!ok) msgs.push(...validate.errors.map(e => `${e.instancePath || '/' } ${e.message}`));
+    if (!ok) {
+      msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
   }
-  // 追加の整合チェック（ID重複 / 参照不整合）
+  // 旧版との後方互換（validate がある環境）
+  else if (typeof validate === 'function') {
+    const ok = validate(data);
+    if (!ok) {
+      msgs.push(...validate.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
+  }
+  // 追加の整合チェック（ID重複/参照不整合）
   msgs.push(...extraChecks(data));
   showErrors(msgs);
 }
 
-async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
-    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
+async function ensureAjv2020(){
+  const key = 'https://json-schema.org/draft/2020-12/schema';
+  try{
+    if (ajv.getSchema(key)) return;
+    const candidates = [
+      './schemas/json-schema-draft-2020-12.json', // local (optional)
+      'https://unpkg.com/ajv@8/dist/refs/json-schema-draft-2020-12.json' // CDN fallback
+    ];
+    for (const url of candidates){
+      try{
+        const r = await fetch(url);
+        if(!r.ok) continue;
+        const meta = await r.json();
+        ajv.addMetaSchema(meta);
+        return;
+      }catch(_){ /* try next */ }
+    }
+    // As a final fallback we just proceed; validateSchema:false avoids hard failure.
+  }catch(_){ /* no-op */ }
+}
+
+async function loadManifest(){
+      const url = bust('./assets/manifest.json');
+      const res = await fetch(url, { cache: 'no-store' });
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      return res.json();
+    }
+    async function loadDigidiorama(path){
+      const url = bust(path);
+      const res = await fetch(url, { cache: 'no-store' });
+      const txt = await res.text();
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      try { return JSON.parse(txt); }
+      catch(e){ throw new Error(`JSON parse error in ${url}: ${e.message}`); }
+    }
 
     const select=document.getElementById('fileSelect');
     loadSchemas().then(()=> loadManifest()).then(list=>{
@@ -446,6 +491,7 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
 
       if(firstPath){
         select.value=firstPath;
+        console.info('Initial dataset path =', firstPath);
         loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
       }
     });
