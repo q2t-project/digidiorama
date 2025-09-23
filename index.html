@@ -362,7 +362,7 @@
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
     document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
 
-    const ajv = new Ajv({ allErrors: true, strict: false });
+    const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
 let validateModel = null;
 let validateManifest = null;
 
@@ -414,6 +414,17 @@ function runValidation(data){
   // 追加の整合チェック（ID重複/参照不整合）
   msgs.push(...extraChecks(data));
   showErrors(msgs);
+}
+
+async function ensureAjv2020(){
+  const key = 'https://json-schema.org/draft/2020-12/schema';
+  try{
+    if(!ajv.getSchema(key)){
+      const url = 'https://cdn.jsdelivr.net/npm/ajv@8/dist/refs/json-schema-draft-2020-12.json';
+      const meta = await fetch(url).then(r=> r.ok ? r.json() : null).catch(()=>null);
+      if(meta){ ajv.addMetaSchema(meta); }
+    }
+  }catch(_){ /* no-op */ }
 }
 
 async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
