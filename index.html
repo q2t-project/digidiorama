@@ -460,7 +460,7 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
     const ro=new ResizeObserver(()=>{
       const {clientWidth:w,clientHeight:h}=container;
       renderer.setSize(w,h,true);
-      camera.aspect=w/h;av
+      camera.aspect=w/h;
       camera.updateProjectionMatrix();
     });
     ro.observe(container);
