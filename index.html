@@ -298,12 +298,29 @@
       fitCameraToScene();
     }
 
-    function showMeta(meta,data){
-      const box=document.getElementById('meta');box.innerHTML='';
-      if(meta){for(const [k,v] of Object.entries(meta)){
-        const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
-      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
+function showMeta(meta, data) {
+  const box = document.getElementById('meta');
+  box.replaceChildren(); // 毎回きれいにする
+
+  // メタ項目
+  if (meta) {
+    for (const [k, v] of Object.entries(meta)) {
+      const d = document.createElement('div');
+      d.className = 'meta-item';
+      d.textContent = `${k}: ${v}`;
+      box.appendChild(d);
     }
+  }
+
+  // counts を毎回生成して追加（idは不要）
+  const counts = document.createElement('div');
+  counts.className = 'meta-item';
+  counts.innerHTML =
+    `<p>Nodes: ${(data.nodes || []).length}</p>` +
+    `<p>Edges: ${(data.edges || []).length}</p>`;
+  box.appendChild(counts);
+}
+
 
     function showNode(node){
       const box=document.getElementById('node');box.innerHTML='';
