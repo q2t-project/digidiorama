@@ -1,0 +1,45 @@
+{
+  "$id": "./manifest_schema_v2.json",
+  "title": "digidiorama manifest",
+  "type": "object",
+  "required": [
+    "groups"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "files"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

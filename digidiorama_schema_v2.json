@@ -1,0 +1,283 @@
+{
+  "$id": "./digidiorama_schema_v2.json",
+  "title": "digidiorama model v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "const": 2
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "auxiliary": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/aux"
+      }
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]+$"
+              },
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "items": false
+    },
+    "labelAttr": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": "number",
+          "minimum": 1
+        },
+        "plane": {
+          "enum": [
+            "xy",
+            "yz",
+            "zx"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "front",
+            "back",
+            "left",
+            "right",
+            "top",
+            "bottom"
+          ]
+        },
+        "background": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": {
+              "type": "string"
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "position"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "position": {
+          "$ref": "#/$defs/vec3"
+        },
+        "labelAttr": {
+          "$ref": "#/$defs/labelAttr"
+        },
+        "layer": {
+          "type": "string"
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "source",
+        "target"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "directed": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "color": {
+          "type": "string"
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0.1
+        },
+        "labelAttr": {
+          "$ref": "#/$defs/labelAttr"
+        },
+        "layer": {
+          "type": "string"
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "aux": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "length"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "axis"
+            },
+            "length": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "plane",
+            "size",
+            "step"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "grid"
+            },
+            "plane": {
+              "enum": [
+                "xy",
+                "yz",
+                "zx"
+              ]
+            },
+            "size": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "items": false
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "color": {
+              "type": "string"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      ]
+    }
+  }
+}
