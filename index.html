@@ -1,378 +1,490 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>Digidiorama Viewer v2</title>
-  <base href="/digidiorama/">
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml;utf8,
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
-        <circle cx='50' cy='50' r='45' stroke='black' stroke-width='5' fill='white'/>
-        <text x='50' y='60' font-size='50' text-anchor='middle' fill='black'>D</text>
-      </svg>">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>digidiorama viewer/</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; }
-    #container { display: flex; height: calc(100% - 60px); }
-    #leftPanel, #rightPanel {
-      width: 220px; overflow-y: auto; background: #f0f0f0; padding: 8px;
+    :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
+    #app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr}
+    header{display:flex;gap:.5rem;align-items:center;padding:.5rem .75rem;background:#0e142a;border-bottom:1px solid #1d2748}
+    header h1{font-size:14px;font-weight:600;margin:0;letter-spacing:.3px}
+    header .spacer{flex:1}
+    header select, header button{
+      appearance:none;border:1px solid #2a3969;background:#131a33;color:var(--fg);
+      padding:.5rem 1rem;border-radius:.4rem;cursor:pointer;min-height:44px
     }
-    #viewer { flex: 1; background: #000; position: relative; }
-    header { display: flex; align-items: center; gap: 8px; padding: 4px; background: #ddd; }
-    footer { padding: 4px; background: #eee; font-size: 12px; text-align: center; }
-    button { margin-right: 4px; }
-    .label {
-      font-size: 12px;
-      color: white;
-      -webkit-text-stroke: 2px black;
-      text-stroke: 2px black;
-      white-space: nowrap;
+    header button:hover, header select:hover{border-color:#39529c;background:#1a2347}
+    #main{display:grid;grid-template-columns:1fr 250px;overflow:hidden}
+    #viewer{position:relative;overflow:hidden}
+    #panel{background:#10172c;border-left:1px solid #1d2748;padding:.5rem;overflow-y:auto;transition:transform .3s ease}
+    #panel h2{font-size:13px;margin:.5rem 0}
+    #panel .meta-item, #panel .error-item, #panel .node-item{font-size:12px;margin-bottom:.25rem}
+    .credit{position:absolute;right:.5rem;bottom:.5rem;font-size:11px;opacity:.7}
+    canvas{display:block;width:100%;height:100%;}
+    /* タブUI（モバイルのみ表示） */
+    #tabs { display:none; margin-bottom:.5rem; }
+    #tabs button { flex:1; padding:.5rem; border:none; background:#2a3969; color:#fff; border-radius:.3rem; cursor:pointer; }
+    #tabs button.active { background:var(--accent); }
+    .tab-pane { display:block; }
+    /* モバイル時: ドロワー＋タブ */
+    @media(max-width:600px){
+      #main{grid-template-columns:1fr;}
+      #panel{position:absolute;z-index:10;width:100%;height:40%;bottom:0;left:0;border-left:none;border-top:1px solid #1d2748;transform:translateY(100%)}
+      #panel.open{transform:translateY(0)}
+      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
+      #tabs { display:flex; gap:.5rem; }
+      #tab-content .tab-pane { display:none; }
+      #tab-content .tab-pane.active { display:block; }
+    }
+    @media(min-width:601px){
+      #panel{width:250px;right:0;top:0;height:100%;transform:translateX(0)}
+      #panel.closed{transform:translateX(100%)}
+      #fab{position:absolute;right:.75rem;bottom:.75rem;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:20}
+      #tabs { display:none; }
+      #tab-content .tab-pane { display:block; }
     }
   </style>
+
   <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "ajv": "https://cdn.skypack.dev/ajv@8/dist/2020"
+      }
     }
-  }
   </script>
 </head>
 <body>
-  <header>
-    <select id="fileSelect"></select>
-    <button id="resetBtn">Reset</button>
-    <button id="fitBtn">Fit</button>
-  </header>
-  <div id="container">
-    <div id="leftPanel">
-      <h3>Meta</h3>
-      <pre id="metaInfo"></pre>
+  <div id="app">
+    <header>
+      <h1 data-i18n="title">デジジオラマ</h1>
+      <div class="spacer"></div>
+      <select id="fileSelect"></select>
+      <select id="langSelect">
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+      <button id="btnReset" data-i18n="reset">Reset</button>
+      <div id="layersMenu" style="position:relative;">
+        <button id="btnLayers" data-i18n="layers">Layers ▼</button>
+        <div id="layersDropdown" style="display:none;position:absolute;right:0;top:100%;background:#131a33;border:1px solid #2a3969;padding:.5rem;border-radius:.4rem;">
+          <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label><br/>
+          <label><input type="checkbox" id="toggle-edges" checked /> Edges</label><br/>
+          <label><input type="checkbox" id="toggle-labels" checked /> Labels</label><br/>
+          <label><input type="checkbox" id="toggle-aux" checked /> Auxiliary</label>
+        </div>
+      </div>
+    </header>
+    <div id="main">
+      <div id="viewer"></div>
+      <div id="panel" class="closed">
+        <div id="tabs">
+          <button data-tab="node" class="active">Node</button>
+          <button data-tab="errors">Errors</button>
+          <button data-tab="meta">Meta</button>
+        </div>
+        <div id="tab-content">
+          <div id="node" class="tab-pane active"></div>
+          <div id="errors" class="tab-pane"></div>
+          <div id="meta" class="tab-pane"></div>
+        </div>
+      </div>
     </div>
-    <div id="viewer"></div>
-    <div id="rightPanel">
-      <h3>Layers</h3>
-      <div id="layers"></div>
-    </div>
+    <button id="fab">≡</button>
   </div>
-  <footer>
-    schema v2 • 2025-09-25
-  </footer>
+  <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
   <script type="module">
-    import * as THREE from "three";
-    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-    import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+    // ---- cache bypass helpers ----
+    const __CACHE_TS__ = Date.now();
+    const bust = (url)=> url + (url.includes("?") ? "&" : "?") + "v=" + __CACHE_TS__;
 
-    const container = document.getElementById("viewer");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, container.clientWidth/container.clientHeight, 0.1, 2000);
-    const renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import Ajv from 'ajv';
+
+    const container=document.getElementById('viewer');
+    const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1020);
+
+    const camera=new THREE.PerspectiveCamera(60,1,0.1,1000);
+    camera.up.set(0,0,1);
+    const renderer=new THREE.WebGLRenderer({antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     container.appendChild(renderer.domElement);
 
-    const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(container.clientWidth, container.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = 0;
-    labelRenderer.domElement.style.pointerEvents = "none";
-    container.appendChild(labelRenderer.domElement);
-
-    const controls = new OrbitControls(camera, labelRenderer.domElement);
-    camera.position.set(0,0,100);
+    const controls=new OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true;
+    controls.zoomSpeed = window.innerWidth<600 ? 1.2 : 2;
+    controls.rotateSpeed = window.innerWidth<600 ? 0.8 : 1.0;
+    controls.panSpeed = window.innerWidth<600 ? 0.5 : 1.0;
+    controls.minDistance = 1;
+    controls.maxDistance = 200;
     controls.update();
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1,1,1);
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0x404040));
+    scene.add(new THREE.AmbientLight(0xffffff,0.6));
+    const dir=new THREE.DirectionalLight(0xffffff,0.8);dir.position.set(5,10,7);scene.add(dir);
 
-    let graph = {nodes:[], edges:[]};
+    const nodeGroup=new THREE.Group();
+    const edgeGroup=new THREE.Group();
+    const labelGroup=new THREE.Group();
+    const auxiliaryGroup=new THREE.Group();
+    scene.add(edgeGroup,nodeGroup,labelGroup,auxiliaryGroup);
 
-    function makeLabelPlane(text, attr={}) {
-      const div = document.createElement("div");
-      div.className = "label";
-      div.textContent = text;
-      if(attr.background){
-        div.style.background = attr.background;
+    function makeLabelPlane(text, options = {}, nodeId=null) {
+      const fontSize  = options.fontSize  ?? 32;
+      const fontFamily= options.fontFamily?? "Arial";
+      const color     = options.color     ?? "white";
+      const opacity   = options.opacity   ?? 1.0;
+      const background= options.background?? null;
+      const plane     = options.plane     ?? "zx";
+      const direction = options.direction ?? 0;
+      const worldScale = options.worldScale ?? 0.1;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      const metrics = ctx.measureText(text);
+      canvas.width  = metrics.width + 20;
+      canvas.height = fontSize * 1.5;
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      if (background) { ctx.fillStyle = background; ctx.fillRect(0,0,canvas.width,canvas.height); }
+      ctx.fillStyle = color;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity, side: THREE.DoubleSide });
+      const geom = new THREE.PlaneGeometry(canvas.width * worldScale, canvas.height * worldScale);
+      const mesh = new THREE.Mesh(geom, mat);
+
+      switch (plane) {
+        case "yz":
+          mesh.rotation.y = Math.PI/2;
+          mesh.rotation.z = Math.PI/2;
+          break;
+        case "zx":
+          mesh.rotation.x = Math.PI/2;
+          mesh.rotation.y += Math.PI;
+          break;
       }
-      const label = new CSS2DObject(div);
-      return label;
+      if (direction) mesh.rotation.z += THREE.MathUtils.degToRad(direction);
+
+      mesh.position.set(...(options.offset ?? [0,0,0]));
+      if(nodeId) mesh.userData.nodeId = nodeId;
+      return mesh;
     }
 
-    function loadJSON(data){
-      graph = data;
-      // counts表示
-      const metaInfo = document.getElementById("metaInfo");
-      const counts = `Nodes: ${data.nodes.length}\nEdges: ${data.edges.length}`;
-      metaInfo.textContent = JSON.stringify(data.meta, null, 2) + "\n" + counts;
+    const nodeById=new Map();
 
-      // clear scene except lights
-      [...scene.children].forEach(o=>{
-        if(!(o.isLight)) scene.remove(o);
-      });
-      const nodeMap = new Map();
-      data.nodes.forEach(n=>{
-        const geom = new THREE.SphereGeometry(1.5,16,16);
-        const mat = new THREE.MeshPhongMaterial({color:0x3399ff});
-        const mesh = new THREE.Mesh(geom,mat);
-        mesh.position.set(...n.pos);
-        scene.add(mesh);
-
-        if(n.label){
-          const label = makeLabelPlane(n.label, n.labelAttr||{});
-          label.position.copy(mesh.position).add(new THREE.Vector3(2,2,0));
-          scene.add(label);
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener('click',event=>{
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse,camera);
+      const intersects = raycaster.intersectObjects(nodeGroup.children.concat(labelGroup.children),true);
+      if(intersects.length>0){
+        const mesh = intersects[0].object;
+        if(mesh.userData.nodeId){
+          const node=nodeById.get(mesh.userData.nodeId).userData;
+          showNode(node);
         }
-        nodeMap.set(n.id, mesh);
-      });
-
-      data.edges.forEach(e=>{
-        const src = nodeMap.get(e.source);
-        const tgt = nodeMap.get(e.target);
-        if(src && tgt){
-          const pts = [src.position, tgt.position];
-          const geom = new THREE.BufferGeometry().setFromPoints(pts);
-          const mat = new THREE.LineBasicMaterial({color:0x999999});
-          const line = new THREE.Line(geom, mat);
-          scene.add(line);
-        }
-      });
-
-      // レイヤー構築
-      buildLayersUI(data);
-    }
-
-    function buildLayersUI(data){
-      const layersDiv = document.getElementById("layers");
-      layersDiv.innerHTML = "";
-      const key = "ddv:v2:layers";
-      let state = {};
-      try{
-        state = JSON.parse(localStorage.getItem(key)) || {};
-      }catch{}
-      data.auxiliary?.forEach(layer=>{
-        const id = "layer_" + layer.id;
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.id = id;
-        chk.checked = state[layer.id] !== false;
-        chk.addEventListener("change", ()=>{
-          state[layer.id] = chk.checked;
-          localStorage.setItem(key, JSON.stringify(state));
-          // TODO: toggle layer visibility
-        });
-        const lbl = document.createElement("label");
-        lbl.htmlFor = id;
-        lbl.textContent = layer.label || layer.id;
-        const div = document.createElement("div");
-        div.appendChild(chk);
-        div.appendChild(lbl);
-        layersDiv.appendChild(div);
-      });
-    }
-
-    async function loadManifest(){
-      try {
-        const res = await fetch("./assets/manifest.json");
-        if(!res.ok) throw new Error("Manifest load failed");
-        return res.json();
-      } catch(err){
-        console.error("Manifest error:", err);
-        return { groups: [] };
-      }
-    }
-
-    async function loadDigidiorama(path){
-      try {
-        const res = await fetch(path);
-        if(!res.ok) throw new Error("Data load failed");
-        return res.json();
-      } catch(err){
-        console.error("Data load error:", err);
-        return { meta:{title:"Error"}, nodes:[], edges:[], auxiliary:[] };
-      }
-    }
-
-    const select=document.getElementById("fileSelect");
-    loadManifest().then(list=>{
-      list.groups.forEach(group=>{
-        const optgroup=document.createElement("optgroup");
-        optgroup.label=group.title;
-        group.files.forEach(f=>{
-          const opt=document.createElement("option");
-          opt.value=f.path;
-          opt.textContent=f.title;
-          optgroup.appendChild(opt);
-        });
-        select.appendChild(optgroup);
-      });
-      if(select.options.length>0){
-        select.selectedIndex=0;
-        loadDigidiorama(select.value).then(loadJSON);
       }
     });
 
-    select.addEventListener("change",()=>{
-      const val=select.value;
-      if(val) loadDigidiorama(val).then(loadJSON);
-    });
+    function fitCameraToScene(padding=1.2){
+      controls.reset();  // ★追加：毎回リセット
 
-    // Reset button
-    document.getElementById("resetBtn").addEventListener("click", ()=>{
-      camera.position.set(0,0,100);
-      controls.reset();
-    });
-
-    // Fit button
-    document.getElementById("fitBtn").addEventListener("click", ()=>{
       const box = new THREE.Box3().setFromObject(scene);
-      const size = box.getSize(new THREE.Vector3()).length();
+      const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      camera.position.copy(center);
-      camera.position.z += size*1.2;
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const fov = camera.fov * (Math.PI / 180);
+      let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+      cameraZ *= padding;
+      camera.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
       controls.target.copy(center);
       controls.update();
-    });
-    window.addEventListener("resize", ()=>{
-      camera.aspect = container.clientWidth/container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      labelRenderer.setSize(container.clientWidth, container.clientHeight);
-    });
-
-    function animate(){
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-      labelRenderer.render(scene, camera);
-    }
-    animate();
-
-    // ============================
-    // i18n（国際化対応の雛形）
-    // ============================
-    const i18nStrings = {
-      ja: {
-        reset: "リセット",
-        fit: "フィット",
-        meta: "メタ情報",
-        layers: "レイヤー"
-      },
-      en: {
-        reset: "Reset",
-        fit: "Fit",
-        meta: "Meta Info",
-        layers: "Layers"
-      }
-    };
-
-    function applyI18n(lang){
-      document.getElementById("resetBtn").textContent = i18nStrings[lang].reset;
-      document.getElementById("fitBtn").textContent = i18nStrings[lang].fit;
-      document.querySelector("#leftPanel h3").textContent = i18nStrings[lang].meta;
-      document.querySelector("#rightPanel h3").textContent = i18nStrings[lang].layers;
     }
 
-    // デフォルトは日本語
-    applyI18n("ja");
+    function buildScene(data){
+      nodeGroup.clear();edgeGroup.clear();labelGroup.clear();auxiliaryGroup.clear();nodeById.clear();
+      const sphereGeom=new THREE.SphereGeometry(0.05,8,8);
 
-    // ============================
-    // JSON Schema Validation (AJV)
-    // ============================
-    import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv7.min.js";
-
-    async function validateJSON(data){
-      try{
-        const res = await fetch("./assets/digidiorama.schema.json");
-        if(!res.ok) throw new Error("schema load failed");
-        const schema = await res.json();
-        const ajv = new Ajv();
-        const validate = ajv.compile(schema);
-        const valid = validate(data);
-        if(!valid){
-          console.warn("Validation errors:", validate.errors);
+      for(const n of data.nodes||[]){
+        const mat=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.3});
+        const m=new THREE.Mesh(sphereGeom,mat);m.position.set(...n.position);m.userData=n;
+        nodeGroup.add(m);nodeById.set(n.id,m);
+        if(n.label){
+          const labelMesh=makeLabelPlane(n.label,n.labelAttr||{},n.id);
+          m.add(labelMesh);
         }
-        return valid;
-      }catch(err){
-        console.error("Validation error:", err);
-        return false;
+      }
+
+      for(const e of data.edges||[]){
+        const a=nodeById.get(e.source),b=nodeById.get(e.target);if(!a||!b)continue;
+        const geo=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
+        const mat=new THREE.LineBasicMaterial({color:e.color||0x9ec1ff,transparent:true,opacity:e.opacity||1.0});
+        edgeGroup.add(new THREE.Line(geo,mat));
+        if(e.label){
+          const midpoint=new THREE.Vector3().addVectors(a.position,b.position).multiplyScalar(0.5);
+          const edgeLabel=makeLabelPlane(e.label,e.labelAttr||{});edgeLabel.position.copy(midpoint);
+          labelGroup.add(edgeLabel);
+        }
+      }
+
+      for(const aux of data.auxiliary||[]){
+        if(aux.type === "grid" && aux.grid){
+          const g = aux.grid;
+          if(g.shape === "rect"){
+            const size = g.size ?? 10;
+            const divisions = g.divisions ?? 10;
+            const color = g.color ?? 0x444444;
+            const grid = new THREE.GridHelper(size, divisions, color, color);
+            grid.material.opacity = g.opacity ?? 0.3;
+            grid.material.transparent = true;
+            if(g.plane==="yz"){grid.rotation.z=Math.PI/2;}
+            if(g.plane==="zx"){grid.rotation.x=Math.PI/2;}
+            if(g.position){grid.position.set(...g.position);}
+            if(aux.visible===false) grid.visible=false;
+            auxiliaryGroup.add(grid);
+          }
+          if(g.shape === "polar"){
+            const rings = g.rings ?? 5;
+            const segments = g.segments ?? 36;
+            const radius = g.size ?? 5;
+            const mat = new THREE.LineBasicMaterial({color:g.color??0x444444, transparent:true, opacity:g.opacity??0.3});
+            for(let r=1;r<=rings;r++){
+              const geom = new THREE.BufferGeometry();
+              const pts=[];
+              for(let i=0;i<=segments;i++){
+                const theta = (i/segments)*2*Math.PI;
+                pts.push(new THREE.Vector3(Math.cos(theta)*radius*r/rings, Math.sin(theta)*radius*r/rings, 0));
+              }
+              geom.setFromPoints(pts);
+              const circle=new THREE.LineLoop(geom,mat);
+              if(g.plane==="yz"){circle.rotation.y=Math.PI/2;}
+              if(g.plane==="zx"){circle.rotation.x=Math.PI/2;}
+              if(g.position){circle.position.set(...g.position);}
+              if(aux.visible===false) circle.visible=false;
+              auxiliaryGroup.add(circle);
+            }
+          }
+        }
+        if(aux.type === "axis"){
+          const len = aux.length ?? 1;
+          const colors = aux.colors || ["#ff0000","#00ff00","#0000ff"];
+          const axes = [
+            { dir: new THREE.Vector3(1,0,0), color: colors[0] },
+            { dir: new THREE.Vector3(0,1,0), color: colors[1] },
+            { dir: new THREE.Vector3(0,0,1), color: colors[2] }
+          ];
+          axes.forEach(axisDef=>{
+            const geom = new THREE.BufferGeometry().setFromPoints([
+              new THREE.Vector3(0,0,0),
+              axisDef.dir.clone().multiplyScalar(len)
+            ]);
+            const mat = new THREE.LineBasicMaterial({ color: axisDef.color });
+            const line = new THREE.Line(geom,mat);
+            if(aux.position){line.position.set(...aux.position);}
+            if(aux.visible===false) line.visible=false;
+            auxiliaryGroup.add(line);
+          });
+        }
+      }
+
+      showMeta(data.meta,data);
+      fitCameraToScene();
+    }
+
+    function showMeta(meta,data){
+      const box=document.getElementById('meta');box.innerHTML='';
+      if(meta){for(const [k,v] of Object.entries(meta)){
+        const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
+    }
+
+    function showNode(node){
+      const box=document.getElementById('node');box.innerHTML='';
+      if(!node)return;
+      for(const [k,v] of Object.entries(node)){
+        const d=document.createElement('div');d.className='node-item';d.textContent=`${k}: ${v}`;box.appendChild(d);
       }
     }
 
-    // ============================
-    // ファイルアップロード機能
-    // ============================
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = ".json";
-    fileInput.style.display = "none";
-    document.body.appendChild(fileInput);
+    function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
+      (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
-    const uploadBtn = document.createElement("button");
-    uploadBtn.textContent = "Upload JSON";
-    document.querySelector("header").appendChild(uploadBtn);
+    let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
+    function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
-    uploadBtn.addEventListener("click", ()=> fileInput.click());
-    fileInput.addEventListener("change", (e)=>{
-      const file = e.target.files[0];
-      if(file){
-        const reader = new FileReader();
-        reader.onload = (ev)=>{
-          try{
-            const data = JSON.parse(ev.target.result);
-            validateJSON(data).then(valid=>{
-              if(valid){
-                loadJSON(data);
-              }else{
-                alert("JSON validation failed. See console.");
-              }
-            });
-          }catch(err){
-            alert("Invalid JSON: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      }
+    document.querySelectorAll('#tabs button').forEach(btn=>{
+      btn.onclick=()=>{
+        const tab=btn.dataset.tab;
+        document.querySelectorAll('#tab-content .tab-pane').forEach(p=>{
+          p.classList.toggle('active',p.id===tab);
+        });
+        document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b===btn));
+      };
     });
+    if(window.innerWidth<=600){
+      document.querySelector('#node').classList.add('active');
+    }
 
-    // ============================
-    // JSON URL入力機能
-    // ============================
-    const urlInput = document.createElement("input");
-    urlInput.type = "text";
-    urlInput.placeholder = "JSON URLを入力";
-    document.querySelector("header").appendChild(urlInput);
+    const panel=document.getElementById('panel');
+    const fab=document.getElementById('fab');
+    fab.onclick=()=>{panel.classList.toggle('open');panel.classList.toggle('closed');};
 
-    const loadBtn = document.createElement("button");
-    loadBtn.textContent = "Load URL";
-    document.querySelector("header").appendChild(loadBtn);
+    let touchStartX=0,touchStartY=0;
+    window.addEventListener("touchstart",e=>{
+      if(!e.touches || e.touches.length===0) return;
+      touchStartX=e.touches[0].clientX;
+      touchStartY=e.touches[0].clientY;
+    }, {passive:true});
+    window.addEventListener("touchend",e=>{
+      if(!e.changedTouches || e.changedTouches.length===0) return;
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      const dy=e.changedTouches[0].clientY-touchStartY;
+      if(Math.abs(dx)>50 && window.innerWidth>600){
+        if(dx<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+      if(Math.abs(dy)>50 && window.innerWidth<=600){
+        if(dy<0) panel.classList.add('open'); else panel.classList.remove('open');
+      }
+    }, {passive:true});
 
-    loadBtn.addEventListener("click", ()=>{
-      const url = urlInput.value.trim();
-      if(url){
-        loadDigidiorama(url).then(data=>{
-          validateJSON(data).then(valid=>{
-            if(valid){
-              loadJSON(data);
-            }else{
-              alert("JSON validation failed. See console.");
-            }
+    document.getElementById('btnReset').onclick=()=>{fitCameraToScene();};
+    document.getElementById('langSelect').onchange=(ev)=>{loadLocale(ev.target.value)};
+    document.getElementById('btnLayers').onclick=()=>{const dd=document.getElementById('layersDropdown');dd.style.display=dd.style.display==='none'?'block':'none';};
+    document.getElementById('toggle-nodes').onchange=(ev)=>{nodeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-edges').onchange=(ev)=>{edgeGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
+    document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
+
+    const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
+let validateModel = null;
+let validateManifest = null;
+
+async function loadSchemas(){
+  try{
+    
+    const [modelSchema, manifestSchema] = await Promise.all([
+      fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+      fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+    ]);
+    validateModel = ajv.compile(modelSchema);
+    validateManifest = ajv.compile(manifestSchema);
+  }catch(err){
+    console.warn('Schema load failed, fallback to minimal schema', err);
+    const fallback = {type:'object',properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},required:['meta','nodes','edges']};
+    validateModel = ajv.compile(fallback);
+  }
+}
+
+    function extraChecks(data){
+  const msgs=[];
+  const ids=new Set();
+  for(const n of (data.nodes||[])){
+    if(!n || typeof n.id!=='string') continue;
+    if(ids.has(n.id)) msgs.push(`Duplicate node id: ${n.id}`);
+    ids.add(n.id);
+  }
+  for(const e of (data.edges||[])){
+    if(e && typeof e.source==='string' && !ids.has(e.source)) msgs.push(`Edge source not found: ${e.source}`);
+    if(e && typeof e.target==='string' && !ids.has(e.target)) msgs.push(`Edge target not found: ${e.target}`);
+  }
+  return msgs;
+}
+function runValidation(data){
+  const msgs = [];
+  // validateModel を使う版（外部スキーマ対応）
+  if (typeof validateModel === 'function') {
+    const ok = validateModel(data);
+    if (!ok) {
+      msgs.push(...validateModel.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
+  }
+  // 旧版との後方互換（validate がある環境）
+  else if (typeof validate === 'function') {
+    const ok = validate(data);
+    if (!ok) {
+      msgs.push(...validate.errors.map(e => `${e.instancePath || '/'} ${e.message}`));
+    }
+  }
+  // 追加の整合チェック（ID重複/参照不整合）
+  msgs.push(...extraChecks(data));
+  showErrors(msgs);
+}
+
+async function loadManifest(){
+      const url = bust('./assets/manifest.json');
+      const res = await fetch(url, { cache: 'no-store' });
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      return res.json();
+    }
+    async function loadDigidiorama(path){
+      const url = bust(path);
+      const res = await fetch(url, { cache: 'no-store' });
+      const txt = await res.text();
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      try { return JSON.parse(txt); }
+      catch(e){ throw new Error(`JSON parse error in ${url}: ${e.message}`); }
+    }
+
+    const select=document.getElementById('fileSelect');
+    loadSchemas().then(()=> loadManifest()).then(list=>{
+      select.innerHTML = "";
+      let firstPath = null;
+
+      if(Array.isArray(list)){ 
+        list.forEach((item,idx)=>{
+          const opt=document.createElement('option');
+          opt.value=item.path;
+          opt.textContent=item.title||item.path;
+          select.appendChild(opt);
+          if(idx===0) firstPath=item.path;
+        });
+      } else if(list.groups){
+        list.groups.forEach(group=>{
+          const optgroup=document.createElement('optgroup');
+          optgroup.label=group.title;
+          (group.files||[]).forEach(item=>{
+            const opt=document.createElement('option');
+            opt.value=item.path;
+            opt.textContent=item.title||item.path;
+            optgroup.appendChild(opt);
+            if(!firstPath) firstPath=item.path;
           });
+          select.appendChild(optgroup);
         });
       }
+
+      if(firstPath){
+        select.value=firstPath;
+        console.info('Initial dataset path =', firstPath);
+        loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
+      }
     });
-    // ============================
-    // デバッグ用: コンソール操作
-    // ============================
-    window.ddv = {
-      scene,
-      camera,
-      controls,
-      loadDigidiorama,
-      loadJSON
-    };
 
-    console.log("Digidiorama Viewer v2 loaded");
+    select.onchange=()=>{loadDigidiorama(select.value).then(data=>{runValidation(data);buildScene(data);});};
 
+    loadLocale('ja');
+
+    const ro=new ResizeObserver(()=>{
+      const {clientWidth:w,clientHeight:h}=container;
+      renderer.setSize(w,h,true);
+      camera.aspect=w/h;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(container);
+
+    function animate(){controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);}animate();
   </script>
 </body>
 </html>
