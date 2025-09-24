@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" href="data:,">
   <title>digidiorama viewer/</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -53,7 +53,7 @@
       "imports": {
         "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
         "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "ajv": "https://esm.sh/ajv@8/dist/2020?bundle"
+        "ajv": "https://cdn.skypack.dev/ajv@8/dist/2020"
       }
     }
   </script>
@@ -99,6 +99,10 @@
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
   <script type="module">
+    // ---- cache bypass helpers ----
+    const __CACHE_TS__ = Date.now();
+    const bust = (url)=> url + (url.includes("?") ? "&" : "?") + "v=" + __CACHE_TS__;
+
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import Ajv from 'ajv';
@@ -299,29 +303,12 @@
       fitCameraToScene();
     }
 
-function showMeta(meta, data) {
-  const box = document.getElementById('meta');
-  box.replaceChildren(); // 毎回きれいにする
-
-  // メタ項目
-  if (meta) {
-    for (const [k, v] of Object.entries(meta)) {
-      const d = document.createElement('div');
-      d.className = 'meta-item';
-      d.textContent = `${k}: ${v}`;
-      box.appendChild(d);
+    function showMeta(meta,data){
+      const box=document.getElementById('meta');box.innerHTML='';
+      if(meta){for(const [k,v] of Object.entries(meta)){
+        const d=document.createElement('div');d.className='meta-item';d.textContent=`${k}: ${v}`;box.appendChild(d);} }
+      document.getElementById('counts').innerHTML=`<p>Nodes: ${(data.nodes||[]).length}</p><p>Edges: ${(data.edges||[]).length}</p>`;
     }
-  }
-
-  // counts を毎回生成して追加（idは不要）
-  const counts = document.createElement('div');
-  counts.className = 'meta-item';
-  counts.innerHTML =
-    `<p>Nodes: ${(data.nodes || []).length}</p>` +
-    `<p>Edges: ${(data.edges || []).length}</p>`;
-  box.appendChild(counts);
-}
-
 
     function showNode(node){
       const box=document.getElementById('node');box.innerHTML='';
@@ -334,27 +321,9 @@ function showMeta(meta, data) {
     function showErrors(errs){const box=document.getElementById('errors');box.innerHTML='';
       (errs||[]).forEach(e=>{const d=document.createElement('div');d.className='error-item';d.textContent=e;box.appendChild(d);});}
 
-  let dict = {};
-  async function loadLocale(locale='ja'){
-    const url = `./assets/i18n/${locale}.json?v=${Date.now()}`;
-    try{
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      dict = await res.json();
-    }catch(e){
-      console.warn(`i18n ${locale} not found at ${url} — fallback to defaults.`, e);
-      dict = {};
-    }
-    applyI18n();
-  }
+    let dict={};async function loadLocale(lang){try{const res=await fetch(`./assets/i18n/${lang}.json`);dict=await res.json();applyI18n();}catch(e){}}
+    function t(key){return dict[key]||key;}function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});}
 
-      function t(key){return dict[key]||key;}
-      function applyI18n(){
-    document.querySelectorAll('[data-i18n]').forEach(el=>{
-      const k = el.dataset.i18n;
-      if (k in dict) el.textContent = dict[k];
-    });
-  }
     document.querySelectorAll('#tabs button').forEach(btn=>{
       btn.onclick=()=>{
         const tab=btn.dataset.tab;
@@ -403,30 +372,19 @@ let validateModel = null;
 let validateManifest = null;
 
 async function loadSchemas(){
-  try {
+  try{
+    
     const [modelSchema, manifestSchema] = await Promise.all([
-      fetch('./digidiorama_schema_v2.json', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-      fetch('./manifest_schema_v2.json', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+      fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+      fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
     ]);
     validateModel = ajv.compile(modelSchema);
     validateManifest = ajv.compile(manifestSchema);
-  } catch (err) {
+  }catch(err){
     console.warn('Schema load failed, fallback to minimal schema', err);
-    const fallback = {
-      type: 'object',
-      properties: {
-        meta: { type: 'object' },
-        nodes: { type: 'array' },
-        edges: { type: 'array' },
-        auxiliary: { type: 'array' }
-      },
-      required: ['meta','nodes','edges']
-    };
+    const fallback = {type:'object',properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},required:['meta','nodes','edges']};
     validateModel = ajv.compile(fallback);
   }
-}
 }
 
     function extraChecks(data){
@@ -464,8 +422,20 @@ function runValidation(data){
   showErrors(msgs);
 }
 
-async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
-    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
+async function loadManifest(){
+      const url = bust('./assets/manifest.json');
+      const res = await fetch(url, { cache: 'no-store' });
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      return res.json();
+    }
+    async function loadDigidiorama(path){
+      const url = bust(path);
+      const res = await fetch(url, { cache: 'no-store' });
+      const txt = await res.text();
+      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+      try { return JSON.parse(txt); }
+      catch(e){ throw new Error(`JSON parse error in ${url}: ${e.message}`); }
+    }
 
     const select=document.getElementById('fileSelect');
     loadSchemas().then(()=> loadManifest()).then(list=>{
@@ -497,6 +467,7 @@ async function loadManifest(){const res=await fetch('./assets/manifest.json');re
 
       if(firstPath){
         select.value=firstPath;
+        console.info('Initial dataset path =', firstPath);
         loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
       }
     });
