@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
-  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -99,10 +98,6 @@
   <div class="credit">MIT © q2t-project / Content © respective authors</div>
 
   <script type="module">
-    // ---- cache bypass helpers ----
-    const __CACHE_TS__ = Date.now();
-    const bust = (url)=> url + (url.includes("?") ? "&" : "?") + "v=" + __CACHE_TS__;
-
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import Ajv from 'ajv';
@@ -422,20 +417,8 @@ function runValidation(data){
   showErrors(msgs);
 }
 
-async function loadManifest(){
-      const url = bust('./assets/manifest.json');
-      const res = await fetch(url, { cache: 'no-store' });
-      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-      return res.json();
-    }
-    async function loadDigidiorama(path){
-      const url = bust(path);
-      const res = await fetch(url, { cache: 'no-store' });
-      const txt = await res.text();
-      if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-      try { return JSON.parse(txt); }
-      catch(e){ throw new Error(`JSON parse error in ${url}: ${e.message}`); }
-    }
+async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
+    async function loadDigidiorama(path){const res=await fetch(path);return res.json();}
 
     const select=document.getElementById('fileSelect');
     loadSchemas().then(()=> loadManifest()).then(list=>{
@@ -467,7 +450,6 @@ async function loadManifest(){
 
       if(firstPath){
         select.value=firstPath;
-        console.info('Initial dataset path =', firstPath);
         loadDigidiorama(firstPath).then(data=>{runValidation(data);buildScene(data);});
       }
     });
