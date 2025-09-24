@@ -1,10 +1,10 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>digidiorama viewer/</title>
-  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%230b1020"/><circle cx="32" cy="32" r="20" fill="%235aa9ff"/></svg>' />
   <style>
     :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
@@ -363,13 +363,12 @@
     document.getElementById('toggle-labels').onchange=(ev)=>{labelGroup.visible=ev.target.checked;};
     document.getElementById('toggle-aux').onchange=(ev)=>{auxiliaryGroup.visible=ev.target.checked;};
 
-    const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
+    const ajv = new Ajv({ allErrors: true, strict: false });
 let validateModel = null;
 let validateManifest = null;
 
 async function loadSchemas(){
   try{
-    await ensureAjv2020();
     const [modelSchema, manifestSchema] = await Promise.all([
       fetch('./digidiorama.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
       fetch('./manifest.schema.json').then(r=> r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
@@ -416,27 +415,6 @@ function runValidation(data){
   // 追加の整合チェック（ID重複/参照不整合）
   msgs.push(...extraChecks(data));
   showErrors(msgs);
-}
-
-async function ensureAjv2020(){
-  const key = 'https://json-schema.org/draft/2020-12/schema';
-  try{
-    if (ajv.getSchema(key)) return;
-    const candidates = [
-      './schemas/json-schema-draft-2020-12.json', // local (optional)
-      'https://unpkg.com/ajv@8/dist/refs/json-schema-draft-2020-12.json' // CDN fallback
-    ];
-    for (const url of candidates){
-      try{
-        const r = await fetch(url);
-        if(!r.ok) continue;
-        const meta = await r.json();
-        ajv.addMetaSchema(meta);
-        return;
-      }catch(_){ /* try next */ }
-    }
-    // As a final fallback we just proceed; validateSchema:false avoids hard failure.
-  }catch(_){ /* no-op */ }
 }
 
 async function loadManifest(){const res=await fetch('./assets/manifest.json');return res.json();}
