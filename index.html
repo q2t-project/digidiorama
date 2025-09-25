@@ -171,8 +171,8 @@
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         if (!background) {
-          ctx.lineWidth = 1;                     // 仕様既定の 2px
-          ctx.strokeStyle = "rgba(0,0,0,0.9)";   // 黒系
+          ctx.lineWidth = Math.max(2, fontSize * 0.12);                     // 仕様既定の 2px
+          ctx.strokeStyle = "rgba(0,0,0,0.9)";
           ctx.lineJoin = "round";
           ctx.strokeText(text, canvas.width/2, canvas.height/2);
         }
