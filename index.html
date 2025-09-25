@@ -427,12 +427,18 @@ function showMeta(meta,data){
       document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; };
 
       const ajv = new Ajv({ allErrors: true, strict: false });
+      ajv.addFormat("uri", true);
+      ajv.addFormat("uri-reference", true);
+      ajv.addFormat("uri-template", true);
+      ajv.addFormat("json-pointer", true);
+      ajv.addFormat("relative-json-pointer", true);
+
       let validateModel = null;
       let validateManifest = null;
 
       async function loadSchemas() {
         try {
-            const draft = await fetch('./schemas/draft-2020-12-schema.json').then(r => r.json());
+            const draft = await fetch('schemas/draft-2020-12-schema.json').then(r => r.json());
             ajv.addSchema(draft, "https://json-schema.org/draft/2020-12/schema");
             
             const [modelSchema, manifestSchema] = await Promise.all([
