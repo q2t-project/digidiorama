@@ -82,6 +82,19 @@
           <option value="ja">Jpn</option>
           <option value="en">Eng</option>
         </select>
+        header button {
+  min-width: auto;            /* 固定幅を解除 */
+  padding: 0.25rem 0.5rem;    /* 横幅を抑える */
+  font-size: 0.9rem;          /* 少し縮小 */
+}
+
+@media (max-width: 600px) {
+  header button {
+    font-size: 0.8rem;        /* スマホ時さらに縮小 */
+    padding: 0.2rem 0.4rem;   /* 余白も小さく */
+  }
+}
+   
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
           <button id="btnLayers" data-i18n="layers">レイヤ▼</button>
