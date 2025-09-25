@@ -16,15 +16,15 @@
         appearance:none; border:1px solid #2a3969; background:#131a33; color:var(--fg);
         padding:.5rem 1rem; border-radius:.4rem; cursor:pointer; min-height:44px
       }
-      header button {
-        min-width: auto;            /* 固定幅を解除 */
-        padding: 0.25rem 0.5rem;    /* 横幅を抑える */
-        font-size: 0.9rem;          /* 少し縮小 */
+      #btnLoad {
+        min-width: auto;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.9rem;
       }
       @media (max-width: 600px) {
-      header button {
-        font-size: 0.8rem;        /* スマホ時さらに縮小 */
-        padding: 0.2rem 0.4rem;   /* 余白も小さく */
+        #btnLoad {
+          font-size: 0.8rem;
+          padding: 0.2rem 0.4rem;
         }
       }
       header button:hover, header select:hover { border-color:#39529c; background:#1a2347 }
@@ -93,7 +93,7 @@
           <option value="ja">Jpn</option>
           <option value="en">Eng</option>
         </select>
- 
+        <button id="btnLoad">File読込</button>
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
           <button id="btnLayers" data-i18n="layers">レイヤ▼</button>
@@ -438,6 +438,23 @@ function showMeta(meta,data){
       document.getElementById('toggle-edges').onchange = (ev) => { edgeGroup.visible = ev.target.checked; };
       document.getElementById('toggle-labels').onchange = (ev) => { labelGroup.visible = ev.target.checked; };
       document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; };
+      document.getElementById("btnLoad").addEventListener("click", async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            loadModel(data); // ←既存のモデル読み込み関数を呼ぶ
+          } catch (err) {
+            alert("JSONの読み込みに失敗しました: " + err.message);
+          }
+        };
+        input.click();
+      });
 
       const ajv = new Ajv({ allErrors: true, strict: false });
       ajv.addFormat("uri", true);
