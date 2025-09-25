@@ -439,8 +439,8 @@ function showMeta(meta,data){
     async function loadSchemas() {
       try {
 const draft = await fetch('./schemas/draft-2020-12-schema.json').then(r => r.json());
+        draft.$id = "./schemas/draft-2020-12-schema.json"; 
 ajv.addSchema(draft, "https://json-schema.org/draft/2020-12/schema");
-
         const [modelSchema, manifestSchema] = await Promise.all([
           fetch('./digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
           fetch('./manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
