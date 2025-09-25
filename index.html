@@ -396,8 +396,8 @@ function showMeta(meta,data){
           const res = await fetch(url);
           if (!res.ok) throw new Error("HTTP " + res.status);
           const data = await res.json();
-          buildScene(data);
           runValidation(data);
+          buildScene(data);
         } catch (err) {
           alert("URL読み込み失敗: " + err.message);
         }
@@ -452,8 +452,8 @@ document.getElementById("btnUrlLoad").addEventListener("click", async () => {
           try {
             const text = await file.text();
             const data = JSON.parse(text);
-            buildScene(data);
             runValidation(data);
+            buildScene(data);
           } catch (err) {
             alert("JSONの読み込みに失敗しました: " + err.message);
           }
