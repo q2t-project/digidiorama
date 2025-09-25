@@ -442,7 +442,8 @@ function showMeta(meta,data){
           try {
             const text = await file.text();
             const data = JSON.parse(text);
-            loadModel(data); // ←既存のモデル読み込み関数を呼ぶ
+            buildScene(data);
+            runValidation(data);
           } catch (err) {
             alert("JSONの読み込みに失敗しました: " + err.message);
           }
