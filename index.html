@@ -1,5 +1,6 @@
+<script src="https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv2020.min.js"></script>
 <script type="module">
-  import { Ajv } from "https://cdn.jsdelivr.net/npm/ajv@latest";
-  const ajv = new Ajv();
-  console.log("Ajv version:", ajv.version);
+  const Ajv = window.Ajv;
+  const ajv = new Ajv({ allErrors: true });
+  // 以降は現行コードでOK
 </script>
