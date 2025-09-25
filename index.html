@@ -89,6 +89,7 @@
 
         <div class="spacer"></div>
         <button id="btnLoad">File読込</button>
+        <button id="btnUrlLoad">URL読込</button>
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
           <button id="btnLayers" data-i18n="layers">レイヤ▼</button>
@@ -397,6 +398,23 @@ function showMeta(meta,data){
       if (window.innerWidth <= 600) {
         document.querySelector('#node').classList.add('active');
       }
+
+      async function loadFromUrl(url) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          buildScene(data);
+          runValidation(data);
+        } catch (err) {
+          alert("URL読み込み失敗: " + err.message);
+        }
+      }
+
+document.getElementById("btnUrlLoad").addEventListener("click", async () => {
+  const url = prompt("読み込みたい JSON の URL を入力してください:");
+  if (url) await loadFromUrl(url);
+});
 
       const panel = document.getElementById('panel');
       const fab = document.getElementById('fab');
