@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>digidiorama viewer/</title>
+    <link rel="icon" href="data:,">
     <style>
       :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
       html,body { height:100%; margin:0; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui }
@@ -438,8 +439,8 @@ function showMeta(meta,data){
 
       async function loadSchemas() {
         try {
-            const draft = await fetch('./schemas/draft-2020-12-schema.json').then(r => r.json());
-            ajv.addSchema(draft, draft.$id); // fetchしたJSONの$idをそのまま使う
+            const draft = await fetch('./draft-2020-12-schema.json').then(r => r.json());
+            ajv.addSchema(draft, "local-draft-2020-12");
             
             const [modelSchema, manifestSchema] = await Promise.all([
             fetch('./digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
