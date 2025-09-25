@@ -88,9 +88,6 @@
         </svg>
 
         <div class="spacer"></div>
-          <option value="ja">Jpn</option>
-          <option value="en">Eng</option>
-        </select>
         <button id="btnLoad">File読込</button>
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
@@ -427,7 +424,6 @@ function showMeta(meta,data){
       }, { passive:true });
 
       document.getElementById('btnReset').onclick = () => { fitCameraToScene(); };
-      document.getElementById('langSelect').onchange = (ev) => { loadLocale(ev.target.value) };
       document.getElementById('btnLayers').onclick = () => {
         const dd = document.getElementById('layersDropdown');
         dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
@@ -525,7 +521,6 @@ function showMeta(meta,data){
         return res.json();
       }
 
-      const select = document.getElementById('fileSelect');
       loadSchemas().then(() => loadManifest()).then(list => {
         select.innerHTML = "";
         let firstPath = null;
@@ -558,10 +553,6 @@ function showMeta(meta,data){
           loadDigidiorama(firstPath).then(data => { runValidation(data); buildScene(data); });
         }
       });
-
-      select.onchange = () => {
-        loadDigidiorama(select.value).then(data => { runValidation(data); buildScene(data); });
-      };
 
       loadLocale('ja');
 
