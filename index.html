@@ -88,8 +88,6 @@
         </svg>
 
         <div class="spacer"></div>
-        <select id="fileSelect"></select>
-        <select id="langSelect">
           <option value="ja">Jpn</option>
           <option value="en">Eng</option>
         </select>
@@ -520,11 +518,6 @@ function showMeta(meta,data){
         }
         msgs.push(...extraChecks(data));
         showErrors(msgs);
-      }
-
-      async function loadManifest() {
-        const res = await fetch('./assets/manifest.json');
-        return res.json();
       }
 
       async function loadDigidiorama(path) {
