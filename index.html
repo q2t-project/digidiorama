@@ -436,29 +436,41 @@ function showMeta(meta,data){
       let validateModel = null;
       let validateManifest = null;
 
-async function loadSchemas() {
+async function loadSchemas(){
   try {
-    const draft = await fetch('./schemas/draft-2020-12-schema.json').then(r => r.json());
-    draft.$id = "./schemas/draft-2020-12-schema.json"; // ← ローカルのIDに上書き
-    ajv.addSchema(draft, draft.$id);
-
-    const [modelSchema, manifestSchema] = await Promise.all([
-      fetch('./digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-      fetch('./manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+    const [modelSchema, manifestSchema, draftSchema] = await Promise.all([
+      fetch('./digidiorama.schema.json').then(r=>r.json()),
+      fetch('./manifest.schema.json').then(r=>r.json()),
+      fetch('./schemas/draft-2020-12-schema.json').then(r=>r.json())
     ]);
+
+    // ===== デバッグログ挿入 =====
+    console.log(">>> draftSchema.$id:", draftSchema.$id);
+    console.log(">>> modelSchema.$schema:", modelSchema.$schema);
+    console.log(">>> manifestSchema.$schema:", manifestSchema.$schema);
+
+    // 登録直前の ajv.schemas の状態
+    console.log(">>> ajv.schemas before add:", ajv.schemas);
+
+    // draft スキーマを Ajv に追加
+    ajv.addSchema(draftSchema, draftSchema.$id);
+
+    // 登録直後の ajv.schemas の状態
+    console.log(">>> ajv.schemas after add:", ajv.schemas);
+
+    // コンパイル直前に schema の $schema を再確認
+    console.log(">>> modelSchema before compile:", modelSchema);
+    console.log(">>> manifestSchema before compile:", manifestSchema);
+
     validateModel = ajv.compile(modelSchema);
     validateManifest = ajv.compile(manifestSchema);
-  } catch (err) {
+
+  } catch(err) {
     console.warn('Schema load failed, fallback to minimal schema', err);
     const fallback = {
-      type: 'object',
-      properties: {
-        meta: { type: 'object' },
-        nodes: { type: 'array' },
-        edges: { type: 'array' },
-        auxiliary: { type: 'array' }
-      },
-      required: ['meta', 'nodes', 'edges']
+      type:'object',
+      properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},
+      required:['meta','nodes','edges']
     };
     validateModel = ajv.compile(fallback);
   }
