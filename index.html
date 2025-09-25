@@ -63,7 +63,7 @@
         "imports": {
           "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
           "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-          "ajv": "https://esm.sh/ajv@8/dist/2020?bundle”
+          "ajv": "https://cdn.skypack.dev/ajv@8"
         }
       }
     </script>
@@ -116,7 +116,7 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-      import Ajv from "ajv";
+      import Ajv from 'ajv';
 
       const container = document.getElementById('viewer');
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b1020);
