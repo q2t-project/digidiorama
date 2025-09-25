@@ -104,7 +104,6 @@
             <div id="node" class="tab-pane active"></div>
             <div id="errors" class="tab-pane"></div>
             <div id="meta" class="tab-pane">
-            <div id="counts"></div>
           </div>
 </div>
         </div>
@@ -326,20 +325,19 @@
         fitCameraToScene();
       }
 
-      function showMeta(meta, data) {
-        const box = document.getElementById('meta');
-        box.innerHTML = '';
-        if (meta) {
-          for (const [k, v] of Object.entries(meta)) {
-            const d = document.createElement('div');
-            d.className = 'meta-item';
-            d.textContent = `${k}: ${v}`;
-            box.appendChild(d);
-          }
-        }
-        document.getElementById('counts').innerHTML =
-        `<p>Nodes: ${(data.nodes || []).length}</p><p>Edges: ${(data.edges || []).length}</p>`;
-      }
+function showMeta(meta,data){
+  const box=document.getElementById('meta');
+  box.innerHTML = '';
+  if (meta) {
+    for (const [k,v] of Object.entries(meta)) {
+      const d = document.createElement('div');
+      d.className = 'meta-item';
+      d.textContent = `${k}: ${v}`;
+      box.appendChild(d);
+    }
+  }
+  // counts 表示は削除
+}
 
       function showNode(node) {
         const box = document.getElementById('node');
