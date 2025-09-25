@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema/draft-2020-12-schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.org/digidiorama.schema.json",
   "title": "Digidiorama Schema",
   "type": "object",
