@@ -170,6 +170,12 @@
         ctx.fillStyle = color;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+        if (!background) {
+          ctx.lineWidth = 2;                     // 仕様既定の 2px
+          ctx.strokeStyle = "rgba(0,0,0,0.9)";   // 黒系
+          ctx.lineJoin = "round";
+          ctx.strokeText(text, canvas.width/2, canvas.height/2);
+        }
         ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
         const texture = new THREE.CanvasTexture(canvas);
