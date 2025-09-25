@@ -116,7 +116,77 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-      import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8/dist/jtd.js";
+// Ajv の import 部分
+
+<script type="module">
+  import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv.min.js";
+  const ajv = new Ajv();
+  console.log("Ajv version:", ajv.version);
+</script>
+
+import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv.min.js";
+
+// Ajv 初期化
+const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false });
+
+// 2020-12 メタスキーマを確実に登録するユーティリティ
+async function ensureAjv2020(){
+  const key = "https://json-schema.org/draft/2020-12/schema";
+  if (!ajv.getSchema(key)) {
+    try {
+      const url = "https://cdn.jsdelivr.net/npm/ajv@8/dist/refs/json-schema-draft-2020-12.json";
+      const meta = await fetch(url).then(r => r.ok ? r.json() : null);
+      if (meta) {
+        ajv.addMetaSchema(meta);
+        console.log("2020-12 meta-schema registered:", key);
+      } else {
+        console.warn("Failed to fetch draft-2020-12 meta-schema");
+      }
+    } catch(e) {
+      console.warn("Error loading draft-2020-12 meta-schema", e);
+    }
+  }
+}
+
+// loadSchemas() の先頭で ensureAjv2020() を呼ぶ
+async function loadSchemas(){
+  try {
+    await ensureAjv2020();
+
+    const [modelSchema, manifestSchema] = await Promise.all([
+      fetch('./digidiorama.schema.json').then(r=> r.json()),
+      fetch('./manifest.schema.json').then(r=> r.json())
+    ]);
+
+    validateModel = ajv.compile(modelSchema);
+    validateManifest = ajv.compile(manifestSchema);
+
+  } catch(err) {
+    console.warn('Schema load failed, fallback to minimal schema', err);
+    const fallback = {
+      type:'object',
+      properties:{meta:{type:'object'},nodes:{type:'array'},edges:{type:'array'},auxiliary:{type:'array'}},
+      required:['meta','nodes','edges']
+    };
+    validateModel = ajv.compile(fallback);
+  }
+}
+
+// runValidation() の修正版
+function runValidation(data){
+  const msgs = [];
+  if (typeof validateModel === 'function') {
+    const ok = validateModel(data);
+    if (!ok) {
+      msgs.push(...validateModel.errors.map(e =>
+        `${e.instancePath || '/'} ${e.message}`
+      ));
+    }
+  }
+  // ID重複など追加チェック
+  msgs.push(...extraChecks(data));
+  showErrors(msgs);
+}
 
       const container = document.getElementById('viewer');
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b1020);
