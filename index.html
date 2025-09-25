@@ -63,7 +63,7 @@
         "imports": {
           "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
           "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-          "ajv": "https://cdn.skypack.dev/ajv@8"
+          "ajv": "https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv.min.js"
         }
       }
     </script>
@@ -437,38 +437,46 @@ function showMeta(meta,data){
       let validateManifest = null;
 
     async function loadSchemas() {
-      try {
-        const draft = await fetch('./schemas/draft-2020-12-schema.json').then(r => r.json());
-        draft.$id = "./schemas/draft-2020-12-schema.json"; 
-        ajv.addSchema(draft, draft.$id); // ← draft を登録する
+    try {
+      const [draftSchema, modelSchema, manifestSchema] = await Promise.all([
+        fetch('./schemas/draft-2020-12-schema.json').then(r => r.json()),
+        fetch('./schemas/digidiorama.schema.json').then(r => r.json()),
+        fetch('./manifest.schema.json').then(r => r.json())
+      ]);
 
-const [modelSchema, manifestSchema] = await Promise.all([
-  fetch('./digidiorama.schema.json').then(r => r.json()),
-  fetch('./manifest.schema.json').then(r => r.json())
-]);
+      const ajv = new Ajv({ strict: false });
 
-// 外部 URL をローカルに書き換え
-if (modelSchema.$schema) modelSchema.$schema = "./schemas/draft-2020-12-schema.json";
-if (manifestSchema.$schema) manifestSchema.$schema = "./schemas/draft-2020-12-schema.json";
+      // デバッグログ
+      console.log("=== SCHEMA LOADED ===");
+      console.log("draftSchema $id:", draftSchema.$id);
+      console.log("modelSchema $schema:", modelSchema.$schema);
 
-validateModel = ajv.compile(modelSchema);
-validateManifest = ajv.compile(manifestSchema);
+      // Draft を明示的キーで登録
+      ajv.addSchema(draftSchema, "https://json-schema.org/draft/2020-12/schema");
 
-      } catch (err) {
-        console.warn('Schema load failed, fallback to minimal schema', err);
-        const fallback = {
-          type: 'object',
-          properties: {
-            meta: { type: 'object' },
-            nodes: { type: 'array' },
-            edges: { type: 'array' },
-            auxiliary: { type: 'array' }
-          },
-          required: ['meta', 'nodes', 'edges']
-        };
-        validateModel = ajv.compile(fallback);
-      }
+      // モデル・マニフェストのコンパイル
+      validateModel = ajv.compile(modelSchema);
+      validateManifest = ajv.compile(manifestSchema);
+
+      console.log("Schemas registered:", ajv.schemas);
+    } catch (err) {
+      console.warn("Schema load failed, fallback to minimal schema", err);
+      const fallback = {
+        type: "object",
+        properties: {
+          meta: { type: "object" },
+          nodes: { type: "array" },
+          edges: { type: "array" },
+          auxiliary: { type: "array" }
+        },
+        required: ["meta", "nodes", "edges"]
+      };
+      const ajv = new Ajv({ strict: false });
+      validateModel = ajv.compile(fallback);
     }
+  }
+
+      await loadSchemas();
 
       function extraChecks(data) {
         const msgs = [];
