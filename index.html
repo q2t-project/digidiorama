@@ -439,12 +439,12 @@ function showMeta(meta,data){
 
       async function loadSchemas() {
         try {
-            const draft = await fetch('./draft-2020-12-schema.json').then(r => r.json());
+            const draft = await fetch('/digidiorama/schemas/draft-2020-12-schema.json').then(r => r.json());
             ajv.addSchema(draft, "local-draft-2020-12");
             
             const [modelSchema, manifestSchema] = await Promise.all([
-            fetch('.schemas/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-            fetch('./manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+            fetch('/digidiorama/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+            fetch('/digidiorama/manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
           ]);
           validateModel = ajv.compile(modelSchema);
           validateManifest = ajv.compile(manifestSchema);
