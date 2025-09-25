@@ -438,10 +438,7 @@ function showMeta(meta,data){
       let validateManifest = null;
 
       async function loadSchemas() {
-        try {
-            const draft = await fetch('/digidiorama/schemas/draft-2020-12-schema.json').then(r => r.json());
-            ajv.addSchema(draft, "local-draft-2020-12");
-            
+        try {        
             const [modelSchema, manifestSchema] = await Promise.all([
             fetch('/digidiorama/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
             fetch('/digidiorama/manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
