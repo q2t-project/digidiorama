@@ -1,7 +1,6 @@
-<script type="importmap">
-  {
-    "imports": {
-      "ajv": "https://esm.sh/ajv@8/dist/2020?bundle"
-    }
-  }
+<script src="https://cdn.jsdelivr.net/npm/ajv@8/dist/ajv2020.min.js"></script>
+<script type="module">
+  const Ajv = window.Ajv;
+  const ajv = new Ajv({ allErrors: true });
+  // 以降は現行コードでOK
 </script>
