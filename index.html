@@ -1,4 +1,18 @@
 <script type="importmap">
 { "imports": { "ajv": "https://esm.sh/ajv@8/dist/2020?bundle" } }
 </script>
-import Ajv from "ajv"; 
+
+<script type="module">
+  import Ajv from "ajv";
+
+  const ajv = new Ajv();
+  console.log("Ajv version:", ajv.version);
+
+  // 簡単なバリデーションテスト
+  const schema = { type: "object", properties: { foo: { type: "string" } }, required: ["foo"] };
+  const validate = ajv.compile(schema);
+
+  console.log("Test valid:", validate({ foo: "bar" }));   // true になるはず
+  console.log("Test invalid:", validate({ foo: 123 }));  // false になるはず
+</script>
+
