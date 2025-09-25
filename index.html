@@ -16,6 +16,17 @@
         appearance:none; border:1px solid #2a3969; background:#131a33; color:var(--fg);
         padding:.5rem 1rem; border-radius:.4rem; cursor:pointer; min-height:44px
       }
+      header button {
+        min-width: auto;            /* 固定幅を解除 */
+        padding: 0.25rem 0.5rem;    /* 横幅を抑える */
+        font-size: 0.9rem;          /* 少し縮小 */
+      }
+      @media (max-width: 600px) {
+      header button {
+        font-size: 0.8rem;        /* スマホ時さらに縮小 */
+        padding: 0.2rem 0.4rem;   /* 余白も小さく */
+        }
+      }
       header button:hover, header select:hover { border-color:#39529c; background:#1a2347 }
       #main { display:grid; grid-template-columns:1fr 250px; overflow:hidden }
       #viewer { position:relative; overflow:hidden }
@@ -82,19 +93,7 @@
           <option value="ja">Jpn</option>
           <option value="en">Eng</option>
         </select>
-        header button {
-  min-width: auto;            /* 固定幅を解除 */
-  padding: 0.25rem 0.5rem;    /* 横幅を抑える */
-  font-size: 0.9rem;          /* 少し縮小 */
-}
-
-@media (max-width: 600px) {
-  header button {
-    font-size: 0.8rem;        /* スマホ時さらに縮小 */
-    padding: 0.2rem 0.4rem;   /* 余白も小さく */
-  }
-}
-   
+ 
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
           <button id="btnLayers" data-i18n="layers">レイヤ▼</button>
