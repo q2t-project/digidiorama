@@ -443,7 +443,7 @@ function showMeta(meta,data){
             ajv.addSchema(draft, "local-draft-2020-12");
             
             const [modelSchema, manifestSchema] = await Promise.all([
-            fetch('./digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+            fetch('.schemas/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
             fetch('./manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
           ]);
           validateModel = ajv.compile(modelSchema);
