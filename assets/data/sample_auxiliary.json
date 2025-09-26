@@ -1,0 +1,42 @@
+{
+  "meta": { "title": "Auxiliary Test", "author": "test" },
+  "nodes": [
+    { "id": "A", "position": [0, 0, 0], "label": "Origin" },
+    { "id": "B", "position": [1, 1, 0], "label": "B" }
+  ],
+  "edges": [
+    { "source": "A", "target": "B", "label": "edge A-B" }
+  ],
+  "auxiliary": [
+    {
+      "type": "axis",
+      "length": 2
+    },
+    {
+      "type": "grid",
+      "grid": {
+        "shape": "rect",
+        "plane": "xy",
+        "sizeU": 10,
+        "sizeV": 5,
+        "divisionsU": 10,
+        "divisionsV": 5,
+        "color": "#00ffff",
+        "opacity": 0.5
+      }
+    },
+    {
+      "type": "grid",
+      "grid": {
+        "shape": "polar",
+        "plane": "zx",
+        "size": 5,
+        "rings": 4,
+        "segments": 24,
+        "mode": "quarter",
+        "color": "#ff00ff",
+        "opacity": 0.4
+      }
+    }
+  ]
+}
