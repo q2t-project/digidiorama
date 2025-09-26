@@ -92,7 +92,7 @@
         <button id="btnUrlLoad">URL読込</button>
         <button id="btnReset" data-i18n="reset">再描画</button>
         <div id="layersMenu" style="position:relative;">
-        <button id="btnLayers">レイヤ▼</button>
+          <button id="btnLayers">レイヤ▼</button>
           <div id="layersDropdown"
             style="display:none">
             <label><input type="checkbox" id="toggle-nodes" checked /> Nodes</label>
@@ -100,7 +100,6 @@
             <label><input type="checkbox" id="toggle-labels" checked /> Labels</label>
             <label><input type="checkbox" id="toggle-aux" checked /> Auxiliary</label>
           </div>
-          <select id="manifestSelect" style="display:none"></select>
         </div>
       </header>
       <div id="main">
@@ -396,55 +395,13 @@
           const res = await fetch(url);
           if (!res.ok) throw new Error("HTTP " + res.status);
           const data = await res.json();
-          if (validateManifest && validateManifest(data)) {
-            populateManifestDropdown(data);
-          } else {
-            if (validateManifest && validateManifest(data)) {
-              populateManifestDropdown(data);
-            } else {
-              runValidation(data);
-              buildScene(data);
-              fitCameraToScene();
-              snapshotInitialView();
- }
-          }
+          runValidation(data);
+          buildScene(data);
+          fitCameraToScene();
+          snapshotInitialView();
         } catch (err) {
           alert("URL読み込み失敗: " + err.message);
         }
-      }
-
-      function populateManifestDropdown(manifest) {
-        const sel = document.getElementById('manifestSelect');
-        sel.innerHTML = "";
-
-        let files = [];
-        if (manifest.files) {
-          files = manifest.files;
-        } else if (manifest.groups) {
-          for (const g of manifest.groups) {
-            files = files.concat(g.files);
-          }
-        }
-        for (const f of files) {
-          const opt = document.createElement('option');
-          opt.value = f.path;
-          opt.textContent = f.title || f.path;
-          sel.appendChild(opt);
-        }
-        sel.style.display = "inline-block";
-
-        sel.onchange = async () => {
-          const res = await fetch(sel.value);
-          const model = await res.json();
-          if (validateModel && validateModel(model)) {
-            runValidation(model);
-            buildScene(model);
-            fitCameraToScene();
-            snapshotInitialView();
-          } else {
-            alert("Invalid model in manifest: " + sel.value);
-          }
-        };
       }
 
       document.getElementById('btnLoad').onclick = () => {
@@ -457,16 +414,10 @@
           try {
             const text = await file.text();
             const data = JSON.parse(text);
-            if (validateManifest && validateManifest(data)) {
-              populateManifestDropdown(data);
-            } else if (validateModel && validateModel(data)) {
-              runValidation(data);
-              buildScene(data);
-              fitCameraToScene();
-              snapshotInitialView();
-            } else {
-              alert("Invalid JSON: not a digidiorama model or manifest.");
-            }
+            runValidation(data);
+            buildScene(data);
+            fitCameraToScene();
+            snapshotInitialView();
           } catch (err) {
             alert("JSONの読み込みに失敗しました: " + err.message);
           }
