@@ -276,6 +276,7 @@
         controls.update();
       }
 
+      let nodeById = new Map();
       function buildScene(data) {
         nodeGroup.clear();
         edgeGroup.clear();
@@ -285,7 +286,6 @@
         const sphereGeom = new THREE.SphereGeometry(0.2, 16, 16);
         const sphereMat = new THREE.MeshStandardMaterial({ color:0x80b0ff });
 
-        const nodeById = new Map();
         for (const n of (data.nodes || [])) {
           const x = n.position?.x ?? 0, y = n.position?.y ?? 0, z = n.position?.z ?? 0;
           const mesh = new THREE.Mesh(sphereGeom, sphereMat.clone());
@@ -437,10 +437,23 @@
 
       async function loadSchemas() {
         try {        
-            const [modelSchema, manifestSchema] = await Promise.all([
-            fetch('/digidiorama/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-            fetch('/digidiorama/manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
-          ]);
+
+      const fetchJsonNoCache = async (url) => {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`${url} HTTP ${res.status}`);
+        const txt = await res.text();
+        try { return JSON.parse(txt); }
+        catch (e) {
+          console.error('Schema fetch returned non-JSON. url=', url, 'head=', txt.slice(0,200));
+          throw e;
+        }
+      };
+      const schemaBase = 'https://q2t-project.github.io/digidiorama';
+      const [modelSchema, manifestSchema] = await Promise.all([
+        fetchJsonNoCache(`${schemaBase}/digidiorama.schema.json`),
+        fetchJsonNoCache(`${schemaBase}/manifest.schema.json`)
+      ]);
+
           validateModel = ajv.compile(modelSchema);
           validateManifest = ajv.compile(manifestSchema);
         } catch(err) {
