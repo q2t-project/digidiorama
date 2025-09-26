@@ -9,8 +9,7 @@
   ],
   "auxiliary": [
     {
-      "type": "axis",
-      "length": 2
+      "grid": { "plane": "xy", "size": 10, "divisions": 10 }
     },
     {
       "type": "grid",
