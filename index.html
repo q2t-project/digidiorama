@@ -272,10 +272,13 @@
           if (aux.type === "grid" && aux.grid) {
             const g = aux.grid;
             if (g.shape === "rect") {
-              const size = g.size ?? 10;
-              const divisions = g.divisions ?? 10;
+              const sizeU = g.sizeU ?? 10;
+              const sizeV = g.sizeV ?? 10;
+              const divisionsU = g.divisionsU ?? 10;
+              const divisionsV = g.divisionsV ?? 10;
               const color = g.color ?? 0x444444;
-              const grid = new THREE.GridHelper(size, divisions, color, color);
+              const grid = new THREE.GridHelper(sizeU, divisionsU, color, color);
+              grid.scale.set(1, sizeV / sizeU, 1);
               grid.material.opacity = g.opacity ?? 0.3;
               grid.material.transparent = true;
               if (g.plane === "yz") { grid.rotation.z = Math.PI / 2; }
@@ -286,7 +289,12 @@
             }
             if (g.shape === "polar") {
               const rings = g.rings ?? 5;
-              const segments = g.segments ?? 36;
+              let segments = g.segments ?? 36;
+              let thetaLength = Math.PI * 2;
+              if (g.mode === "half") { thetaLength = Math.PI; }
+              if (g.mode === "quarter") { thetaLength = Math.PI / 2; }
+              const circleGeom = new THREE.CircleGeometry(radius, segments, 0, thetaLength);
+
               const radius = g.size ?? 5;
               const mat = new THREE.LineBasicMaterial({ color:g.color ?? 0x444444, transparent:true, opacity:g.opacity ?? 0.3 });
               for (let r = 1; r <= rings; r++) {
@@ -309,11 +317,12 @@
           if (aux.type === "axis") {
             const len = aux.length ?? 1;
             const colors = aux.colors || ["#ff0000", "#00ff00", "#0000ff"];
-            const axes = [
-              { dir: new THREE.Vector3(1, 0, 0), color: colors[0] },
-              { dir: new THREE.Vector3(0, 1, 0), color: colors[1] },
-              { dir: new THREE.Vector3(0, 0, 1), color: colors[2] }
-            ];
+          if (!model.auxiliary) {
+            const axes = new THREE.AxesHelper(5);
+            auxiliaryGroup.add(axes);
+            const grid = new THREE.GridHelper(10, 10);
+            auxiliaryGroup.add(grid);
+            }
             axes.forEach(axisDef => {
               const geom = new THREE.BufferGeometry().setFromPoints([
                 new THREE.Vector3(0, 0, 0),
