@@ -180,6 +180,7 @@
           "enum": [
             "grid",
             "axis"
+            "label"
           ]
         },
         "visible": {

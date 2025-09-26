@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Complex Example",
+    "version": "v2",
+    "locale": "ja",
+    "author": "q2t_project",
+    "date": "2025-09-26T12:00:00Z"
+  },
+  "nodes": [
+    { "id": "a", "label": "Alpha", "position": [-1, 0, 0] },
+    { "id": "b", "label": "Beta", "position": [1, 0, 0] },
+    { "id": "c", "label": "Gamma", "position": [0, 1, 0] }
+  ],
+  "edges": [
+    { "source": "a", "target": "b" },
+    { "source": "b", "target": "c" }
+  ],
+  "auxiliary": [
+    {
+      "type": "axis",
+      "axis": { "size": 5, "color": 16711680 }
+    },
+    {
+      "type": "grid",
+      "grid": { "shape": "rect", "sizeU": 10, "sizeV": 10, "divisionsU": 10, "divisionsV": 10 }
+    },
+    {
+      "type": "label",
+      "label": { "text": "ZX Plane Label", "plane": "zx" }
+    }
+  ]
+}
