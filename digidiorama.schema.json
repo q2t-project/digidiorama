@@ -179,7 +179,7 @@
           "type": "string",
           "enum": [
             "grid",
-            "axis"
+            "axis",
             "label"
           ]
         },
