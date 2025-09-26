@@ -1,0 +1,29 @@
+{
+  "title": "3DSS-as-3DSD (core sketch)",
+  "nodes": [
+    { "id": "Type:Node", "label": "Type: Node", "kind": "type", "phi": true, "pos": [0,0,0] },
+    { "id": "Prop:Node.id", "label": "prop id:string ★", "kind": "prop", "phi": true, "pos": [2,0.5,0] },
+    { "id": "Prop:Node.label", "label": "prop label:string", "kind": "prop", "phi": true, "pos": [2,-0.5,0] },
+
+    { "id": "Type:Edge", "label": "Type: Edge", "kind": "type", "phi": true, "pos": [0,-3,0] },
+    { "id": "Prop:Edge.source", "label": "prop source: NodeRef ★", "kind": "prop", "psi": true, "pos": [2,-2.5,0] },
+    { "id": "Prop:Edge.target", "label": "prop target: NodeRef ★", "kind": "prop", "psi": true, "pos": [2,-3.5,0] },
+
+    { "id": "Constraint:Node.id", "label": "unique(id)", "kind": "constraint", "mu": true, "pos": [4,0.5,0] }
+  ],
+  "edges": [
+    { "id": "e1", "source": "Type:Node", "target": "Prop:Node.id", "rel": "hasProp" },
+    { "id": "e2", "source": "Type:Node", "target": "Prop:Node.label", "rel": "hasProp" },
+    { "id": "e3", "source": "Type:Edge", "target": "Prop:Edge.source", "rel": "hasProp" },
+    { "id": "e4", "source": "Type:Edge", "target": "Prop:Edge.target", "rel": "hasProp" },
+    { "id": "e5", "source": "Prop:Node.id", "target": "Constraint:Node.id", "rel": "constrainedBy" }
+  ],
+  "auxiliary": [
+    { "type": "axis", "axis": { "size": 10, "opacity": 0.4 } },
+    { "type": "grid", "grid": { "shape": "rect", "sizeU": 10, "sizeV": 10, "divisionsU": 10, "divisionsV": 10, "opacity": 0.15 } }
+  ],
+  "style": {
+    "palette": { "phi": "#2b6cb0", "psi": "#2f855a", "mu": "#b7791f" },
+    "badges": { "required": "★" }
+  }
+}
