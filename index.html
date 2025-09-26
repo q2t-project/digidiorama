@@ -289,27 +289,41 @@
             }
             if (g.shape === "polar") {
               const rings = g.rings ?? 5;
-              let segments = g.segments ?? 36;
+              const segments = g.segments ?? 36;
               let thetaLength = Math.PI * 2;
+
               if (g.mode === "half") { thetaLength = Math.PI; }
               if (g.mode === "quarter") { thetaLength = Math.PI / 2; }
-              const circleGeom = new THREE.CircleGeometry(radius, segments, 0, thetaLength);
 
               const radius = g.size ?? 5;
-              const mat = new THREE.LineBasicMaterial({ color:g.color ?? 0x444444, transparent:true, opacity:g.opacity ?? 0.3 });
+
+             const mat = new THREE.LineBasicMaterial({
+                color: g.color ?? 0x444444,
+                transparent: true,
+                opacity: g.opacity ?? 0.3
+              });
+
               for (let r = 1; r <= rings; r++) {
                 const geom = new THREE.BufferGeometry();
                 const pts = [];
+
                 for (let i = 0; i <= segments; i++) {
-                  const theta = (i / segments) * 2 * Math.PI;
-                  pts.push(new THREE.Vector3(Math.cos(theta) * radius * r / rings, Math.sin(theta) * radius * r / rings, 0));
+                  const theta = (i / segments) * thetaLength; // ← mode に応じた角度範囲に変更
+                  pts.push(new THREE.Vector3(
+                    Math.cos(theta) * radius * r / rings,
+                    Math.sin(theta) * radius * r / rings,
+                    0
+                  ));
                 }
+
                 geom.setFromPoints(pts);
                 const circle = new THREE.LineLoop(geom, mat);
+
                 if (g.plane === "yz") { circle.rotation.y = Math.PI / 2; }
                 if (g.plane === "zx") { circle.rotation.x = Math.PI / 2; }
                 if (g.position) { circle.position.set(...g.position); }
                 if (aux.visible === false) circle.visible = false;
+
                 auxiliaryGroup.add(circle);
               }
             }
