@@ -317,7 +317,7 @@
           if (aux.type === "axis") {
             const len = aux.length ?? 1;
             const colors = aux.colors || ["#ff0000", "#00ff00", "#0000ff"];
-          if (!model.auxiliary) {
+          if (!data.auxiliary) {
             const axes = new THREE.AxesHelper(5);
             auxiliaryGroup.add(axes);
             const grid = new THREE.GridHelper(10, 10);
