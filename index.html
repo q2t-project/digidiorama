@@ -416,21 +416,33 @@
       function populateManifestDropdown(manifest) {
         const sel = document.getElementById('manifestSelect');
         sel.innerHTML = "";
-        for (const f of manifest.files || []) {
+
+        let files = [];
+        if (manifest.files) {
+          files = manifest.files;
+        } else if (manifest.groups) {
+          for (const g of manifest.groups) {
+            files = files.concat(g.files);
+          }
+        }
+        for (const f of files) {
           const opt = document.createElement('option');
           opt.value = f.path;
           opt.textContent = f.title || f.path;
           sel.appendChild(opt);
         }
         sel.style.display = "inline-block";
+
         sel.onchange = async () => {
           const res = await fetch(sel.value);
           const model = await res.json();
-          if (validateModel(model)) {
+          if (validateModel && validateModel(model)) {
             runValidation(model);
             buildScene(model);
             fitCameraToScene();
             snapshotInitialView();
+          } else {
+            alert("Invalid model in manifest: " + sel.value);
           }
         };
       }
@@ -445,10 +457,16 @@
           try {
             const text = await file.text();
             const data = JSON.parse(text);
-            runValidation(data);
-            buildScene(data);
-            fitCameraToScene();
-            snapshotInitialView();
+            if (validateManifest && validateManifest(data)) {
+              populateManifestDropdown(data);
+            } else if (validateModel && validateModel(data)) {
+              runValidation(data);
+              buildScene(data);
+              fitCameraToScene();
+              snapshotInitialView();
+            } else {
+              alert("Invalid JSON: not a digidiorama model or manifest.");
+            }
           } catch (err) {
             alert("JSONの読み込みに失敗しました: " + err.message);
           }
