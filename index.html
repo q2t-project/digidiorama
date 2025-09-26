@@ -100,6 +100,7 @@
             <label><input type="checkbox" id="toggle-labels" checked /> Labels</label>
             <label><input type="checkbox" id="toggle-aux" checked /> Auxiliary</label>
           </div>
+          <select id="manifestSelect" style="display:none"></select>
         </div>
       </header>
       <div id="main">
@@ -395,13 +396,43 @@
           const res = await fetch(url);
           if (!res.ok) throw new Error("HTTP " + res.status);
           const data = await res.json();
-          runValidation(data);
-          buildScene(data);
-          fitCameraToScene();
-          snapshotInitialView();
+          if (validateManifest && validateManifest(data)) {
+            populateManifestDropdown(data);
+          } else {
+            if (validateManifest && validateManifest(data)) {
+              populateManifestDropdown(data);
+            } else {
+              runValidation(data);
+              buildScene(data);
+              fitCameraToScene();
+              snapshotInitialView();
+ }
+          }
         } catch (err) {
           alert("URL読み込み失敗: " + err.message);
         }
+      }
+
+      function populateManifestDropdown(manifest) {
+        const sel = document.getElementById('manifestSelect');
+        sel.innerHTML = "";
+        for (const f of manifest.files || []) {
+          const opt = document.createElement('option');
+          opt.value = f.path;
+          opt.textContent = f.title || f.path;
+          sel.appendChild(opt);
+        }
+        sel.style.display = "inline-block";
+        sel.onchange = async () => {
+          const res = await fetch(sel.value);
+          const model = await res.json();
+          if (validateModel(model)) {
+            runValidation(model);
+            buildScene(model);
+            fitCameraToScene();
+            snapshotInitialView();
+          }
+        };
       }
 
       document.getElementById('btnLoad').onclick = () => {
