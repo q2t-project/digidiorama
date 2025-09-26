@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>digidiorama viewer/</title>
+    <base href="/digidiorama/">
     <link rel="icon" href="data:,">
     <style>
       :root { --bg: #0b1020; --fg: #e6edf3; --accent: #5aa9ff; }
@@ -437,8 +438,8 @@
       async function loadSchemas() {
         try {        
             const [modelSchema, manifestSchema] = await Promise.all([
-            fetch('/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
-            fetch('/manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
+            fetch('/digidiorama/digidiorama.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('model schema not found'))),
+            fetch('/digidiorama/manifest.schema.json').then(r => r.ok ? r.json() : Promise.reject(new Error('manifest schema not found')))
           ]);
           validateModel = ajv.compile(modelSchema);
           validateManifest = ajv.compile(manifestSchema);
