@@ -278,17 +278,25 @@
 
       function fitCameraToScene(padding = 1.2) {
         controls.reset();
-        const box = new THREE.Box3().setFromObject(scene);
+
+        // 表示対象だけを対象にする
+        const box = new THREE.Box3();
+        box.expandByObject(nodeGroup);
+        box.expandByObject(edgeGroup);
+        box.expandByObject(labelGroup);
+        box.expandByObject(auxiliaryGroup);
+
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = camera.fov * (Math.PI / 180);
-        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-        cameraZ *= padding;
+        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * padding;
+
         camera.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
         controls.target.copy(center);
         controls.update();
       }
+
 
       function buildScene(data) {
         nodeGroup.clear();
