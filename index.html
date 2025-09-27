@@ -53,12 +53,6 @@
       #panel.open{ transform:translateY(0); }
      #panel.closed{ transform:translateY(100%); }
     }
-
-    <button id="fab" 
-      style="position:absolute; bottom:1rem; right:1rem; 
-            width:48px; height:48px; border-radius:50%; 
-            border:none; background:#2a3969; color:#fff; font-size:20px; 
-            cursor:pointer; z-index:2000;">≡</button>
     </style>
 
     <script type="importmap">
@@ -106,11 +100,17 @@
             <div id="errors" class="tab-pane"></div>
             <div id="meta" class="tab-pane">
           </div>
-</div>
+          </div>
         </div>
       </div>
       <button id="fab">≡</button>
     </div>
+
+    <button id="fab" 
+      style="position:absolute; bottom:1rem; right:1rem; 
+            width:48px; height:48px; border-radius:50%; 
+            border:none; background:#2a3969; color:#fff; font-size:20px; 
+            cursor:pointer; z-index:2000;">≡</button>
 
     <div class="credit">MIT © qQt-project / Content © respective authors</div>
 
