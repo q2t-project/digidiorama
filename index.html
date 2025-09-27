@@ -140,12 +140,18 @@
       controls.maxDistance = 200;
 
       let needsUpdate = true;   // 初期レンダリング
+      let animating =fales;
 
-      controls.addEventListener("start", () => { 
-        needsUpdate = true;     // 操作開始
+      controls.addEventListener("start", () => {
+        startAnimating();     // ドラッグ開始でループ開始
       });
-      controls.addEventListener("end", () => { 
-        needsUpdate = true;
+      controls.addEventListener("change", () => {
+        // カーソル移動ごとに描画（追従用）
+        renderer.render(scene, camera);
+      });
+      controls.addEventListener("end", () => {
+        animating = false;    // ドラッグ終了 → 停止
+        renderer.render(scene, camera); // 最後に1回
       });
 
       function animate() {
@@ -161,6 +167,20 @@
         requestAnimationFrame(animate);
       }
       animate();
+
+      function startAnimating() {
+        if (!animating) {
+          animating = true;
+          requestAnimationFrame(loop);
+        }
+      }
+
+      function loop() {
+        if (!animating) return;
+        controls.update();
+        renderer.render(scene, camera);
+        requestAnimationFrame(loop);
+      }
 
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
       const dir = new THREE.DirectionalLight(0xffffff, 0.8);
