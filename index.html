@@ -606,12 +606,6 @@ document.getElementById("btnUrlLoad").addEventListener("click", async () => {
       });
       ro.observe(container);
 
-      function animate() {
-        controls.update();
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate);
-      }
-      animate();
     </script>
   </body>
 </html>
