@@ -124,6 +124,8 @@
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b1020);
       const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
       camera.up.set(0, 0, 1);
+      camera.position.set(5, 5, 5);
+      camera.lookAt(0,0,0);
 
       const renderer = new THREE.WebGLRenderer({ antialias:true });
       const dpr = Math.min(window.devicePixelRatio, 1.5);
@@ -408,6 +410,7 @@
 
         showMeta(data.meta, data);
         fitCameraToScene();
+        renderer.render(scene, camera);
       }
 
 function showMeta(meta,data){
