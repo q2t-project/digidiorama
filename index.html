@@ -140,33 +140,15 @@
       controls.maxDistance = 200;
 
       let needsUpdate = true;   // 初期レンダリング
-      let animating =fales;
+      let animating =false;
 
       controls.addEventListener("start", () => {
         startAnimating();     // ドラッグ開始でループ開始
-      });
-      controls.addEventListener("change", () => {
-        // カーソル移動ごとに描画（追従用）
-        renderer.render(scene, camera);
       });
       controls.addEventListener("end", () => {
         animating = false;    // ドラッグ終了 → 停止
         renderer.render(scene, camera); // 最後に1回
       });
-
-      function animate() {
-        if (needsUpdate) {
-          controls.update();
-          renderer.render(scene, camera);
-          if (!controls.enableDamping || controls.getPolarAngle) {
-            if (!controls.enableDamping || controls.target.equals(controls.target.clone())) {
-              needsUpdate = false;
-            }
-          }
-        }
-        requestAnimationFrame(animate);
-      }
-      animate();
 
       function startAnimating() {
         if (!animating) {
