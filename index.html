@@ -164,8 +164,22 @@
       }
 
       function loop() {
+        function updateLabelsVisibility() {
+          const camPos = camera.position;
+          for (const label of labelGroup.children) {
+            // ラベルの距離
+            const dist = camPos.distanceTo(label.getWorldPosition(new THREE.Vector3()));
+            // オプションからサイズを取得（なければデフォルト）
+            const fs = (label.userData.fontSize ?? 32) * (label.userData.worldScale ?? 0.1);
+            // 投影された見かけサイズを推定
+            const apparent = fs / dist;
+            // 閾値 (例: 0.003) 以下なら非表示
+            label.visible = (apparent > 0.003);
+          }
+        }
         if (!animating) return;
         controls.update();
+        updateLabelsVisibility(); 
         renderer.render(scene, camera);
         requestAnimationFrame(loop);
       }
