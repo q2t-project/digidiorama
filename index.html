@@ -525,10 +525,10 @@ document.getElementById("btnUrlLoad").addEventListener("click", async () => {
         const dd = document.getElementById('layersDropdown');
         dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
       };
-      document.getElementById('toggle-nodes').onchange = (ev) => { nodeGroup.visible = ev.target.checked; };
-      document.getElementById('toggle-edges').onchange = (ev) => { edgeGroup.visible = ev.target.checked; };
-      document.getElementById('toggle-labels').onchange = (ev) => { labelGroup.visible = ev.target.checked; };
-      document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; };
+      document.getElementById('toggle-nodes').onchange = (ev) => { nodeGroup.visible = ev.target.checked; renderer.render(scene, camera);};
+      document.getElementById('toggle-edges').onchange = (ev) => { edgeGroup.visible = ev.target.checked; renderer.render(scene, camera);};
+      document.getElementById('toggle-labels').onchange = (ev) => { labelGroup.visible = ev.target.checked; renderer.render(scene, camera);};
+      document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; renderer.render(scene, camera);};
       document.getElementById("btnLoad").addEventListener("click", async () => {
         const input = document.createElement("input");
         input.type = "file";
