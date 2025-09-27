@@ -51,18 +51,15 @@
         #tab-content .tab-pane.active { display:block; }
       }
       @media(min-width:601px){
-        #panel{
-          position:absolute; z-index:10;
-          width:250px; right:0; top:0; height:100%;
-          background:#10172c; border-left:1px solid #1d2748;
-          transform:translateX(100%);            /* 初期は閉じる */
-          transition:transform .3s ease;
-          pointer-events: none; 
-      }
-        #panel.open{
-          pointer-events: auto;     /* ←開いたときだけ有効 */
-          transform:translateX(0)
-        }   /* 開くときだけ表示 */
+        #panel {}
+        #panel.closed {
+          transform:translateX(100%);
+          pointer-events: none;
+        }
+        #panel.open {
+          pointer-events: auto;
+          transform:translateX(0);
+        }
 
         #fab {
           position:absolute; right:.75rem; bottom:.75rem; width:56px; height:56px; border-radius:50%;
