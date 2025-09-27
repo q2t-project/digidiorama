@@ -126,8 +126,9 @@
       camera.up.set(0, 0, 1);
 
       const renderer = new THREE.WebGLRenderer({ antialias:true });
+      const dpr = Math.min(window.devicePixelRatio, 1.5);
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      renderer.setPixelRatio(dpr);
       document.body.appendChild(renderer.domElement);
       container.appendChild(renderer.domElement);
 
@@ -143,11 +144,14 @@
       let animating =false;
 
       controls.addEventListener("start", () => {
-        startAnimating();     // ドラッグ開始でループ開始
+        renderer.setPixelRatio(1.0); // 操作中は軽く
+        renderer.setSize(container.clientWidth, container.clientHeight, false);
       });
+
       controls.addEventListener("end", () => {
-        animating = false;    // ドラッグ終了 → 停止
-        renderer.render(scene, camera); // 最後に1回
+        renderer.setPixelRatio(dpr); // 操作終了で高解像度に戻す
+        renderer.setSize(container.clientWidth, container.clientHeight, false);
+        renderer.render(scene, camera); // 仕上げに1枚きれいな絵を描く
       });
 
       function startAnimating() {
