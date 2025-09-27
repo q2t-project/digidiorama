@@ -139,13 +139,28 @@
       controls.minDistance = 1;
       controls.maxDistance = 200;
 
-      controls.addEventListener("change", render);
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        render();
+      let needsUpdate = true;   // 初期レンダリング
+
+      controls.addEventListener("start", () => { 
+        needsUpdate = true;     // 操作開始
       });
+      controls.addEventListener("end", () => { 
+        needsUpdate = true;
+      });
+
+      function animate() {
+        if (needsUpdate) {
+          controls.update();
+          renderer.render(scene, camera);
+          if (!controls.enableDamping || controls.getPolarAngle) {
+            if (!controls.enableDamping || controls.target.equals(controls.target.clone())) {
+              needsUpdate = false;
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
 
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
       const dir = new THREE.DirectionalLight(0xffffff, 0.8);
