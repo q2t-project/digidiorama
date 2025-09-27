@@ -30,28 +30,28 @@
       }
       #tabs button.active { background:var(--accent); }
       .tab-pane { display:block; }
-      /* === 末尾に追加（既存の @media(max-width:600px) があれば置換） === */
-@media (max-width:600px){
-  #panel{
-    width:100%; height:40%;
-    top:auto; bottom:0; right:0; border-left:none; border-top:1px solid #1d2748;
-    transform:translateY(100%);                   /* 下に隠す */
-  }
-  #panel.open{ transform:translateY(0); }
-  #panel.closed{ transform:translateY(100%); }
-}
 
-      @media(min-width:601px){
-#panel{
-  position:absolute; z-index:10;
-  top:0; right:0; height:100%; width:300px;      /* 右側固定 */
-  background:#10172c; border-left:1px solid #1d2748;
-  transform:translateX(100%);                    /* 初期は隠す */
-  transition:transform .3s ease;
-  pointer-events:none;                            /* 閉じてる間は背面に通す */
-}
-#panel.open{ transform:translateX(0); pointer-events:auto; }
-#panel.closed{ transform:translateX(100%); pointer-events:none; }
+      @media (max-width:600px){
+        #panel{
+          width:100%; height:40%;
+          top:auto; bottom:0; right:0; border-left:none; border-top:1px solid #1d2748;
+          transform:translateY(100%);                   /* 下に隠す */
+        }
+        #panel.open{ transform:translateY(0); }
+        #panel.closed{ transform:translateY(100%); }
+      }
+
+    @media(min-width:601px){
+      #panel{
+        position:absolute; z-index:10;
+        top:0; right:0; height:100%; width:300px;      /* 右側固定 */
+        background:#10172c; border-left:1px solid #1d2748;
+        transform:translateX(100%);                    /* 初期は隠す */
+        transition:transform .3s ease;
+        pointer-events:none;                            /* 閉じてる間は背面に通す */
+      }
+      #panel.open{ transform:translateX(0); pointer-events:auto; }
+      #panel.closed{ transform:translateX(100%); pointer-events:none; }
       }
     </style>
 
