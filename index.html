@@ -146,9 +146,11 @@
       controls.addEventListener("start", () => {
         renderer.setPixelRatio(1.0); // 操作中は軽く
         renderer.setSize(container.clientWidth, container.clientHeight, false);
+        startAnimating(); 
       });
 
       controls.addEventListener("end", () => {
+        animating = false; 
         renderer.setPixelRatio(dpr); // 操作終了で高解像度に戻す
         renderer.setSize(container.clientWidth, container.clientHeight, false);
         renderer.render(scene, camera); // 仕上げに1枚きれいな絵を描く
