@@ -37,13 +37,11 @@
         min-height:32px;
       }
         #main { grid-template-columns:1fr; }
-      #panel {
-        pointer-events: none;     /* ← 追加: 閉じてるときは操作できない */
-      }
-      #panel.open {
-        pointer-events: auto;     /* ← 開いたときだけ有効 */
-        transform: translateX(0);
-      }
+        #panel {
+          position:absolute; z-index:10; width:100%; height:40%; bottom:0; left:0;
+          border-left:none; border-top:1px solid #1d2748; transform:translateY(100%)
+        }
+        #panel.open { transform:translateY(0) }
         #fab {
           position:absolute; right:.75rem; bottom:.75rem; width:56px; height:56px; border-radius:50%;
           background:var(--accent); color:#fff; border:none; font-size:24px; cursor:pointer; z-index:20
@@ -280,20 +278,13 @@
 
       function fitCameraToScene(padding = 1.2) {
         controls.reset();
-
-        // 表示対象だけを対象にする
-        const box = new THREE.Box3();
-        box.expandByObject(nodeGroup);
-        box.expandByObject(edgeGroup);
-        box.expandByObject(labelGroup);
-        box.expandByObject(auxiliaryGroup);
-
+        const box = new THREE.Box3().setFromObject(scene);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = camera.fov * (Math.PI / 180);
-        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * padding;
-
+        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+        cameraZ *= padding;
         camera.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
         controls.target.copy(center);
         controls.update();
@@ -534,10 +525,10 @@ document.getElementById("btnUrlLoad").addEventListener("click", async () => {
         const dd = document.getElementById('layersDropdown');
         dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
       };
-      document.getElementById('toggle-nodes').onchange = (ev) => { nodeGroup.visible = ev.target.checked; renderer.render(scene, camera);};
-      document.getElementById('toggle-edges').onchange = (ev) => { edgeGroup.visible = ev.target.checked; renderer.render(scene, camera);};
-      document.getElementById('toggle-labels').onchange = (ev) => { labelGroup.visible = ev.target.checked; renderer.render(scene, camera);};
-      document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; renderer.render(scene, camera);};
+      document.getElementById('toggle-nodes').onchange = (ev) => { nodeGroup.visible = ev.target.checked; };
+      document.getElementById('toggle-edges').onchange = (ev) => { edgeGroup.visible = ev.target.checked; };
+      document.getElementById('toggle-labels').onchange = (ev) => { labelGroup.visible = ev.target.checked; };
+      document.getElementById('toggle-aux').onchange = (ev) => { auxiliaryGroup.visible = ev.target.checked; };
       document.getElementById("btnLoad").addEventListener("click", async () => {
         const input = document.createElement("input");
         input.type = "file";
