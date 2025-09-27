@@ -516,7 +516,7 @@ document.getElementById("btnUrlLoad").addEventListener("click", async () => {
         }
       }, { passive:true });
 
-      document.getElementById('btnReset').onclick = () => { fitCameraToScene(); };
+      document.getElementById('btnReset').onclick = () => { fitCameraToScene(); renderer.render(scene, camera);};
       document.getElementById('btnLayers').onclick = () => {
         const dd = document.getElementById('layersDropdown');
         dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
