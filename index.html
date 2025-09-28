@@ -306,9 +306,9 @@
           m.userData = n;
           nodeGroup.add(m);
           nodeById.set(n.id, m);
-          if (n.label) {
-            const labelMesh = makeLabelPlane(n.label, n.labelAttr || {}, n.id);
-            m.add(labelMesh);
+        if (n.label?.text) {
+          const labelMesh = makeLabelPlane(n.label.text, n.label, n.id);
+          m.add(labelMesh);
           }
         }
 
@@ -318,9 +318,9 @@
           const geo = new THREE.BufferGeometry().setFromPoints([a.position, b.position]);
           const mat = new THREE.LineBasicMaterial({ color:e.color || 0x9ec1ff, transparent:true, opacity:e.opacity || 1.0 });
           edgeGroup.add(new THREE.Line(geo, mat));
-          if (e.label) {
+          if (e.label?.text) {
             const midpoint = new THREE.Vector3().addVectors(a.position, b.position).multiplyScalar(0.5);
-            const edgeLabel = makeLabelPlane(e.label, e.labelAttr || {});
+            const edgeLabel = makeLabelPlane(e.label.text, e.label);
             edgeLabel.position.copy(midpoint);
             labelGroup.add(edgeLabel);
           }
